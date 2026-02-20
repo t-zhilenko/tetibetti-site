@@ -1,4 +1,6 @@
-﻿type ProductPageProps = {
+﻿export const runtime = "edge";
+
+type ProductPageProps = {
   params: {
     slug: string;
   };
