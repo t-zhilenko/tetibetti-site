@@ -1,0 +1,5 @@
+﻿name = "tetibetti-site"
+compatibility_date = "2026-02-20"
+
+[assets]
+directory = ".open-next/assets"

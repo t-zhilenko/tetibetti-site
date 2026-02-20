@@ -9,16 +9,13 @@ npm install
 npm run dev
 ```
 
-## Cloudflare Pages Deploy
+## Cloudflare Deploy (OpenNext)
 
-Settings for a standard Next.js App Router build:
+Build settings for Cloudflare Pages/Workers using the OpenNext Cloudflare adapter:
 
-- Framework preset: Next.js
-- Build command: `npm run build`
-- Build output directory: `.next`
+- Build command: `npm run build:cf`
+- Build output directory: `.open-next`
 - Root directory: `/`
-
-Cloudflare Pages will run `npm install` automatically.
 
 ## Project Structure
 
