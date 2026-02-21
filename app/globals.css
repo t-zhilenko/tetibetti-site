@@ -30,3 +30,7 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+.font-script {
+  font-family: var(--font-script), "Segoe Script", "Brush Script MT", cursive;
+}

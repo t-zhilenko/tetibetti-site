@@ -17,6 +17,11 @@ Build settings for Cloudflare Pages/Workers using the OpenNext Cloudflare adapte
 - Build output directory: `.open-next`
 - Root directory: `/`
 
+## Styling Notes
+
+- Fonts: Playfair Display for headings, Inter for body/UI, Great Vibes for the brand wordmark.
+- Brand colors: soft, blush, beige, slateBlue, deep (see `app/globals.css`).
+
 ## Project Structure
 
 - `app/layout.tsx` global layout with header/footer
