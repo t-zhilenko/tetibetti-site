@@ -1,14 +1,32 @@
 ﻿import Container from "@/components/Container";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-soft bg-[radial-gradient(900px_420px_at_80%_85%,rgba(223,194,192,0.08),transparent_70%)]">
       <Container className="py-16 md:py-15">
-        <div className="min-h-[70vh] grid gap-4 lg:grid-cols-[420px_1fr] items-center lg:gap-10">
+        <div className="min-h-[70vh] grid gap-4 lg:grid-cols-[380px_1fr] items-center lg:gap-12">
           <div className="flex justify-center lg:justify-start order-1">
-            <div className="w-full max-w-[240px] sm:max-w-[280px] lg:w-[420px] lg:max-w-none">
-              <div className="aspect-[3/4] w-full rounded-3xl bg-beige/35 border border-deep/10" />
+            <div className="w-full max-w-[260px] sm:max-w-[320px] lg:max-w-[380px]">
+              <div className="inline-block md:-rotate-2 rotate-0">
+                <div className="polaroid-frame">
+                  <Image
+                    src="/images/hero-portrait.png"
+                    alt="Tatiana – Founder of Teti Betti"
+                    width={480}
+                    height={600}
+                    className="w-full h-auto object-cover rounded-sm"
+                    style={{
+                      filter: "saturate(0.90) contrast(0.98) brightness(1.03)",
+                    }}
+                    priority
+                  />
+                </div>
+              </div>
+              <p className="mt-3 text-center text-xs tracking-wide text-deep/40">
+                Tetiana • Teti Betti
+              </p>
             </div>
           </div>
           <div className="space-y-5 order-2 max-w-[560px] lg:justify-self-start">
