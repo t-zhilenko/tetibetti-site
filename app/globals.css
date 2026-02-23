@@ -16,6 +16,20 @@ body {
   font-family: var(--font-inter), sans-serif;
 }
 
+@keyframes footerFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.footer-fade {
+  opacity: 0;
+  animation: footerFade 240ms ease-out forwards;
+}
+
 h1,
 h2,
 h3,

@@ -5,14 +5,24 @@ import Container from "@/components/Container";
 
 type Status = "idle" | "loading";
 
+type MessageType = "error" | "success" | null;
+
+type MessageState = {
+  type: MessageType;
+  text: string;
+  visible: boolean;
+};
+
 export default function EmailSubscription() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
-  const [error, setError] = useState("");
   const [showSubscribed, setShowSubscribed] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [successVisible, setSuccessVisible] = useState(false);
   const [justSucceeded, setJustSucceeded] = useState(false);
+  const [message, setMessage] = useState<MessageState>({
+    type: null,
+    text: "",
+    visible: false,
+  });
   const timersRef = useRef<number[]>([]);
 
   const isLoading = status === "loading";
@@ -37,16 +47,18 @@ export default function EmailSubscription() {
     if (!isValidEmail(trimmedEmail)) {
       clearTimers();
       setShowSubscribed(false);
-      setShowSuccessMessage(false);
-      setSuccessVisible(false);
       setJustSucceeded(false);
-      setError("Please enter a valid email address.");
+      setMessage({
+        type: "error",
+        text: "Please enter a valid email address.",
+        visible: true,
+      });
       setStatus("idle");
       return;
     }
 
     clearTimers();
-    setError("");
+    setMessage({ type: null, text: "", visible: false });
     setStatus("loading");
     console.log("Email subscription:", trimmedEmail);
 
@@ -54,14 +66,27 @@ export default function EmailSubscription() {
       setStatus("idle");
       setEmail("");
       setShowSubscribed(true);
-      setShowSuccessMessage(true);
-      setSuccessVisible(true);
+      setMessage({
+        type: "success",
+        text: "Thank you. You're on the list.",
+        visible: true,
+      });
       setJustSucceeded(true);
 
       const pulseTimer = window.setTimeout(() => setJustSucceeded(false), 120);
-      const labelTimer = window.setTimeout(() => setShowSubscribed(false), 2500);
-      const fadeTimer = window.setTimeout(() => setSuccessVisible(false), 4000);
-      const clearTimer = window.setTimeout(() => setShowSuccessMessage(false), 4200);
+      const labelTimer = window.setTimeout(() => setShowSubscribed(false), 2200);
+      const fadeTimer = window.setTimeout(
+        () =>
+          setMessage((prev) => ({
+            ...prev,
+            visible: false,
+          })),
+        4000
+      );
+      const clearTimer = window.setTimeout(
+        () => setMessage({ type: null, text: "", visible: false }),
+        4200
+      );
 
       timersRef.current.push(pulseTimer, labelTimer, fadeTimer, clearTimer);
     }, 800);
@@ -69,15 +94,9 @@ export default function EmailSubscription() {
     timersRef.current.push(submitTimer);
   };
 
-  const showError = Boolean(error);
-  const showMessage = showError || showSuccessMessage;
-  const messageVisible = showError || successVisible;
-  const messageText = showError
-    ? error
-    : showSuccessMessage
-      ? "Thank you. You're on the list."
-      : "";
-  const messageTone = showError ? "text-[#cda4a8]" : "text-deep/65";
+  const messageTone =
+    message.type === "error" ? "text-[#cda4a8]" : "text-deep/60";
+  const messageVisible = message.visible && message.text;
 
   return (
     <section className="bg-soft">
@@ -114,23 +133,18 @@ export default function EmailSubscription() {
               value={email}
               onChange={(event) => {
                 setEmail(event.target.value);
-                if (error) {
-                  setError("");
-                }
-                if (showSubscribed || showSuccessMessage || successVisible) {
-                  clearTimers();
-                  setShowSubscribed(false);
-                  setShowSuccessMessage(false);
-                  setSuccessVisible(false);
-                  setJustSucceeded(false);
+                if (message.type === "error") {
+                  setMessage({ type: null, text: "", visible: false });
                 }
               }}
               placeholder="Your email"
               disabled={isLoading}
-              aria-invalid={showError}
+              aria-invalid={message.type === "error"}
               aria-describedby="newsletter-feedback"
               className={`h-12 w-full rounded-full bg-[#fdfcfa] border px-6 text-sm text-deep placeholder:text-deep/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-deep/40 disabled:opacity-70 transition-colors duration-150 ${
-                showError ? "border-[rgba(223,194,192,0.85)]" : "border-[rgba(43,89,104,0.15)]"
+                message.type === "error"
+                  ? "border-[rgba(223,194,192,0.85)]"
+                  : "border-[rgba(43,89,104,0.15)]"
               }`}
             />
             <div className="min-h-[18px] mt-2 text-left">
@@ -140,7 +154,7 @@ export default function EmailSubscription() {
                   messageVisible ? "opacity-100" : "opacity-0"
                 }`}
               >
-                {showMessage ? messageText : ""}
+                {message.text}
               </p>
             </div>
           </div>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Instagram, Pin, Search, ShoppingBag, Youtube } from "lucide-react";
+import { Instagram, Pin, Search, ShoppingBag, Youtube, Send } from "lucide-react";
 import Container from "@/components/Container";
 
 const navLinks = [
@@ -18,6 +18,7 @@ const socialLinks = [
   { href: "#", label: "Instagram", Icon: Instagram },
   { href: "#", label: "YouTube", Icon: Youtube },
   { href: "#", label: "Pinterest", Icon: Pin },
+  { href: "#", label: "Telegram", Icon: Send },
 ];
 
 export default function Header() {
