@@ -1,4 +1,4 @@
-import { handleSubscribe } from "../../lib/subscribe";
+﻿import { handleSubscribe } from "../../lib/subscribe";
 
 export interface Env {
   BREVO_API_KEY: string;

@@ -1,4 +1,4 @@
-import { handleSubscribe } from "@/lib/subscribe";
+﻿import { handleSubscribe } from "@/lib/subscribe";
 
 export const runtime = "edge";
 

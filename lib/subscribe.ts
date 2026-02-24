@@ -1,4 +1,4 @@
-const BREVO_ENDPOINT = "https://api.brevo.com/v3/contacts";
+﻿const BREVO_ENDPOINT = "https://api.brevo.com/v3/contacts";
 const LIST_ID = 3;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

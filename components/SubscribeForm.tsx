@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 
@@ -14,11 +14,12 @@ type MessageState = {
 
 type SubscribeFormProps = {
   tag?: string;
+  className?: string;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function SubscribeForm({ tag }: SubscribeFormProps) {
+export default function SubscribeForm({ tag, className }: SubscribeFormProps) {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -142,7 +143,9 @@ export default function SubscribeForm({ tag }: SubscribeFormProps) {
     <form
       onSubmit={handleSubmit}
       noValidate
-      className="mt-10 flex flex-col sm:flex-row items-stretch justify-center gap-3 mx-auto max-w-[640px]"
+      className={`mt-10 flex flex-col sm:flex-row items-stretch justify-center gap-3 mx-auto max-w-[640px]${
+        className ? ` ${className}` : ""
+      }`}
     >
       <div className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden">
         <label htmlFor={honeypotId} aria-hidden="true">
