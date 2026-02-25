@@ -1,6 +1,10 @@
 ﻿const BREVO_ENDPOINT = "https://api.brevo.com/v3/contacts";
+const BREVO_SMTP_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
 const LIST_ID = 3;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const RATE_LIMIT_MAX = 5;
+const rateLimitStore = new Map<string, number[]>();
 
 const jsonResponse = (body: unknown, status = 200) => {
   return new Response(JSON.stringify(body), {
@@ -16,6 +20,28 @@ type SubscribeBody = {
   tag?: unknown;
   company?: unknown;
   website?: unknown;
+};
+
+const getClientIp = (request: Request) => {
+  const cfIp = request.headers.get("cf-connecting-ip");
+  if (cfIp) {
+    return cfIp;
+  }
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0]?.trim() || "unknown";
+  }
+  const realIp = request.headers.get("x-real-ip");
+  return realIp || "unknown";
+};
+
+const isRateLimited = (key: string) => {
+  const now = Date.now();
+  const history = rateLimitStore.get(key) || [];
+  const recent = history.filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS);
+  recent.push(now);
+  rateLimitStore.set(key, recent);
+  return recent.length > RATE_LIMIT_MAX;
 };
 
 export async function handleSubscribe(
@@ -54,6 +80,15 @@ export async function handleSubscribe(
     return jsonResponse({ success: false, error: "Invalid email address." }, 400);
   }
 
+  const ip = getClientIp(request);
+  const rateKey = `${ip}|${email.toLowerCase()}`;
+  if (isRateLimited(rateKey)) {
+    return jsonResponse(
+      { success: false, error: "Too many requests. Please try again shortly." },
+      429
+    );
+  }
+
   const brevoPayload: {
     email: string;
     updateEnabled: boolean;
@@ -80,6 +115,28 @@ export async function handleSubscribe(
   });
 
   if (brevoResponse.ok) {
+    try {
+      const smtpResponse = await fetch(BREVO_SMTP_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          accept: "application/json",
+          "api-key": apiKey,
+        },
+        body: JSON.stringify({
+          to: [{ email }],
+          templateId: 2,
+        }),
+      });
+
+      if (!smtpResponse.ok) {
+        const smtpText = await smtpResponse.text();
+        console.error("Brevo SMTP send failed:", smtpResponse.status, smtpText);
+      }
+    } catch (error) {
+      console.error("Brevo SMTP send error:", error);
+    }
+
     return jsonResponse({ success: true }, 200);
   }
 

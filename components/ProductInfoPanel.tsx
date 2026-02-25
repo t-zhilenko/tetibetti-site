@@ -5,6 +5,7 @@ type ProductInfoPanelProps = {
   summary: string;
   ctaLabel: string;
   ctaHref: string;
+  onCtaClick?: () => void;
   secondaryCtaLabel?: string;
   secondaryCtaHref?: string;
   meta: string[];
@@ -16,6 +17,7 @@ export default function ProductInfoPanel({
   summary,
   ctaLabel,
   ctaHref,
+  onCtaClick,
   secondaryCtaLabel,
   secondaryCtaHref,
   meta,
@@ -38,12 +40,22 @@ export default function ProductInfoPanel({
       </div>
 
       <div className="space-y-2">
-        <Link
-          href={ctaHref}
-          className="inline-flex items-center justify-center rounded-full bg-blush px-6 py-3 text-sm font-medium text-deep border border-deep/10 transition-all duration-200 hover:bg-[#d7b7b4] hover:-translate-y-0.5"
-        >
-          {ctaLabel}
-        </Link>
+        {onCtaClick ? (
+          <button
+            type="button"
+            onClick={onCtaClick}
+            className="inline-flex items-center justify-center rounded-full bg-blush px-6 py-3 text-sm font-medium text-deep border border-deep/10 transition-all duration-200 hover:bg-[#d7b7b4] hover:-translate-y-0.5"
+          >
+            {ctaLabel}
+          </button>
+        ) : (
+          <Link
+            href={ctaHref}
+            className="inline-flex items-center justify-center rounded-full bg-blush px-6 py-3 text-sm font-medium text-deep border border-deep/10 transition-all duration-200 hover:bg-[#d7b7b4] hover:-translate-y-0.5"
+          >
+            {ctaLabel}
+          </Link>
+        )}
         {secondaryCtaLabel && secondaryCtaHref ? (
           <div>
             <Link
