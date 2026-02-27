@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
+import ScreenshotFrame from "@/components/ScreenshotFrame";
 
 type ProductImage = {
   src: string;
@@ -18,19 +19,20 @@ export default function ProductGallery({ images = [], title }: ProductGalleryPro
 
   return (
     <div className="space-y-4">
-      <div className="aspect-[4/5] rounded-2xl border border-[#cabab1]/40 bg-[#fbf7f6] overflow-hidden">
-        {activeImage?.src ? (
-          <img
-            src={activeImage.src}
-            alt={activeImage.alt || title}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="h-full w-full flex items-center justify-center bg-[radial-gradient(circle_at_top,#f7dce0_0%,#fbf7f6_55%,#fdf9f9_100%)] text-deep/50 text-sm">
-            Product preview
-          </div>
-        )}
-      </div>
+      {activeImage?.src ? (
+        <ScreenshotFrame
+          variant="hero"
+          src={activeImage.src}
+          alt={activeImage.alt || title}
+          priority
+          sizes="(min-width: 1024px) 520px, 90vw"
+          objectPosition="55% 60%"
+        />
+      ) : (
+        <div className="aspect-[16/10] rounded-3xl bg-[radial-gradient(circle_at_top,#f7dce0_0%,#fbf7f6_55%,#fdf9f9_100%)] text-deep/50 text-sm flex items-center justify-center">
+          Product preview
+        </div>
+      )}
       {images.length > 1 ? (
         <div className="flex flex-wrap items-center gap-3">
           {images.map((image, index) => {

@@ -67,3 +67,108 @@ a {
   background: rgba(215, 194, 189, 0.06);
   pointer-events: none;
 }
+
+.lightbox-jewelry .yarl__container {
+  pointer-events: auto;
+}
+
+.lightbox-jewelry .yarl__slide {
+  background: transparent;
+}
+
+.lightbox-jewelry .yarl__navigation_prev,
+.lightbox-jewelry .yarl__navigation_next {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(223, 194, 192, 0.35);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 14px rgba(43, 89, 104, 0.08);
+  color: #2b5968;
+  opacity: 0.25;
+  transform: scale(0.98);
+  transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  pointer-events: auto;
+}
+
+.lightbox-jewelry .yarl__container:hover .yarl__navigation_prev,
+.lightbox-jewelry .yarl__container:hover .yarl__navigation_next,
+.lightbox-jewelry .yarl__container:focus-within .yarl__navigation_prev,
+.lightbox-jewelry .yarl__container:focus-within .yarl__navigation_next {
+  opacity: 0.9;
+  transform: scale(1);
+}
+
+.lightbox-jewelry .yarl__navigation_prev {
+  left: max(1rem, calc(50% - 450px));
+}
+
+.lightbox-jewelry .yarl__navigation_next {
+  right: max(1rem, calc(50% - 450px));
+}
+
+.lightbox-jewelry .yarl__navigation_prev:hover,
+.lightbox-jewelry .yarl__navigation_next:hover {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(223, 194, 192, 0.55);
+  color: rgba(43, 89, 104, 0.95);
+}
+
+.lightbox-jewelry .yarl__navigation_prev svg,
+.lightbox-jewelry .yarl__navigation_next svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.lightbox-jewelry .yarl__button_close {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 0;
+  border: 1px solid rgba(223, 194, 192, 0.35);
+  background: rgba(255, 255, 255, 0.65);
+  color: #2b5968;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 14px rgba(43, 89, 104, 0.08);
+  opacity: 0.85;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.lightbox-jewelry .yarl__button_close:hover {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(223, 194, 192, 0.55);
+  color: rgba(43, 89, 104, 0.95);
+  opacity: 1;
+}
+
+.lightbox-jewelry .yarl__button_close svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.lightbox-jewelry .yarl__navigation_prev:focus-visible,
+.lightbox-jewelry .yarl__navigation_next:focus-visible,
+.lightbox-jewelry .yarl__button_close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(223, 194, 192, 0.35);
+}
+
+@media (hover: none) {
+  .lightbox-jewelry .yarl__navigation_prev,
+  .lightbox-jewelry .yarl__navigation_next {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+}

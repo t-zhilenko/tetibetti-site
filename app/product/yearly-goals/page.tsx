@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Share2, CircleHelp } from "lucide-react";
+import { Share2, Mail } from "lucide-react";
 import Container from "@/components/Container";
 import Accordion, { type AccordionItem } from "@/components/Accordion";
-import ProductGalleryCarousel from "@/components/ProductCarousel";
+import ProductGalleryEmbla from "@/components/ProductGalleryEmbla";
 import BenefitCard from "@/components/BenefitCard";
 import SubscribeForm from "@/components/SubscribeForm";
 import Modal from "@/components/Modal";
@@ -313,13 +313,23 @@ export default function Page() {
     }
   };
 
+  const handleAskQuestion = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    window.location.href =
+      "mailto:support@tetibetti.com?subject=Question%20about%20Yearly%20Goals";
+  };
+
   const isLoading = status === "loading";
+  const actionLinkClass =
+    "inline-flex items-center gap-[6px] bg-transparent p-0 text-[11px] md:text-[12px] font-normal text-[#2b5968]/55 hover:text-[#2b5968]/80 transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#dfc2c0]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]";
   return (
     <section className="bg-[#fdf9f9]">
       <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[50px]">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] lg:gap-16 gap-12 items-start">
           <div className="lg:sticky lg:top-24 lg:self-start">
-            <ProductGalleryCarousel images={carouselImages} />
+            <ProductGalleryEmbla images={carouselImages} />
           </div>
           <div className="w-full">
             <h1 className="text-[28px] md:text-[40px] lg:text-[44px] font-medium leading-[1.1] lg:leading-[52px] text-deep/90">
@@ -358,17 +368,21 @@ export default function Page() {
             >
               {product.ctaLabel}
             </a>
-            <div className="mt-6 rounded-2xl border border-[#dfc2c0]/35 bg-[#f7dce0]/30 p-4">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-deep/65">
+            <div className="mt-6">
+              <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-deep/55">
                 Pairs well with
               </p>
-              <div className="mt-3 flex items-center gap-4">
-                <div className="relative h-14 w-14 overflow-hidden rounded-xl border border-[#dfc2c0]/40 bg-white/70">
+              <a
+                href="#nutrition-waitlist"
+                className="mt-2 flex items-center gap-3 rounded-2xl border border-[#dfc2c0]/25 bg-[#f7dce0]/20 px-4 py-3 transition hover:bg-[#f7dce0]/30"
+                aria-label={`View ${relatedProduct.title}`}
+              >
+                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-[#dfc2c0]/35 bg-white/70">
                   <Image
                     src={relatedProduct.imageSrc}
                     alt={relatedProduct.imageAlt}
                     fill
-                    sizes="56px"
+                    sizes="48px"
                     className="object-cover"
                   />
                 </div>
@@ -376,20 +390,15 @@ export default function Page() {
                   <p className="text-sm font-medium text-deep/85">
                     {relatedProduct.title}
                   </p>
-                  <p className="text-[12px] text-deep/60">
+                  <p className="text-[12px] text-deep/55">
                     {relatedProduct.subtitle}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  aria-label={`More about ${relatedProduct.title}`}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#dfc2c0]/45 bg-white/80 text-deep/70 transition-colors hover:text-deep/85"
+                <span
+                  aria-hidden="true"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#dfc2c0]/35 bg-white/70 text-deep/70 transition hover:text-deep/90"
                 >
-                  <svg
-                    viewBox="0 0 20 20"
-                    aria-hidden="true"
-                    className="h-4 w-4"
-                  >
+                  <svg viewBox="0 0 20 20" className="h-4 w-4">
                     <path
                       d="m7.5 4.5 5 5.5-5 5.5"
                       fill="none"
@@ -399,30 +408,31 @@ export default function Page() {
                       strokeLinejoin="round"
                     />
                   </svg>
-                </button>
-              </div>
+                </span>
+              </a>
             </div>
             <div className="mt-6">
               <Accordion items={detailItems} variant="minimal" />
             </div>
-            <div className="mt-4 pt-4 border-t border-[#dfc2c0]/35 flex flex-wrap items-center gap-8">
+            <div className="mt-4 flex flex-wrap items-center gap-[18px] pb-5">
               <button
                 type="button"
                 onClick={handleShare}
                 aria-label="Share this product page"
-                className="inline-flex items-center gap-2 text-[12px] md:text-[13px] font-normal text-deep/70 hover:text-deep/90 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dfc2c0]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]"
+                className={actionLinkClass}
               >
-                <Share2 className="h-4 w-4 opacity-70" />
+                <Share2 className="h-[14px] w-[14px]" />
                 {shareStatus === "copied" ? "Copied" : "Share"}
               </button>
-              <a
-                href="mailto:support@tetibetti.com?subject=Question%20about%20Yearly%20Goals"
+              <button
+                type="button"
+                onClick={handleAskQuestion}
                 aria-label="Ask a question about Yearly Goals"
-                className="inline-flex items-center gap-2 text-[12px] md:text-[13px] font-normal text-deep/70 hover:text-deep/90 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#dfc2c0]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]"
+                className={actionLinkClass}
               >
-                <CircleHelp className="h-4 w-4 opacity-70" />
+                <Mail className="h-[14px] w-[14px]" />
                 Ask a question
-              </a>
+              </button>
             </div>
           </div>
         </div>

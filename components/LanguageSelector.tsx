@@ -28,10 +28,10 @@ export default function LanguageSelector({
               type="button"
               onClick={() => onChange(option.value)}
               aria-pressed={isSelected}
-              className={`h-11 w-[140px] rounded-full border px-4 text-sm font-semibold transition-colors ${
+              className={`h-11 w-[140px] rounded-full border border-[rgba(223,194,192,0.55)] px-4 text-[13px] md:text-[14px] font-semibold transition-all duration-200 shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(223,194,192,0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
                 isSelected
-                  ? "border-[#97b5c2]/45 bg-[#97b5c2]/25 text-deep/90"
-                  : "border-[#dfc2c0]/40 bg-white/90 text-deep/80 hover:border-[#dfc2c0]/60"
+                  ? "bg-[rgba(247,220,224,0.55)] text-[#2B5968] border-[rgba(223,194,192,0.65)] shadow-[0_0_0_1px_rgba(223,194,192,0.35)]"
+                  : "bg-[#FBF3F4] text-[#2B5968]/70 hover:bg-[rgba(247,220,224,0.35)] hover:text-[#2B5968]/85"
               }`}
             >
               {option.label}

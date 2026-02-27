@@ -59,7 +59,7 @@ export default function ProductGalleryCarousel({ images }: ProductGalleryProps) 
 
   return (
     <div className="w-full max-w-[350px] sm:max-w-[420px] lg:max-w-[560px] mx-auto">
-      <div className="relative rounded-3xl border-2 border-[#dfc2c0]/60 bg-[linear-gradient(135deg,rgba(247,220,224,0.55),rgba(255,255,255,0.9))] p-[10px] shadow-[0_10px_24px_rgba(0,0,0,0.1)] ring-1 ring-[#f7dce0]/70">
+      <div className="relative rounded-3xl bg-[linear-gradient(135deg,rgba(247,220,224,0.45),rgba(255,255,255,0.9))] p-[10px] shadow-[0_10px_30px_rgba(0,0,0,0.06)]">
         <button
           type="button"
           onClick={() => setIsLightboxOpen(true)}
@@ -133,7 +133,7 @@ export default function ProductGalleryCarousel({ images }: ProductGalleryProps) 
         {activeIndex + 1} / {totalImages}
       </div>
       {hasMultiple ? (
-        <div className="mt-4 hidden lg:flex items-center gap-3 overflow-x-auto pb-2">
+        <div className="mt-4 hidden lg:flex items-center gap-3 overflow-x-auto px-3 py-2">
           {safeImages.map((image, index) => {
             const isActive = index === activeIndex;
             return (
@@ -141,10 +141,10 @@ export default function ProductGalleryCarousel({ images }: ProductGalleryProps) 
                 key={`${image.src}-${index}`}
                 type="button"
                 onClick={() => setActiveIndex(index)}
-                className={`relative h-[96px] w-[96px] shrink-0 overflow-hidden rounded-2xl border border-[#dfc2c0]/45 bg-white/70 transition-all duration-200 ${
+                className={`relative h-[84px] w-[84px] shrink-0 overflow-hidden rounded-lg bg-white/70 transition-all duration-200 ${
                   isActive
-                    ? "border-[#dfc2c0]/60 ring-2 ring-[#dfc2c0]/50 shadow-sm"
-                    : "hover:border-[#dfc2c0]/60"
+                    ? "shadow-[inset_0_0_0_1px_rgba(223,194,192,0.55),0_6px_18px_rgba(0,0,0,0.06)]"
+                    : "shadow-[inset_0_0_0_1px_rgba(223,194,192,0.35)] hover:shadow-[inset_0_0_0_1px_rgba(223,194,192,0.55)]"
                 }`}
                 aria-label={`View image ${index + 1} of ${totalImages}`}
                 aria-current={isActive}
