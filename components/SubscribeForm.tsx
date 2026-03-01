@@ -15,11 +15,20 @@ type MessageState = {
 type SubscribeFormProps = {
   tag?: string;
   className?: string;
+  buttonLabel?: string;
+  inputClassName?: string;
+  buttonClassName?: string;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function SubscribeForm({ tag, className }: SubscribeFormProps) {
+export default function SubscribeForm({
+  tag,
+  className,
+  buttonLabel,
+  inputClassName,
+  buttonClassName,
+}: SubscribeFormProps) {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -185,7 +194,7 @@ export default function SubscribeForm({ tag, className }: SubscribeFormProps) {
             message.type === "error"
               ? "border-[rgba(223,194,192,0.85)]"
               : "border-[rgba(43,89,104,0.15)]"
-          }`}
+          }${inputClassName ? ` ${inputClassName}` : ""}`}
         />
         <div className="min-h-[18px] mt-2 text-left">
           <p
@@ -205,9 +214,15 @@ export default function SubscribeForm({ tag, className }: SubscribeFormProps) {
           isLoading
             ? "bg-blush/70 text-deep/70 border-deep/10 opacity-60 cursor-not-allowed shadow-none"
             : "bg-blush text-deep border-deep/10 hover:bg-[#d7b7b4] hover:-translate-y-0.5 hover:shadow-[0_10px_20px_rgba(223,194,192,0.35)] active:translate-y-0"
-        } ${justSucceeded ? "scale-[0.98]" : "scale-100"}`}
+        } ${justSucceeded ? "scale-[0.98]" : "scale-100"}${
+          buttonClassName ? ` ${buttonClassName}` : ""
+        }`}
       >
-        {isLoading ? "Subscribing..." : showSubscribed ? "Subscribed" : "Subscribe"}
+        {isLoading
+          ? "Subscribing..."
+          : showSubscribed
+            ? "Subscribed"
+            : buttonLabel ?? "Subscribe"}
       </button>
     </form>
   );

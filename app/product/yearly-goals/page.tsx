@@ -57,24 +57,24 @@ export default function Page() {
   const benefits = useMemo<Benefit[]>(
     () => [
       {
-        title: "Quarterly Focus",
-        text: "Work in calm seasons so goals don't compete for attention.",
+        title: "Quarterly Clarity",
+        text: "Work in focused seasons so your goals stop competing for attention.",
       },
       {
-        title: "Progress at a Glance",
-        text: "See movement without manual tracking or messy dashboards.",
+        title: "Visible Progress",
+        text: "See movement automatically — no manual tracking, no messy dashboards.",
       },
       {
-        title: "Connected System",
-        text: "Goals, projects, and tasks stay linked automatically.",
+        title: "One Connected System",
+        text: "Goals, projects, and tasks stay aligned through relational links.",
       },
       {
-        title: "Clear Execution",
-        text: "Monthly to-dos keep action grounded and realistic.",
+        title: "Grounded Execution",
+        text: "Monthly views translate vision into realistic daily action.",
       },
       {
-        title: "Quiet Automations",
-        text: "Set up the year in minutes with built-in buttons.",
+        title: "Quiet Automation",
+        text: "Built-in buttons handle setup so you can focus on thinking, not formatting.",
       },
     ],
     []
@@ -159,27 +159,62 @@ export default function Page() {
       {
         id: "faq-1",
         title: "Do I need Notion Pro?",
-        content: <p>No. The template works with the free plan.</p>,
+        content: (
+          <p>
+            No. The template works perfectly with the free version of Notion. You
+            only need a free Notion account to use it. After downloading,
+            duplicate the template into your own workspace and customize it as
+            you like — no paid features required.
+          </p>
+        ),
       },
       {
         id: "faq-2",
         title: "Can I customize it?",
-        content: <p>Yes. Duplicate and adjust sections to match your workflow.</p>,
+        content: (
+          <p>
+            Yes — completely. You can rename pages, adjust categories, add new
+            properties, change layouts, or simplify the system to fit your
+            workflow. The structure is clean and flexible, so it adapts to your
+            goals — not the other way around.
+          </p>
+        ),
       },
       {
         id: "faq-3",
         title: "Is this a one-time download?",
-        content: <p>Yes. You will get an instant duplicate link for your workspace.</p>,
+        content: (
+          <p>
+            Yes. This is a one-time digital download. After download, you’ll
+            receive access to the template link and can duplicate it to your
+            workspace and use it indefinitely. If small improvements or fixes
+            are released later, you’ll receive updated access.
+          </p>
+        ),
       },
       {
         id: "faq-4",
         title: "Does it include automations?",
-        content: <p>Yes. Buttons and simple templates are included.</p>,
+        content: (
+          <p>
+            Yes — built-in setup buttons and relational links are included. The
+            system automatically connects goals, projects, and tasks. Progress
+            updates without manual tracking, so your dashboard stays clean and
+            accurate. No complex scripting or integrations needed.
+          </p>
+        ),
       },
       {
         id: "faq-5",
         title: "Can I share it with my team?",
-        content: <p>Please keep it personal and invite teammates to your workspace instead.</p>,
+        content: (
+          <p>
+            Yes, you can share it inside Notion just like any other workspace
+            page. If you’re using it for a team, each member will need access to
+            the duplicated workspace. For larger teams or commercial use, please
+            refer to the license terms on the product page.
+          </p>
+        ),
       },
     ],
     []
@@ -448,14 +483,14 @@ export default function Page() {
         </div>
       </Container>
 
-      <section className="py-16 bg-[#f7dce0]/14">
+      <section className="py-16 bg-[#f7dce0]">
         <Container>
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <h2 className="text-2xl md:text-3xl text-deep/90">
-              5 Ways This System Keeps You Focused
+            <h2 className="text-2xl md:text-3xl text-[#1F4E57]">
+              5 Reasons This System Brings Clarity
             </h2>
-            <p className="text-sm md:text-[15px] text-deep/60">
-              Calm structure that connects vision to action.
+            <p className="text-sm md:text-[15px] text-[#5E7C85]">
+              A calm structure that turns intention into consistent action.
             </p>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -486,38 +521,22 @@ export default function Page() {
         </Container>
       </section>
 
-      <section id="nutrition-waitlist" className="py-16 bg-[#f7dce0]/10">
+      <section id="nutrition-waitlist" className="bg-soft">
         <Container>
-          <div className="max-w-4xl mx-auto space-y-6">
-            <div className="text-center space-y-3">
-              <h2 className="text-2xl md:text-3xl text-deep/90">
-                Early access: Nutrition Meal Planner
-              </h2>
-              <p className="text-sm md:text-[15px] text-deep/60 leading-relaxed">
-                Join the waitlist to get early access and an early-bird discount.
-              </p>
-            </div>
-            <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] items-start">
-              <div className="rounded-2xl bg-[#fdf9f9] border border-[#cabab1]/35 p-5 text-left">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-deep/45">
-                  Coming soon
-                </p>
-                <p className="mt-2 text-base font-medium text-deep/85">
-                  Nutrition Meal Planner
-                </p>
-                <p className="mt-2 text-sm text-deep/60">
-                  A calm, structured planner to simplify meals, groceries, and
-                  nutrition tracking.
-                </p>
-                <a
-                  href="#nutrition-waitlist"
-                  className="mt-4 inline-flex items-center justify-center rounded-full border border-[#cabab1]/40 px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-deep/60 transition-colors hover:text-deep/85"
-                >
-                  Join waitlist
-                </a>
-              </div>
-              <SubscribeForm tag="nutrition-meal-planner" className="w-full" />
-            </div>
+          <div className="mx-auto max-w-[900px] text-center space-y-5 py-16 md:py-24">
+            <p className="text-xs uppercase tracking-[0.36em] text-deep/40">
+              Early Access
+            </p>
+            <h2 className="text-2xl md:text-3xl">Nutrition Meal Planner</h2>
+            <p className="text-[13px] md:text-sm text-deep/70 leading-relaxed">
+              A calm, structured system designed to simplify meals, groceries,
+              and nutrition tracking without overwhelm.
+            </p>
+            <p className="mt-3 text-[12px] text-deep/45">
+              Be the first to access the planner and receive an exclusive
+              early-bird launch offer.
+            </p>
+            <SubscribeForm tag="nutrition-meal-planner" buttonLabel="Join waitlist" />
           </div>
         </Container>
       </section>
@@ -613,4 +632,3 @@ export default function Page() {
     </section>
   );
 }
-

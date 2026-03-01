@@ -86,17 +86,17 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
 
   return (
     <div className="w-full">
-      <div className="relative rounded-2xl bg-[#FBF3F4] shadow-[0_12px_35px_rgba(0,0,0,0.06),inset_0_0_0_1px_rgba(223,194,192,0.25)]">
-        <div className="overflow-hidden" ref={mainViewportRef}>
-          <div className="flex">
+      <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-[#FBF3F4] shadow-[0_12px_35px_rgba(0,0,0,0.06),inset_0_0_0_1px_rgba(223,194,192,0.25)]">
+        <div className="h-full overflow-hidden" ref={mainViewportRef}>
+          <div className="flex h-full">
             {galleryImages.map((image, index) => (
-              <div className="flex-[0_0_100%]" key={`${image.src}-${index}`}>
-                  <button
-                    type="button"
-                    onClick={() => setLightboxOpen(true)}
-                    className="relative aspect-square w-full rounded-2xl cursor-zoom-in"
-                    aria-label="Open image preview"
-                  >
+              <div className="flex-[0_0_100%] h-full" key={`${image.src}-${index}`}>
+                <button
+                  type="button"
+                  onClick={() => setLightboxOpen(true)}
+                  className="relative h-full w-full cursor-zoom-in"
+                  aria-label="Open image preview"
+                >
                     {image.src ? (
                       <Image
                         src={image.src}
