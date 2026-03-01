@@ -208,24 +208,27 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
         controller={{ closeOnPullDown: true, closeOnBackdropClick: true }}
         styles={{
           container: { backgroundColor: "rgba(0,0,0,0.60)", pointerEvents: "auto" },
-          slide: { padding: "32px", backgroundColor: "transparent" },
+          slide: { padding: "0", backgroundColor: "transparent" },
           root: { backgroundColor: "transparent" },
         }}
         render={{
           slide: ({ slide }) => (
-            <div className="relative mx-auto w-full max-w-[900px] px-6">
-              {slide.src ? (
-                <img
-                  src={slide.src}
-                  alt={slide.alt ?? ""}
-                  className="max-h-[82vh] w-full object-contain rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] mx-auto"
-                  draggable={false}
-                />
-              ) : (
-                <div className="w-full rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
-                  <GalleryPlaceholder className="h-[60vh] w-full" />
-                </div>
-              )}
+            <div className="flex h-full w-full items-center justify-center">
+              <div
+                className="relative rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden"
+                style={{ width: "min(90vw, 90vh)", height: "min(90vw, 90vh)" }}
+              >
+                {slide.src ? (
+                  <img
+                    src={slide.src}
+                    alt={slide.alt ?? ""}
+                    className="h-full w-full object-contain"
+                    draggable={false}
+                  />
+                ) : (
+                  <GalleryPlaceholder className="h-full w-full" />
+                )}
+              </div>
             </div>
           ),
         }}

@@ -9,13 +9,15 @@ export type ProductImage = {
 export type Product = {
   title: string;
   slug: string;
-  short: string;
+  shortDescription: string;
   subtitle?: string;
   priceLabel: string;
   status: ProductStatus;
   eta?: string;
   cta: string;
   ctaLabel?: string;
+  isFree?: boolean;
+  isComingSoon?: boolean;
   mainPreviewImage: ProductImage;
   galleryImages?: ProductImage[];
 };
@@ -24,13 +26,15 @@ export const products: Product[] = [
   {
     title: "Yearly Goals",
     slug: "yearly-goals",
-    short: "Minimal Notion system for yearly planning & weekly clarity.",
+    shortDescription: "Minimal Notion system for yearly planning & weekly clarity.",
     subtitle:
       "A calm, minimalist Notion workspace for yearly planning. Map priorities, track progress, and keep your goals visible without noise.",
     priceLabel: "Free download",
     status: "available",
     cta: "Get now",
     ctaLabel: "Download",
+    isFree: true,
+    isComingSoon: false,
     mainPreviewImage: {
       src: "/images/yearly-goals/main-pveview.png",
       alt: "Yearly Goals preview",
@@ -69,10 +73,12 @@ export const products: Product[] = [
   {
     title: "Nutrition System / Meal Planner",
     slug: "nutrition-system",
-    short: "A structured meal planner + nutrition tracking system.",
+    shortDescription: "A structured meal planner + nutrition tracking system.",
     priceLabel: "Estimated delivery: 20 March",
     status: "coming_soon",
     cta: "Coming soon",
+    isFree: false,
+    isComingSoon: true,
     mainPreviewImage: {
       src: "/images/products/nutrition-system.jpg",
       alt: "Nutrition System preview",
@@ -81,10 +87,12 @@ export const products: Product[] = [
   {
     title: "Java Cheat Sheets",
     slug: "java-cheat-sheets",
-    short: "Practical Java notes + interview-ready cheat sheets.",
+    shortDescription: "Practical Java notes + interview-ready cheat sheets.",
     priceLabel: "Estimated delivery: 15 April",
     status: "coming_soon",
     cta: "Coming soon",
+    isFree: false,
+    isComingSoon: true,
     mainPreviewImage: {
       src: "/images/products/java-cheat-sheets.jpg",
       alt: "Java Cheat Sheets preview",

@@ -1,7 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { existsSync } from "fs";
-import path from "path";
 import type { Product } from "@/lib/products";
 
 type ProductCardProps = {
@@ -12,19 +10,6 @@ const primaryButtonClassName =
   "inline-flex items-center justify-center rounded-full bg-blush/60 px-4 py-1.5 text-[12px] font-medium text-deep/80 border border-deep/10";
 const secondaryButtonClassName =
   "inline-flex items-center justify-center rounded-full bg-transparent px-4 py-1.5 text-[12px] font-medium text-deep/45 border border-deep/15";
-
-const imageExists = (src: string) => {
-  if (!src.startsWith("/")) {
-    return false;
-  }
-
-  try {
-    const filePath = path.join(process.cwd(), "public", src.replace(/^\//, ""));
-    return existsSync(filePath);
-  } catch {
-    return false;
-  }
-};
 
 const PlaceholderImage = ({ title }: { title: string }) => {
   return (
@@ -39,7 +24,10 @@ const PlaceholderImage = ({ title }: { title: string }) => {
 export default function ProductCard({ product }: ProductCardProps) {
   const productHref = `/product/${product.slug}`;
   const checkoutHref = `/checkout?product=${product.slug}`;
-  const hasImage = imageExists(product.mainPreviewImage.src);
+  const baseImage = product.mainPreviewImage;
+  const hoverImage = product.galleryImages?.[0];
+  const hasImage = Boolean(baseImage?.src);
+  const hasHoverImage = Boolean(hoverImage?.src);
   const isAvailable = product.status === "available";
 
   const cardShadow = isAvailable
@@ -66,26 +54,43 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="flex h-full flex-col space-y-6">
         <Link
           href={productHref}
-          className="block aspect-[4/3] w-full overflow-hidden rounded-[12px]"
+          className="group block w-full"
           aria-label={`${product.title} details`}
         >
           {hasImage ? (
-            <Image
-              src={product.mainPreviewImage.src}
-              alt={product.mainPreviewImage.alt ?? product.title}
-              width={640}
-              height={480}
-              className="h-full w-full object-cover"
-            />
+            <div className="relative aspect-square w-full overflow-hidden rounded-[12px]">
+              <Image
+                src={baseImage.src}
+                alt={baseImage.alt ?? product.title}
+                fill
+                sizes="(min-width: 1024px) 320px, (min-width: 768px) 280px, 90vw"
+                className={`object-contain transition-opacity duration-300 ease-out motion-reduce:transition-none ${
+                  hasHoverImage
+                    ? "opacity-100 group-hover:opacity-0 group-focus-visible:opacity-0"
+                    : "opacity-100"
+                }`}
+              />
+              {hasHoverImage ? (
+                <Image
+                  src={hoverImage!.src}
+                  alt={hoverImage!.alt ?? product.title}
+                  fill
+                  sizes="(min-width: 1024px) 320px, (min-width: 768px) 280px, 90vw"
+                  className="object-contain opacity-0 transition-opacity duration-300 ease-out motion-reduce:transition-none group-hover:opacity-100 group-focus-visible:opacity-100"
+                />
+              ) : null}
+            </div>
           ) : (
-            <PlaceholderImage title={product.title} />
+            <div className="relative aspect-square w-full overflow-hidden rounded-[12px]">
+              <PlaceholderImage title={product.title} />
+            </div>
           )}
         </Link>
         <div className="space-y-3">
           <Link href={productHref} className="inline-flex">
             <h3 className={titleClassName}>{product.title}</h3>
           </Link>
-          <p className={descriptionClassName}>{product.short}</p>
+          <p className={descriptionClassName}>{product.shortDescription}</p>
         </div>
         <div className="space-y-2">
           <p className={priceClassName}>{product.priceLabel}</p>

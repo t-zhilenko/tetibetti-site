@@ -86,29 +86,58 @@ export default function Page() {
         id: "what-you-get",
         title: "What You Get",
         content: (
-          <p>
-            Notion template, setup checklist, and lifetime access to updates.
-          </p>
+          <div className="space-y-3">
+            <p>Inside the template you’ll find:</p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Yearly Goals dashboard — your main control center</li>
+              <li>Quarterly pages (Q1–Q4) with focus planning</li>
+              <li>Projects database connected to goals</li>
+              <li>Task system with automatic progress calculation</li>
+              <li>Monthly to-do view</li>
+              <li>Clean relational structure (Goals ↔ Projects ↔ Tasks)</li>
+            </ul>
+            <p>Everything is connected — nothing duplicated.</p>
+          </div>
         ),
       },
       {
         id: "why-it-works",
         title: "Why It Works",
         content: (
-          <p>
-            Quarterly focus, connected goals-to-tasks structure, and automatic
-            progress tracking to keep your year calm and visible.
-          </p>
+          <div className="space-y-3">
+            <p>This system works because it combines clarity with structure.</p>
+            <ul className="list-disc pl-5 space-y-2">
+              <li>Every goal is connected to projects and tasks</li>
+              <li>Progress updates automatically as tasks are completed</li>
+              <li>Quarterly focus prevents overwhelm</li>
+              <li>Clear “Why” blocks keep motivation visible</li>
+              <li>Relational databases remove chaos and duplication</li>
+            </ul>
+            <p>Instead of scattered to-do lists, you get a single thinking system.</p>
+          </div>
         ),
       },
       {
         id: "how-to-use",
         title: "How To Use It",
         content: (
-          <p>
-            Duplicate the template, press the setup buttons, add goals, connect
-            tasks, and review monthly or quarterly.
-          </p>
+          <div className="space-y-3">
+            <p>
+              You’ll need a free Notion account (Notion is a free app available on
+              desktop and mobile).
+            </p>
+            <p>After download:</p>
+            <ol className="list-decimal pl-5 space-y-2">
+              <li>Open the template link</li>
+              <li>Click “Duplicate” in the top right corner</li>
+              <li>Add it to your workspace</li>
+              <li>Start customizing your goals</li>
+            </ol>
+            <p>
+              You can modify categories, timelines, and views to match your
+              personal workflow.
+            </p>
+          </div>
         ),
       },
     ],
@@ -302,7 +331,7 @@ export default function Page() {
   return (
     <section className="bg-[#fdf9f9]">
       <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[50px] overflow-visible">
-        <div className="grid grid-cols-1 lg:grid-cols-[13fr_12fr] lg:gap-16 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[13fr_12fr] lg:gap-1 gap-12 items-start">
           <div className="lg:sticky lg:top-24 lg:self-start w-full min-w-0 lg:max-w-[560px]">
             <ProductGalleryEmbla images={carouselImages} />
           </div>
@@ -311,17 +340,19 @@ export default function Page() {
               {product.title}
             </h1>
             <p className="mt-3.5 text-base font-normal leading-7 text-deep/80">
-              {product.subtitle ??
-                "A calm, minimalist Notion workspace for yearly planning. Map priorities, track progress, and keep your goals visible without noise."}
+              A calm, structured Notion system designed to help you plan your
+              year with clarity and intention. Break big goals into focused
+              quarters, connected projects, and meaningful daily action.
             </p>
             <div className="mt-3.5">
               <PriceBadge label={product.priceLabel} />
             </div>
             <ul className="mt-4 max-w-[520px] list-disc pl-5 space-y-2.5 text-[15px] leading-[26px] text-deep/80 marker:text-[#97b5c2]">
-              <li>Goals → Projects → Tasks (connected)</li>
-              <li>Progress updates automatically</li>
-              <li>Quarterly focus built in</li>
-              <li>Includes setup automations</li>
+              <li>Goals → Projects → Tasks — fully connected</li>
+              <li>Built-in quarterly planning system</li>
+              <li>Automatic progress tracking</li>
+              <li>Clean, distraction-free structure</li>
+              <li>Free Notion template — duplicate and use instantly</li>
             </ul>
             <div className="mt-[22px]">
               <LanguageSelector
@@ -344,6 +375,9 @@ export default function Page() {
             >
               {product.ctaLabel ?? "Download"}
             </a>
+            <p className="mt-2 text-[12px] text-deep/60">
+              Works with the free version of Notion.
+            </p>
             <div className="mt-6">
               <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-deep/55">
                 Pairs well with
