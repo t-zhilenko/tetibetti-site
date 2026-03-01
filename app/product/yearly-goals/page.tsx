@@ -12,13 +12,7 @@ import SubscribeForm from "@/components/SubscribeForm";
 import Modal from "@/components/Modal";
 import PriceBadge from "@/components/PriceBadge";
 import LanguageSelector from "@/components/LanguageSelector";
-
-type Product = {
-  title: string;
-  priceLabel: string;
-  subtitle: string;
-  ctaLabel: string;
-};
+import { getProductBySlug, type ProductImage } from "@/lib/products";
 
 type CarouselImage = {
   src: string;
@@ -37,46 +31,27 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Page() {
   const router = useRouter();
-  const product = useMemo<Product>(
-    () => ({
-      title: "Yearly Goals",
-      priceLabel: "FREE",
-      subtitle:
-        "A calm, minimalist Notion workspace for yearly planning. Map priorities, track progress, and keep your goals visible without noise.",
-      ctaLabel: "Download",
-    }),
+  const product = useMemo(
+    () =>
+      getProductBySlug("yearly-goals") ?? {
+        title: "Yearly Goals",
+        priceLabel: "FREE",
+        subtitle:
+          "A calm, minimalist Notion workspace for yearly planning. Map priorities, track progress, and keep your goals visible without noise.",
+        ctaLabel: "Download",
+        galleryImages: [],
+      },
     []
   );
 
   const carouselImages = useMemo<CarouselImage[]>(
-    () => [
-      {
-        src: "/images/yearly-goals-preview.svg",
-        alt: "Yearly Goals preview",
-        objectPosition: "50% 50%",
-      },
-      {
-        src: "/images/yearly-goals-preview.svg",
-        alt: "Yearly Goals preview detail",
-        objectPosition: "50% 50%",
-      },
-      {
-        src: "/images/yearly-goals-preview.svg",
-        alt: "Yearly Goals preview layout",
-        objectPosition: "50% 50%",
-      },
-      {
-        src: "/images/yearly-goals-preview.svg",
-        alt: "Yearly Goals preview calendar view",
-        objectPosition: "50% 50%",
-      },
-      {
-        src: "/images/yearly-goals-preview.svg",
-        alt: "Yearly Goals preview goals table",
-        objectPosition: "50% 50%",
-      },
-    ],
-    []
+    () =>
+      (product.galleryImages ?? []).map((image: ProductImage) => ({
+        src: image.src,
+        alt: image.alt,
+        objectPosition: image.objectPosition,
+      })),
+    [product.galleryImages]
   );
 
   const benefits = useMemo<Benefit[]>(
@@ -326,17 +301,18 @@ export default function Page() {
     "inline-flex items-center gap-[6px] bg-transparent p-0 text-[11px] md:text-[12px] font-normal text-[#2b5968]/55 hover:text-[#2b5968]/80 transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#dfc2c0]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]";
   return (
     <section className="bg-[#fdf9f9]">
-      <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[50px]">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] lg:gap-16 gap-12 items-start">
-          <div className="lg:sticky lg:top-24 lg:self-start">
+      <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[50px] overflow-visible">
+        <div className="grid grid-cols-1 lg:grid-cols-[13fr_12fr] lg:gap-16 gap-12 items-start">
+          <div className="lg:sticky lg:top-24 lg:self-start w-full min-w-0 lg:max-w-[560px]">
             <ProductGalleryEmbla images={carouselImages} />
           </div>
-          <div className="w-full">
+          <div className="w-full min-w-0">
             <h1 className="text-[28px] md:text-[40px] lg:text-[44px] font-medium leading-[1.1] lg:leading-[52px] text-deep/90">
               {product.title}
             </h1>
             <p className="mt-3.5 text-base font-normal leading-7 text-deep/80">
-              {product.subtitle}
+              {product.subtitle ??
+                "A calm, minimalist Notion workspace for yearly planning. Map priorities, track progress, and keep your goals visible without noise."}
             </p>
             <div className="mt-3.5">
               <PriceBadge label={product.priceLabel} />
@@ -366,7 +342,7 @@ export default function Page() {
               }}
               className="mt-[18px] inline-flex h-14 w-full items-center justify-center rounded-full bg-[#dfc2c0]/90 px-6 text-base font-semibold text-deep border border-[#dfc2c0]/60 transition-colors duration-200 hover:bg-[#d7b7b4]"
             >
-              {product.ctaLabel}
+              {product.ctaLabel ?? "Download"}
             </a>
             <div className="mt-6">
               <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-deep/55">

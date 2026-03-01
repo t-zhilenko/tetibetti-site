@@ -2,19 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { existsSync } from "fs";
 import path from "path";
-
-export type ProductStatus = "available" | "coming_soon";
-
-export type Product = {
-  title: string;
-  slug: string;
-  short: string;
-  priceLabel: string;
-  status: ProductStatus;
-  eta?: string;
-  cta: string;
-  image: string;
-};
+import type { Product } from "@/lib/products";
 
 type ProductCardProps = {
   product: Product;
@@ -51,7 +39,7 @@ const PlaceholderImage = ({ title }: { title: string }) => {
 export default function ProductCard({ product }: ProductCardProps) {
   const productHref = `/product/${product.slug}`;
   const checkoutHref = `/checkout?product=${product.slug}`;
-  const hasImage = imageExists(product.image);
+  const hasImage = imageExists(product.mainPreviewImage.src);
   const isAvailable = product.status === "available";
 
   const cardShadow = isAvailable
@@ -83,8 +71,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         >
           {hasImage ? (
             <Image
-              src={product.image}
-              alt={product.title}
+              src={product.mainPreviewImage.src}
+              alt={product.mainPreviewImage.alt ?? product.title}
               width={640}
               height={480}
               className="h-full w-full object-cover"

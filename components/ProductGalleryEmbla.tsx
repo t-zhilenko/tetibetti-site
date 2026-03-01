@@ -91,21 +91,21 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
           <div className="flex">
             {galleryImages.map((image, index) => (
               <div className="flex-[0_0_100%]" key={`${image.src}-${index}`}>
-                <button
-                  type="button"
-                  onClick={() => setLightboxOpen(true)}
-                  className="relative aspect-square w-full rounded-2xl cursor-zoom-in"
-                  aria-label="Open image preview"
-                >
-                  {image.src ? (
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      sizes="(min-width: 1024px) 560px, 92vw"
+                  <button
+                    type="button"
+                    onClick={() => setLightboxOpen(true)}
+                    className="relative aspect-square w-full rounded-2xl cursor-zoom-in"
+                    aria-label="Open image preview"
+                  >
+                    {image.src ? (
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        sizes="(min-width: 1024px) 560px, 92vw"
                       className="object-contain"
-                    />
-                  ) : (
+                      />
+                    ) : (
                     <GalleryPlaceholder className="h-full w-full" />
                   )}
                 </button>

@@ -1,36 +1,7 @@
 import Container from "@/components/Container";
-import ProductCard, { type Product } from "@/components/ProductCard";
+import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
-
-const products: Product[] = [
-  {
-    title: "Yearly Goals",
-    slug: "yearly-goals",
-    short: "Minimal Notion system for yearly planning & weekly clarity.",
-    priceLabel: "Free download",
-    status: "available",
-    cta: "Get now",
-    image: "/images/products/yearly-goals.jpg",
-  },
-  {
-    title: "Nutrition System / Meal Planner",
-    slug: "nutrition-system",
-    short: "A structured meal planner + nutrition tracking system.",
-    priceLabel: "Estimated delivery: 20 March",
-    status: "coming_soon",
-    cta: "Coming soon",
-    image: "/images/products/nutrition-system.jpg",
-  },
-  {
-    title: "Java Cheat Sheets",
-    slug: "java-cheat-sheets",
-    short: "Practical Java notes + interview-ready cheat sheets.",
-    priceLabel: "Estimated delivery: 15 April",
-    status: "coming_soon",
-    cta: "Coming soon",
-    image: "/images/products/java-cheat-sheets.jpg",
-  },
-];
+import { products } from "@/lib/products";
 
 export default function FeaturedProducts() {
   return (
