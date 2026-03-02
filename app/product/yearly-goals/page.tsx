@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { Share2, Mail } from "lucide-react";
 import Container from "@/components/Container";
@@ -418,46 +417,44 @@ export default function Page() {
               <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-deep/55">
                 Pairs well with
               </p>
-              <Link
-                href="/product/nutrition-meal-planner"
-                aria-label="View Nutrition Meal Planner product page"
-                className="group block"
+              <a
+                href="#nutrition-waitlist"
+                className="mt-2 flex items-center gap-3 rounded-2xl border border-[#dfc2c0]/25 bg-[#f7dce0]/20 px-4 py-3 transition hover:bg-[#f7dce0]/30"
+                aria-label={`View ${relatedProduct.title}`}
               >
-                <div className="mt-2 flex items-center gap-3 rounded-2xl border border-[#dfc2c0]/25 bg-[#f7dce0]/20 px-4 py-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-md cursor-pointer">
-                  <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-[#dfc2c0]/35 bg-white/70">
-                    <Image
-                      src={relatedProduct.imageSrc}
-                      alt={relatedProduct.imageAlt}
-                      fill
-                      sizes="48px"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-deep/85">
-                      {relatedProduct.title}
-                    </p>
-                    <p className="text-[12px] text-deep/55">
-                      {relatedProduct.subtitle}
-                    </p>
-                  </div>
-                  <span
-                    aria-hidden="true"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#dfc2c0]/35 bg-white/70 text-deep/70 transition-transform duration-300 group-hover:translate-x-1"
-                  >
-                    <svg viewBox="0 0 20 20" className="h-4 w-4">
-                      <path
-                        d="m7.5 4.5 5 5.5-5 5.5"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
+                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-[#dfc2c0]/35 bg-white/70">
+                  <Image
+                    src={relatedProduct.imageSrc}
+                    alt={relatedProduct.imageAlt}
+                    fill
+                    sizes="48px"
+                    className="object-cover"
+                  />
                 </div>
-              </Link>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-deep/85">
+                    {relatedProduct.title}
+                  </p>
+                  <p className="text-[12px] text-deep/55">
+                    {relatedProduct.subtitle}
+                  </p>
+                </div>
+                <span
+                  aria-hidden="true"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#dfc2c0]/35 bg-white/70 text-deep/70 transition hover:text-deep/90"
+                >
+                  <svg viewBox="0 0 20 20" className="h-4 w-4">
+                    <path
+                      d="m7.5 4.5 5 5.5-5 5.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </a>
             </div>
             <div className="mt-6">
               <Accordion items={detailItems} variant="minimal" />
@@ -526,31 +523,20 @@ export default function Page() {
 
       <section id="nutrition-waitlist" className="bg-soft">
         <Container>
-          <div className="mx-auto max-w-[900px] text-center py-16 md:py-24">
+          <div className="mx-auto max-w-[900px] text-center space-y-5 py-16 md:py-24">
             <p className="text-xs uppercase tracking-[0.36em] text-deep/40">
               Early Access
             </p>
-            <Link
-              href="/product/nutrition-meal-planner"
-              aria-label="View Nutrition Meal Planner details"
-            >
-              <h2 className="mt-6 text-2xl md:text-3xl transition-all duration-300 hover:-translate-y-0.5 hover:text-teal-800">
-                Nutrition Meal Planner
-              </h2>
-            </Link>
-            <p className="mt-6 text-[13px] md:text-sm text-deep/70 leading-relaxed">
+            <h2 className="text-2xl md:text-3xl">Nutrition Meal Planner</h2>
+            <p className="text-[13px] md:text-sm text-deep/70 leading-relaxed">
               A calm, structured system designed to simplify meals, groceries,
               and nutrition tracking without overwhelm.
             </p>
-            <p className="mt-4 text-[12px] text-deep/45">
+            <p className="mt-3 text-[12px] text-deep/45">
               Be the first to access the planner and receive an exclusive
               early-bird launch offer.
             </p>
-            <SubscribeForm
-              tag="nutrition-meal-planner"
-              buttonLabel="Join waitlist"
-              className="mt-8"
-            />
+            <SubscribeForm tag="nutrition-meal-planner" buttonLabel="Join waitlist" />
           </div>
         </Container>
       </section>
