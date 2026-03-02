@@ -18,6 +18,7 @@ type SubscribeFormProps = {
   buttonLabel?: string;
   inputClassName?: string;
   buttonClassName?: string;
+  layout?: "default" | "aligned";
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,6 +29,7 @@ export default function SubscribeForm({
   buttonLabel,
   inputClassName,
   buttonClassName,
+  layout = "default",
 }: SubscribeFormProps) {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
@@ -147,6 +149,87 @@ export default function SubscribeForm({
   const messageTone =
     message.type === "error" ? "text-[#cda4a8]" : "text-deep/60";
   const messageVisible = message.visible && message.text;
+
+  if (layout === "aligned") {
+    return (
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        className={`mt-10 w-full${
+          className ? ` ${className}` : ""
+        }`}
+      >
+        <div className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden">
+          <label htmlFor={honeypotId} aria-hidden="true">
+            Company
+          </label>
+          <input
+            id={honeypotId}
+            name="company"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            value={company}
+            onChange={(event) => setCompany(event.target.value)}
+          />
+        </div>
+        <label htmlFor={inputId} className="sr-only">
+          Email
+        </label>
+        <div className="flex w-full items-center gap-3">
+          <input
+            id={inputId}
+            type="email"
+            name="email"
+            value={email}
+            onChange={(event) => {
+              setEmail(event.target.value);
+              if (message.type === "error") {
+                setMessage({ type: null, text: "", visible: false });
+              }
+            }}
+            placeholder="Your email"
+            disabled={isLoading}
+            aria-invalid={message.type === "error"}
+            aria-describedby={`${inputId}-feedback`}
+            className={`h-12 flex-1 rounded-full bg-[#fdfcfa] border px-6 text-sm text-deep placeholder:text-deep/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-deep/40 disabled:opacity-70 transition-colors duration-150 ${
+              message.type === "error"
+                ? "border-[rgba(223,194,192,0.85)]"
+                : "border-[rgba(43,89,104,0.15)]"
+            }${inputClassName ? ` ${inputClassName}` : ""}`}
+          />
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`h-12 w-auto rounded-full px-6 text-sm font-medium border transition-all duration-200 ${
+              isLoading
+                ? "bg-blush/70 text-deep/70 border-deep/10 opacity-60 cursor-not-allowed shadow-none"
+                : "bg-blush text-deep border-deep/10 hover:bg-[#d7b7b4] hover:-translate-y-0.5 hover:shadow-[0_10px_20px_rgba(223,194,192,0.35)] active:translate-y-0"
+            } ${justSucceeded ? "scale-[0.98]" : "scale-100"}${
+              buttonClassName ? ` ${buttonClassName}` : ""
+            }`}
+          >
+            {isLoading
+              ? "Subscribing..."
+              : showSubscribed
+                ? "Subscribed"
+                : buttonLabel ?? "Subscribe"}
+          </button>
+        </div>
+        <div className="min-h-[18px] mt-2 text-left">
+          <p
+            id={`${inputId}-feedback`}
+            className={`text-[12px] ${messageTone} transition-opacity duration-150 ${
+              messageVisible ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            {message.text}
+          </p>
+        </div>
+      </form>
+    );
+  }
 
   return (
     <form

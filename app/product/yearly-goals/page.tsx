@@ -2,27 +2,24 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import Link from "next/link";
 import { Share2, Mail } from "lucide-react";
 import Container from "@/components/Container";
-import Accordion, { type AccordionItem } from "@/components/Accordion";
+import type { AccordionItem } from "@/components/Accordion";
 import ProductGalleryEmbla from "@/components/ProductGalleryEmbla";
-import BenefitCard from "@/components/BenefitCard";
 import SubscribeForm from "@/components/SubscribeForm";
 import Modal from "@/components/Modal";
-import PriceBadge from "@/components/PriceBadge";
 import LanguageSelector from "@/components/LanguageSelector";
+import ProductPageLayout, {
+  type ProductBenefit,
+} from "@/components/product/ProductPageLayout";
+import PairsWithSection from "@/components/product/PairsWithSection";
 import { getProductBySlug, type ProductImage } from "@/lib/products";
 
 type CarouselImage = {
   src: string;
   alt: string;
   objectPosition?: string;
-};
-
-type Benefit = {
-  title: string;
-  text: string;
 };
 
 type ModalState = "idle" | "loading" | "success" | "error";
@@ -54,7 +51,7 @@ export default function Page() {
     [product.galleryImages]
   );
 
-  const benefits = useMemo<Benefit[]>(
+  const benefits = useMemo<ProductBenefit[]>(
     () => [
       {
         title: "Quarterly Clarity",
@@ -150,6 +147,7 @@ export default function Page() {
       subtitle: "Coming soon",
       imageSrc: "/images/yearly-goals-preview.svg",
       imageAlt: "Nutrition Meal Planner preview",
+      href: "/products/nutrition-meal-planner",
     }),
     []
   );
@@ -364,271 +362,210 @@ export default function Page() {
   const actionLinkClass =
     "inline-flex items-center gap-[6px] bg-transparent p-0 text-[11px] md:text-[12px] font-normal text-[#2b5968]/55 hover:text-[#2b5968]/80 transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#dfc2c0]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]";
   return (
-    <section className="bg-[#fdf9f9]">
-      <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[50px] overflow-visible">
-        <div className="grid grid-cols-1 lg:grid-cols-[13fr_12fr] lg:gap-1 gap-12 items-start">
-          <div className="lg:sticky lg:top-24 lg:self-start w-full min-w-0 lg:max-w-[560px]">
-            <ProductGalleryEmbla images={carouselImages} />
-          </div>
-          <div className="w-full min-w-0">
-            <h1 className="text-[28px] md:text-[40px] lg:text-[44px] font-medium leading-[1.1] lg:leading-[52px] text-deep/90">
-              {product.title}
-            </h1>
-            <p className="mt-3.5 text-base font-normal leading-7 text-deep/80">
-              A calm, structured Notion system designed to help you plan your
-              year with clarity and intention. Break big goals into focused
-              quarters, connected projects, and meaningful daily action.
-            </p>
-            <div className="mt-3.5">
-              <PriceBadge label={product.priceLabel} />
-            </div>
-            <ul className="mt-4 max-w-[520px] list-disc pl-5 space-y-2.5 text-[15px] leading-[26px] text-deep/80 marker:text-[#97b5c2]">
-              <li>Goals → Projects → Tasks — fully connected</li>
-              <li>Built-in quarterly planning system</li>
-              <li>Automatic progress tracking</li>
-              <li>Clean, distraction-free structure</li>
-              <li>Free Notion template — duplicate and use instantly</li>
-            </ul>
-            <div className="mt-[22px]">
-              <LanguageSelector
-                label="Language"
-                value={language}
-                onChange={setLanguage}
-                options={[
-                  { value: "en", label: "English" },
-                  { value: "uk", label: "Ukrainian" },
-                ]}
+    <ProductPageLayout
+      title={product.title}
+      description="A calm, structured Notion system designed to help you plan your year with clarity and intention. Break big goals into focused quarters, connected projects, and meaningful daily action."
+      badgeLabel={product.priceLabel}
+      bullets={[
+        "Goals → Projects → Tasks — fully connected",
+        "Built-in quarterly planning system",
+        "Automatic progress tracking",
+        "Clean, distraction-free structure",
+        "Free Notion template — duplicate and use instantly",
+      ]}
+      languageSelector={
+        <LanguageSelector
+          label="Language"
+          value={language}
+          onChange={setLanguage}
+          options={[
+            { value: "en", label: "English" },
+            { value: "uk", label: "Ukrainian" },
+          ]}
+        />
+      }
+      cta={
+        <a
+          href="#"
+          onClick={(event) => {
+            event.preventDefault();
+            setIsModalOpen(true);
+          }}
+          className="inline-flex h-14 w-full items-center justify-center rounded-full bg-[#dfc2c0]/90 px-6 text-base font-semibold text-deep border border-[#dfc2c0]/60 transition-colors duration-200 hover:bg-[#d7b7b4]"
+        >
+          {product.ctaLabel ?? "Download"}
+        </a>
+      }
+      ctaNote={
+        <p className="mt-2 text-[12px] text-deep/60">
+          Works with the free version of Notion.
+        </p>
+      }
+      media={<ProductGalleryEmbla images={carouselImages} />}
+      relatedContent={
+        <PairsWithSection
+          variant="inline"
+          title="Pairs well with"
+          items={[
+            {
+              title: relatedProduct.title,
+              subtitle: relatedProduct.subtitle,
+              href: relatedProduct.href,
+              imageSrc: relatedProduct.imageSrc,
+              imageAlt: relatedProduct.imageAlt,
+            },
+          ]}
+        />
+      }
+      detailsAccordion={detailItems}
+      actions={
+        <>
+          <button
+            type="button"
+            onClick={handleShare}
+            aria-label="Share this product page"
+            className={actionLinkClass}
+          >
+            <Share2 className="h-[14px] w-[14px]" />
+            {shareStatus === "copied" ? "Copied" : "Share"}
+          </button>
+          <button
+            type="button"
+            onClick={handleAskQuestion}
+            aria-label="Ask a question about Yearly Goals"
+            className={actionLinkClass}
+          >
+            <Mail className="h-[14px] w-[14px]" />
+            Ask a question
+          </button>
+        </>
+      }
+      benefits={{
+        title: "5 Reasons This System Brings Clarity",
+        description: "A calm structure that turns intention into consistent action.",
+        items: benefits,
+      }}
+      faq={{
+        title: "Frequently Asked Questions",
+        description: "Quick answers to keep your download smooth.",
+        items: faqItems,
+      }}
+      extraSection={
+        <section id="nutrition-waitlist" className="bg-soft">
+          <Container>
+            <div className="mx-auto max-w-[900px] text-center space-y-5 py-16 md:py-24">
+              <p className="text-xs uppercase tracking-[0.36em] text-deep/40">
+                Early Access
+              </p>
+              <Link href="/products/nutrition-meal-planner" className="inline-flex">
+                <h2 className="text-2xl md:text-3xl">Nutrition Meal Planner</h2>
+              </Link>
+              <p className="text-[13px] md:text-sm text-deep/70 leading-relaxed">
+                A calm, structured system designed to simplify meals, groceries,
+                and nutrition tracking without overwhelm.
+              </p>
+              <p className="mt-3 text-[12px] text-deep/45">
+                Be the first to access the planner and receive an exclusive
+                early-bird launch offer.
+              </p>
+              <SubscribeForm
+                tag="nutrition-meal-planner"
+                buttonLabel="Join waitlist"
               />
             </div>
-            <a
-              href="#"
-              onClick={(event) => {
-                event.preventDefault();
-                setIsModalOpen(true);
-              }}
-              className="mt-[18px] inline-flex h-14 w-full items-center justify-center rounded-full bg-[#dfc2c0]/90 px-6 text-base font-semibold text-deep border border-[#dfc2c0]/60 transition-colors duration-200 hover:bg-[#d7b7b4]"
-            >
-              {product.ctaLabel ?? "Download"}
-            </a>
-            <p className="mt-2 text-[12px] text-deep/60">
-              Works with the free version of Notion.
-            </p>
-            <div className="mt-6">
-              <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-deep/55">
-                Pairs well with
-              </p>
-              <a
-                href="#nutrition-waitlist"
-                className="mt-2 flex items-center gap-3 rounded-2xl border border-[#dfc2c0]/25 bg-[#f7dce0]/20 px-4 py-3 transition hover:bg-[#f7dce0]/30"
-                aria-label={`View ${relatedProduct.title}`}
-              >
-                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-[#dfc2c0]/35 bg-white/70">
-                  <Image
-                    src={relatedProduct.imageSrc}
-                    alt={relatedProduct.imageAlt}
-                    fill
-                    sizes="48px"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-deep/85">
-                    {relatedProduct.title}
-                  </p>
-                  <p className="text-[12px] text-deep/55">
-                    {relatedProduct.subtitle}
-                  </p>
-                </div>
-                <span
-                  aria-hidden="true"
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#dfc2c0]/35 bg-white/70 text-deep/70 transition hover:text-deep/90"
-                >
-                  <svg viewBox="0 0 20 20" className="h-4 w-4">
-                    <path
-                      d="m7.5 4.5 5 5.5-5 5.5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
-              </a>
-            </div>
-            <div className="mt-6">
-              <Accordion items={detailItems} variant="minimal" />
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-[18px] pb-5">
+          </Container>
+        </section>
+      }
+      afterContent={
+        <Modal open={isModalOpen} title="Download Free" onClose={closeModal}>
+          {status === "success" ? (
+            <div className="space-y-4">
+              <div>
+                <p className="text-lg text-deep/85">Sent to your email {"\u2728"}</p>
+                <p className="mt-2 text-sm text-deep/60">
+                  We just sent your template link + setup steps. Check your inbox
+                  (and Promotions/Spam).
+                </p>
+              </div>
               <button
                 type="button"
-                onClick={handleShare}
-                aria-label="Share this product page"
-                className={actionLinkClass}
+                onClick={() => {
+                  if (redirectTimer) {
+                    window.clearTimeout(redirectTimer);
+                    setRedirectTimer(null);
+                  }
+                  router.push("/thank-you/yearly-goals");
+                }}
+                className="inline-flex items-center justify-center rounded-full bg-blush px-5 py-2 text-sm font-medium text-deep border border-deep/10 transition-all duration-200 hover:bg-[#d7b7b4]"
               >
-                <Share2 className="h-[14px] w-[14px]" />
-                {shareStatus === "copied" ? "Copied" : "Share"}
-              </button>
-              <button
-                type="button"
-                onClick={handleAskQuestion}
-                aria-label="Ask a question about Yearly Goals"
-                className={actionLinkClass}
-              >
-                <Mail className="h-[14px] w-[14px]" />
-                Ask a question
+                Continue
               </button>
             </div>
-          </div>
-        </div>
-      </Container>
-
-      <section className="py-16 bg-[#f7dce0]">
-        <Container>
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <h2 className="text-2xl md:text-3xl text-[#1F4E57]">
-              5 Reasons This System Brings Clarity
-            </h2>
-            <p className="text-sm md:text-[15px] text-[#5E7C85]">
-              A calm structure that turns intention into consistent action.
-            </p>
-          </div>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {benefits.map((benefit) => (
-              <BenefitCard
-                key={benefit.title}
-                title={benefit.title}
-                text={benefit.text}
-              />
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      <section className="py-16 bg-[#fdf9f9]">
-        <Container>
-          <div className="text-center max-w-2xl mx-auto space-y-3">
-            <h2 className="text-2xl md:text-3xl text-deep/90">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-sm md:text-[15px] text-deep/60">
-              Quick answers to keep your download smooth.
-            </p>
-          </div>
-          <div className="mt-10 max-w-4xl mx-auto">
-            <Accordion items={faqItems} />
-          </div>
-        </Container>
-      </section>
-
-      <section id="nutrition-waitlist" className="bg-soft">
-        <Container>
-          <div className="mx-auto max-w-[900px] text-center space-y-5 py-16 md:py-24">
-            <p className="text-xs uppercase tracking-[0.36em] text-deep/40">
-              Early Access
-            </p>
-            <h2 className="text-2xl md:text-3xl">Nutrition Meal Planner</h2>
-            <p className="text-[13px] md:text-sm text-deep/70 leading-relaxed">
-              A calm, structured system designed to simplify meals, groceries,
-              and nutrition tracking without overwhelm.
-            </p>
-            <p className="mt-3 text-[12px] text-deep/45">
-              Be the first to access the planner and receive an exclusive
-              early-bird launch offer.
-            </p>
-            <SubscribeForm tag="nutrition-meal-planner" buttonLabel="Join waitlist" />
-          </div>
-        </Container>
-      </section>
-
-      <Modal open={isModalOpen} title="Download Free" onClose={closeModal}>
-        {status === "success" ? (
-          <div className="space-y-4">
-            <div>
-              <p className="text-lg text-deep/85">Sent to your email {"\u2728"}</p>
-              <p className="mt-2 text-sm text-deep/60">
-                We just sent your template link + setup steps. Check your inbox
-                (and Promotions/Spam).
+          ) : (
+            <form onSubmit={handleSubscribe} noValidate className="space-y-4">
+              <p className="text-sm text-deep/65">
+                Enter your email to receive the Notion template link and setup
+                steps.
               </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (redirectTimer) {
-                  window.clearTimeout(redirectTimer);
-                  setRedirectTimer(null);
-                }
-                router.push("/thank-you/yearly-goals");
-              }}
-              className="inline-flex items-center justify-center rounded-full bg-blush px-5 py-2 text-sm font-medium text-deep border border-deep/10 transition-all duration-200 hover:bg-[#d7b7b4]"
-            >
-              Continue
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubscribe} noValidate className="space-y-4">
-            <p className="text-sm text-deep/65">
-              Enter your email to receive the Notion template link and setup
-              steps.
-            </p>
-            <div>
-              <label htmlFor="yearly-goals-email" className="sr-only">
-                Email
-              </label>
-              <input
-                id="yearly-goals-email"
-                ref={inputRef}
-                type="text"
-                inputMode="email"
-                autoComplete="email"
-                data-autofocus="true"
-                value={email}
-                onChange={(event) => {
-                  const nextValue = event.target.value;
-                  setEmail(nextValue);
-                  if (emailError) {
-                    const nextError = getEmailError(nextValue.trim());
-                    if (!nextError) {
-                      setEmailError("");
+              <div>
+                <label htmlFor="yearly-goals-email" className="sr-only">
+                  Email
+                </label>
+                <input
+                  id="yearly-goals-email"
+                  ref={inputRef}
+                  type="text"
+                  inputMode="email"
+                  autoComplete="email"
+                  data-autofocus="true"
+                  value={email}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+                    setEmail(nextValue);
+                    if (emailError) {
+                      const nextError = getEmailError(nextValue.trim());
+                      if (!nextError) {
+                        setEmailError("");
+                      }
                     }
-                  }
-                  if (status === "error") {
-                    setStatus("idle");
-                  }
-                }}
-                onBlur={() => {
-                  const nextError = getEmailError(email.trim());
-                  if (nextError) {
-                    setEmailError(nextError);
-                  }
-                }}
-                placeholder="you@example.com"
-                className={`h-11 w-full rounded-full bg-[#fdfcfa] border px-5 text-sm text-deep placeholder:text-deep/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-deep/40 ${
-                  emailError
-                    ? "border-[rgba(223,194,192,0.85)]"
-                    : "border-[rgba(43,89,104,0.2)]"
-                }`}
+                    if (status === "error") {
+                      setStatus("idle");
+                    }
+                  }}
+                  onBlur={() => {
+                    const nextError = getEmailError(email.trim());
+                    if (nextError) {
+                      setEmailError(nextError);
+                    }
+                  }}
+                  placeholder="you@example.com"
+                  className={`h-11 w-full rounded-full bg-[#fdfcfa] border px-5 text-sm text-deep placeholder:text-deep/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-deep/40 ${
+                    emailError
+                      ? "border-[rgba(223,194,192,0.85)]"
+                      : "border-[rgba(43,89,104,0.2)]"
+                  }`}
+                  disabled={isLoading}
+                  aria-invalid={Boolean(emailError)}
+                />
+                {emailError ? (
+                  <p className="mt-2 text-[12px] text-[#cda4a8]">{emailError}</p>
+                ) : null}
+              </div>
+              <button
+                type="submit"
                 disabled={isLoading}
-                aria-invalid={Boolean(emailError)}
-              />
-              {emailError ? (
-                <p className="mt-2 text-[12px] text-[#cda4a8]">{emailError}</p>
-              ) : null}
-            </div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`inline-flex w-full items-center justify-center rounded-full px-5 py-2 text-sm font-medium border transition-all duration-200 ${
-                isLoading
-                  ? "bg-blush/60 text-deep/70 border-deep/10 opacity-60 cursor-not-allowed"
-                  : "bg-blush text-deep border-deep/10 hover:bg-[#d7b7b4]"
-              }`}
-            >
-              {isLoading ? "Sending..." : "Send me the link"}
-            </button>
-          </form>
-        )}
-      </Modal>
-    </section>
+                className={`inline-flex w-full items-center justify-center rounded-full px-5 py-2 text-sm font-medium border transition-all duration-200 ${
+                  isLoading
+                    ? "bg-blush/60 text-deep/70 border-deep/10 opacity-60 cursor-not-allowed"
+                    : "bg-blush text-deep border-deep/10 hover:bg-[#d7b7b4]"
+                }`}
+              >
+                {isLoading ? "Sending..." : "Send me the link"}
+              </button>
+            </form>
+          )}
+        </Modal>
+      }
+    />
   );
 }
