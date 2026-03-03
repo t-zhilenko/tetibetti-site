@@ -40,7 +40,6 @@ type ProductPageLayoutProps = {
   faq?: ProductFaqSection;
   detailsAccordionClassName?: string;
   betweenSections?: ReactNode;
-  extraSection?: ReactNode;
   afterContent?: ReactNode;
 };
 
@@ -61,7 +60,6 @@ export default function ProductPageLayout({
   faq,
   detailsAccordionClassName,
   betweenSections,
-  extraSection,
   afterContent,
 }: ProductPageLayoutProps) {
   return (
@@ -162,7 +160,6 @@ export default function ProductPageLayout({
         </section>
       ) : null}
 
-      {extraSection}
       {afterContent}
     </section>
   );

@@ -1,16 +1,28 @@
-﻿export const runtime = "edge";
+import { redirect } from "next/navigation";
+import { products } from "@/content/products";
 
-type ProductPageProps = {
-  params: {
+export const dynamicParams = false;
+
+type ProductRedirectPageProps = {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
-export default function ProductPage({ params }: ProductPageProps) {
-  return (
-    <div className="space-y-2">
-      <h1 className="text-3xl font-semibold">Product</h1>
-      <p className="text-sm">Slug: {params.slug}</p>
-    </div>
-  );
+const legacySlugMap: Record<string, string> = {
+  "nutrition-system": "nutrition-meal-planner",
+};
+
+export function generateStaticParams() {
+  const legacySlugs = Object.keys(legacySlugMap);
+  const productSlugs = products.map((product) => product.slug);
+  return Array.from(new Set([...legacySlugs, ...productSlugs])).map((slug) => ({
+    slug,
+  }));
+}
+
+export default async function ProductRedirectPage({ params }: ProductRedirectPageProps) {
+  const { slug } = await params;
+  const targetSlug = legacySlugMap[slug] ?? slug;
+  redirect(`/products/${targetSlug}`);
 }

@@ -12,9 +12,7 @@ type PairsWithItem = {
 
 type PairsWithSectionProps = {
   title: string;
-  subtitle?: string;
   items: PairsWithItem[];
-  variant?: "section" | "inline";
 };
 
 function PairsWithCard({
@@ -69,19 +67,14 @@ function PairsWithCard({
 
 export default function PairsWithSection({
   title,
-  subtitle,
   items,
-  variant = "section",
 }: PairsWithSectionProps) {
   const content = (
     <div>
-      <div className="space-y-1">
+      <div>
         <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-deep/55">
           {title}
         </p>
-        {subtitle ? (
-          <p className="text-sm text-deep/60">{subtitle}</p>
-        ) : null}
       </div>
       <div className="mt-2 space-y-3">
         {items.map((item) => (
@@ -91,14 +84,10 @@ export default function PairsWithSection({
     </div>
   );
 
-  if (variant === "inline") {
-    return content;
-  }
-
   return (
     <section className="py-1 bg-[#fdf9f9]">
-      <Container>
-        <div className="max-w-3xl">{content}</div>
+      <Container className="!px-0">
+        <div className="max-w-3xl text-left">{content}</div>
       </Container>
     </section>
   );

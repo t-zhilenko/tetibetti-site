@@ -22,7 +22,7 @@ const PlaceholderImage = ({ title }: { title: string }) => {
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const productHref = `/product/${product.slug}`;
+  const productHref = `/products/${product.slug}`;
   const checkoutHref = `/checkout?product=${product.slug}`;
   const baseImage = product.mainPreviewImage;
   const hoverImage = product.galleryImages?.[0];

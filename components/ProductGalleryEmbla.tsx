@@ -103,7 +103,9 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
                         alt={image.alt}
                         fill
                         sizes="(min-width: 1024px) 560px, 92vw"
-                      className="object-contain"
+                        unoptimized
+                        loading="eager"
+                        className="object-contain"
                       />
                     ) : (
                     <GalleryPlaceholder className="h-full w-full" />
