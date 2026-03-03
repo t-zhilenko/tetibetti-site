@@ -15,6 +15,7 @@ import {
 } from "@/content/products";
 
 type ModalState = "idle" | "loading" | "success" | "error";
+type WaitlistStatus = "idle" | "loading" | "success" | "error";
 
 type ProductPageClientProps = {
   slug: string;
@@ -34,6 +35,11 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<ModalState>("idle");
   const [emailError, setEmailError] = useState("");
+  const [waitlistEmail, setWaitlistEmail] = useState("");
+  const [waitlistStatus, setWaitlistStatus] =
+    useState<WaitlistStatus>("idle");
+  const [waitlistError, setWaitlistError] = useState("");
+  const [waitlistHasSubmitted, setWaitlistHasSubmitted] = useState(false);
   const [redirectTimer, setRedirectTimer] = useState<number | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "copied">("idle");
   const shareTimerRef = useRef<number | null>(null);
@@ -176,6 +182,61 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     }
   };
 
+  const handleWaitlistSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    setWaitlistHasSubmitted(true);
+    if (waitlistStatus === "loading") {
+      return;
+    }
+
+    const trimmedEmail = waitlistEmail.trim();
+    if (!trimmedEmail) {
+      setWaitlistError("");
+      return;
+    }
+
+    if (!EMAIL_RE.test(trimmedEmail)) {
+      setWaitlistError("Please enter a valid email");
+      return;
+    }
+
+    setWaitlistStatus("loading");
+    setWaitlistError("");
+
+    try {
+      const response = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          tag: product.downloadTag ?? product.slug,
+        }),
+      });
+
+      const result = (await response.json().catch(() => null)) as
+        | { success?: boolean; error?: string }
+        | null;
+
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || "Something went wrong.");
+      }
+
+      setWaitlistHasSubmitted(false);
+      setWaitlistStatus("success");
+      setWaitlistEmail("");
+    } catch (error) {
+      setWaitlistStatus("error");
+      setWaitlistError(
+        error instanceof Error && error.message
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    }
+  };
+
   const handleShare = async () => {
     if (typeof window === "undefined") {
       return;
@@ -218,6 +279,21 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   };
 
   const isLoading = status === "loading";
+  const isWaiting = product.status === "waiting";
+  const isWaitlistLoading = waitlistStatus === "loading";
+  const waitlistValidationError =
+    waitlistHasSubmitted && waitlistEmail.trim() === ""
+      ? "Email is required"
+      : "";
+  const waitlistInlineError = waitlistValidationError || waitlistError;
+  const waitlistHint =
+    waitlistInlineError ||
+    (waitlistStatus === "success"
+      ? "You’re on the waitlist."
+      : "We’ll email you when the product is ready.");
+  const waitlistHintTone = waitlistInlineError
+    ? "text-[#cfa0a6]/80"
+    : "text-deep/60";
   const actionLinkClass =
     "inline-flex items-center gap-[6px] bg-transparent p-0 text-[11px] md:text-[12px] font-normal text-[#2b5968]/55 hover:text-[#2b5968]/80 transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#dfc2c0]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]";
 
@@ -255,16 +331,70 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
         ) : null
       }
       cta={
-        <a
-          href="#"
-          onClick={(event) => {
-            event.preventDefault();
-            setIsModalOpen(true);
-          }}
-          className="inline-flex h-14 w-full items-center justify-center rounded-full bg-[#dfc2c0]/90 px-6 text-base font-semibold text-deep border border-[#dfc2c0]/60 transition-colors duration-200 hover:bg-[#d7b7b4]"
-        >
-          {product.ctaLabel ?? "Download"}
-        </a>
+        isWaiting ? (
+          <div className="w-full">
+            <form
+              onSubmit={handleWaitlistSubmit}
+              noValidate
+              className="flex w-full items-center gap-3"
+            >
+              <label htmlFor={`${product.slug}-waitlist-email`} className="sr-only">
+                Email
+              </label>
+              <input
+                id={`${product.slug}-waitlist-email`}
+                type="text"
+                inputMode="email"
+                autoComplete="email"
+                value={waitlistEmail}
+                onChange={(event) => {
+                  const nextValue = event.target.value;
+                  setWaitlistEmail(nextValue);
+                  if (waitlistHasSubmitted) {
+                    setWaitlistHasSubmitted(false);
+                  }
+                  if (waitlistError) {
+                    setWaitlistError("");
+                  }
+                  if (waitlistStatus === "error") {
+                    setWaitlistStatus("idle");
+                  }
+                }}
+                placeholder="you@example.com"
+                className={`h-14 w-full flex-[3_1_0%] rounded-full bg-[#fdfcfa] border px-5 text-sm text-deep placeholder:text-deep/30 focus-visible:outline-none focus-visible:border-[rgba(43,89,104,0.35)] focus-visible:ring-1 focus-visible:ring-[rgba(43,89,104,0.15)] ${
+                  waitlistInlineError
+                    ? "border-[rgba(223,194,192,0.65)]"
+                    : "border-[rgba(43,89,104,0.2)]"
+                }`}
+                disabled={isWaitlistLoading}
+                aria-invalid={Boolean(waitlistInlineError)}
+              />
+              <button
+                type="submit"
+                disabled={isWaitlistLoading}
+                className={`inline-flex h-14 w-full flex-[1_1_0%] items-center justify-center rounded-full bg-[#dfc2c0]/75 px-6 text-base font-medium text-deep border border-[#dfc2c0]/50 transition-all duration-200 hover:bg-[#d7b7b4]/85 hover:-translate-y-[1px] hover:shadow-[0_6px_14px_rgba(223,194,192,0.22)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(223,194,192,0.2)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9] ${
+                  isWaitlistLoading ? "opacity-60 cursor-not-allowed" : ""
+                }`}
+              >
+                Join waitlist
+              </button>
+            </form>
+            <div className="min-h-[18px] mt-2 text-left">
+              <p className={`text-[12px] ${waitlistHintTone}`}>{waitlistHint}</p>
+            </div>
+          </div>
+        ) : (
+          <a
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              setIsModalOpen(true);
+            }}
+            className="inline-flex h-14 w-full items-center justify-center rounded-full bg-[#dfc2c0]/75 px-6 text-base font-medium text-deep border border-[#dfc2c0]/50 transition-all duration-200 hover:bg-[#d7b7b4]/85 hover:-translate-y-[1px] hover:shadow-[0_6px_14px_rgba(223,194,192,0.22)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(223,194,192,0.2)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]"
+          >
+            {product.ctaLabel ?? "Download"}
+          </a>
+        )
       }
       ctaNote={
         product.ctaNote ? (
@@ -273,6 +403,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
       }
       media={<ProductGalleryEmbla images={carouselImages} />}
       relatedContent={relatedContent}
+      relatedContentClassName="mt-4"
       detailsAccordion={product.detailsAccordion}
       actions={
         (product.showActions ?? true) ? (

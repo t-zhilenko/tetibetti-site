@@ -94,7 +94,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
         <div className="space-y-2">
           <p className={priceClassName}>{product.priceLabel}</p>
-          {product.status === "coming_soon" && product.eta ? (
+          {product.status === "waiting" && product.eta ? (
             <p className="text-[11px] text-deep/35">{product.eta}</p>
           ) : null}
           {product.status === "available" ? (

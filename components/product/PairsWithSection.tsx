@@ -28,7 +28,7 @@ function PairsWithCard({
     href,
     "aria-label": `View ${title}`,
     className:
-      "flex items-center gap-3 rounded-2xl border border-[#dfc2c0]/25 bg-[#f7dce0]/20 px-4 py-3 transition hover:bg-[#f7dce0]/30",
+      "group flex items-center gap-3 rounded-2xl border border-[#dfc2c0]/25 bg-[#f7dce0]/20 px-4 py-3 transition-transform duration-200 hover:scale-[1.02] hover:bg-[#f7dce0]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(223,194,192,0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]",
   };
 
   return (
@@ -43,19 +43,21 @@ function PairsWithCard({
         />
       </div>
       <div className="flex-1">
-        <p className="text-sm font-medium text-deep/85">{title}</p>
+        <p className="text-sm font-medium text-deep/85 transition">
+          {title}
+        </p>
         <p className="text-[12px] text-deep/55">{subtitle}</p>
       </div>
       <span
         aria-hidden="true"
-        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#dfc2c0]/35 bg-white/70 text-deep/70 transition hover:text-deep/90"
+        className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[#dfc2c0]/30 bg-white/70 text-deep/45 transition-transform duration-200 group-hover:translate-x-1"
       >
-        <svg viewBox="0 0 20 20" className="h-4 w-4">
+        <svg viewBox="0 0 20 20" className="h-3.5 w-3.5">
           <path
             d="m7.5 4.5 5 5.5-5 5.5"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.6"
+            strokeWidth="1.2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -71,12 +73,10 @@ export default function PairsWithSection({
 }: PairsWithSectionProps) {
   const content = (
     <div>
-      <div>
-        <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-deep/55">
-          {title}
-        </p>
-      </div>
-      <div className="mt-2 space-y-3">
+      <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-deep/55 opacity-80">
+        {title}
+      </p>
+      <div className="mt-3 space-y-3">
         {items.map((item) => (
           <PairsWithCard key={item.title} {...item} />
         ))}
@@ -85,7 +85,7 @@ export default function PairsWithSection({
   );
 
   return (
-    <section className="py-1 bg-[#fdf9f9]">
+    <section className="py-0 bg-[#fdf9f9]">
       <Container className="!px-0">
         <div className="max-w-3xl text-left">{content}</div>
       </Container>

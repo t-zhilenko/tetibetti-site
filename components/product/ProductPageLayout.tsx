@@ -82,9 +82,14 @@ export default function ProductPageLayout({
               </div>
             ) : null}
             {bullets?.length ? (
-              <ul className="mt-4 max-w-[520px] list-disc pl-5 space-y-2.5 text-[15px] leading-[26px] text-deep/80 marker:text-[#97b5c2]">
+              <ul className="mt-4 max-w-[520px] space-y-3 text-[15px] leading-[26px] text-deep/80">
                 {bullets.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li
+                    key={item}
+                    className="relative pl-5 before:absolute before:left-0 before:top-[0.55em] before:h-1 before:w-1 before:rounded-full before:bg-[#97b5c2]/55"
+                  >
+                    {item}
+                  </li>
                 ))}
               </ul>
             ) : null}

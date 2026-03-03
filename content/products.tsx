@@ -1,6 +1,6 @@
 ﻿import type { ReactNode } from "react";
 
-export type ProductStatus = "available" | "coming_soon";
+export type ProductStatus = "available" | "waiting";
 
 export type ProductImage = {
   src: string;
@@ -358,7 +358,7 @@ export const products: ProductConfig[] = [
     mainPreviewImage: nutritionPreviewImages[0],
     cta: "Coming soon",
     priceLabel: "Estimated delivery: 20 March",
-    status: "coming_soon",
+    status: "waiting",
     detailsAccordion: [
       {
         id: "inside",
@@ -459,7 +459,7 @@ export const products: ProductConfig[] = [
     },
     cta: "Coming soon",
     priceLabel: "Estimated delivery: 15 April",
-    status: "coming_soon",
+    status: "waiting",
     detailsAccordion: [
       {
         id: "inside",
