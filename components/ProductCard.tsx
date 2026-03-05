@@ -24,10 +24,16 @@ const PlaceholderImage = ({ title }: { title: string }) => {
 export default function ProductCard({ product }: ProductCardProps) {
   const productHref = `/products/${product.slug}`;
   const checkoutHref = `/checkout?product=${product.slug}`;
-  const baseImage = product.mainPreviewImage;
+  const baseImageSrc =
+    product.thumbnail ??
+    product.galleryImages?.[0]?.src ??
+    product.mainPreviewImage?.src ??
+    "";
+  const baseImageAlt = product.mainPreviewImage?.alt ?? product.title;
   const hoverImage = product.galleryImages?.[0];
-  const hasImage = Boolean(baseImage?.src);
-  const hasHoverImage = Boolean(hoverImage?.src);
+  const hasImage = Boolean(baseImageSrc);
+  const hasHoverImage =
+    Boolean(hoverImage?.src) && hoverImage?.src !== baseImageSrc;
   const isAvailable = product.status === "available";
 
   const cardShadow = isAvailable
@@ -60,8 +66,8 @@ export default function ProductCard({ product }: ProductCardProps) {
           {hasImage ? (
             <div className="relative aspect-square w-full overflow-hidden rounded-[12px]">
               <Image
-                src={baseImage.src}
-                alt={baseImage.alt ?? product.title}
+                src={baseImageSrc}
+                alt={baseImageAlt}
                 fill
                 sizes="(min-width: 1024px) 320px, (min-width: 768px) 280px, 90vw"
                 className={`object-contain transition-opacity duration-300 ease-out motion-reduce:transition-none ${

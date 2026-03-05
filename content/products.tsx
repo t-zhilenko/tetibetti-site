@@ -6,6 +6,9 @@ export type ProductImage = {
   src: string;
   alt: string;
   objectPosition?: string;
+  headline?: string;
+  lines?: string[];
+  bullets?: string[];
 };
 
 export type AccordionSection = {
@@ -16,7 +19,7 @@ export type AccordionSection = {
 
 export type ProductBenefit = {
   title: string;
-  text: ReactNode;
+  text: string;
 };
 
 export type ProductBenefitsSection = {
@@ -29,6 +32,29 @@ export type ProductFaqSection = {
   title: string;
   description?: string;
   items: AccordionSection[];
+};
+
+export type ProductPrimaryCta = {
+  type: "download" | "waitlist";
+  label: string;
+  helperText?: string;
+};
+
+export type ProductKeyFeature = {
+  title: string;
+  descriptionShort: string;
+};
+
+export type ProductSections = {
+  keyFeaturesSectionTitle?: string;
+  keyFeaturesSectionSubtitle?: string;
+  faqTitle?: string;
+  faqSubtitle?: string;
+  accordionItems?: {
+    whoItsFor?: string[] | string;
+    whatsInside?: string[] | string;
+    releasePlan?: string[] | string;
+  };
 };
 
 export type ProductBadge = {
@@ -46,11 +72,20 @@ export type ProductPairsWithOverride = {
 export type ProductConfig = {
   slug: string;
   title: string;
-  description: ReactNode;
+  tags?: string[];
+  tagline?: string;
+  description: string;
+  statusBadgeText?: string;
+  primaryCta?: ProductPrimaryCta;
+  successMessageLines?: string[];
+  endNote?: string;
+  keyFeatures?: ProductKeyFeature[];
+  sections?: ProductSections;
   shortDescription: string;
   badge: ProductBadge;
   bullets: string[];
   galleryImages?: ProductImage[];
+  thumbnail?: string;
   mainPreviewImage: ProductImage;
   downloadTag?: string;
   cta: string;
@@ -119,6 +154,14 @@ export const products: ProductConfig[] = [
   {
     slug: "yearly-goals",
     title: "Yearly Goals",
+    tags: ["Planning System", "Quarterly Rhythm", "Minimal Notion", "For Real Life"],
+    tagline: "Turn clear goals into steady, focused action.",
+    statusBadgeText: "FREE DOWNLOAD",
+    primaryCta: {
+      type: "download",
+      label: "Download",
+      helperText: "Works with the free version of Notion.",
+    },
     description:
       "A calm, structured Notion system designed to help you plan your year with clarity and intention. Break big goals into focused quarters, connected projects, and meaningful daily action.",
     shortDescription:
@@ -128,12 +171,42 @@ export const products: ProductConfig[] = [
       tone: "soft",
     },
     bullets: [
-      "Goals \u2192 Projects \u2192 Tasks — fully connected",
-      "Built-in quarterly planning system",
+      "Goals \u2192 Projects \u2192 Tasks (connected)",
+      "Built-in quarterly planning pages",
       "Automatic progress tracking",
-      "Clean, distraction-free structure",
-      "Free Notion template — duplicate and use instantly",
+      "Clean dashboard + focused views",
+      "Duplicate and start in minutes",
     ],
+    keyFeatures: [
+      {
+        title: "Connected Goals",
+        descriptionShort:
+          "Goals, projects, and tasks stay linked with automatic rollups.",
+      },
+      {
+        title: "Quarterly Focus",
+        descriptionShort: "Plan in seasons so priorities stay clear and realistic.",
+      },
+      {
+        title: "Progress Clarity",
+        descriptionShort: "Built-in tracking shows momentum without manual updates.",
+      },
+      {
+        title: "Clean Structure",
+        descriptionShort: "A minimal layout that keeps your dashboard quiet and usable.",
+      },
+      {
+        title: "Instant Setup",
+        descriptionShort: "Duplicate the template and start planning in minutes.",
+      },
+    ],
+    sections: {
+      keyFeaturesSectionTitle: "Key Features",
+      keyFeaturesSectionSubtitle:
+        "A calm structure that turns intention into consistent action.",
+      faqTitle: "Frequently Asked Questions",
+      faqSubtitle: "Quick answers to keep your download smooth.",
+    },
     galleryImages: [
       {
         src: "/images/yearly-goals/2.png",
@@ -164,6 +237,7 @@ export const products: ProductConfig[] = [
         alt: "Yearly Goals planning view",
       },
     ],
+    thumbnail: "/images/yearly-goals/main-pveview.png",
     mainPreviewImage: {
       src: "/images/yearly-goals/main-pveview.png",
       alt: "Yearly Goals preview",
@@ -235,28 +309,28 @@ export const products: ProductConfig[] = [
       },
     ],
     benefits: {
-      title: "5 Reasons This System Brings Clarity",
+      title: "Key Features",
       description: "A calm structure that turns intention into consistent action.",
       items: [
         {
-          title: "Quarterly Clarity",
-          text: "Work in focused seasons so your goals stop competing for attention.",
+          title: "Connected Goals",
+          text: "Goals, projects, and tasks stay linked with automatic rollups.",
         },
         {
-          title: "Visible Progress",
-          text: "See movement automatically — no manual tracking, no messy dashboards.",
+          title: "Quarterly Focus",
+          text: "Plan in seasons so priorities stay clear and realistic.",
         },
         {
-          title: "One Connected System",
-          text: "Goals, projects, and tasks stay aligned through relational links.",
+          title: "Progress Clarity",
+          text: "Built-in tracking shows momentum without manual updates.",
         },
         {
-          title: "Grounded Execution",
-          text: "Monthly views translate vision into realistic daily action.",
+          title: "Clean Structure",
+          text: "A minimal layout that keeps your dashboard quiet and usable.",
         },
         {
-          title: "Quiet Automation",
-          text: "Built-in buttons handle setup so you can focus on thinking, not formatting.",
+          title: "Instant Setup",
+          text: "Duplicate the template and start planning in minutes.",
         },
       ],
     },
@@ -330,8 +404,6 @@ export const products: ProductConfig[] = [
     pairsWithOverrides: {
       "nutrition-meal-planner": {
         subtitle: "Coming soon",
-        imageSrc: "/images/yearly-goals-preview.svg",
-        imageAlt: "Nutrition Meal Planner preview",
       },
     },
     showActions: true,
@@ -345,22 +417,22 @@ export const products: ProductConfig[] = [
   {
     slug: "nutrition-meal-planner",
     title: "Nutrition Meal Planner",
-    description: (
-      <div className="space-y-3 text-[15px] leading-7 text-deep/80">
-        <p>
-          Nutrition Meal Planner is a calm Notion system for weekly meal
-          planning, groceries, and nutrient awareness.
-        </p>
-        <p>
-          Plan once, cook with intention, and stay gently on track with macros
-          and key vitamins.
-        </p>
-        <div className="space-y-1.5">
-          <p>No rigid rules. Just structure and gentle guidance.</p>
-        </div>
-        <p>Early waitlist members may receive launch bonuses.</p>
-      </div>
-    ),
+    tags: ["Meal Planning", "Nutrient-Aware", "Body-Supportive", "Calm Structure"],
+    tagline: "Plan meals, track macros, and stay gently guided.",
+    statusBadgeText: "COMING SOON",
+    primaryCta: {
+      type: "waitlist",
+      label: "Join waitlist",
+      helperText: "No spam. Just one email when the planner launches.",
+    },
+    successMessageLines: [
+      "You're on the waitlist 🌿",
+      "We'll email you when Nutrition Meal Planner launches.",
+      "Planned release: March 29.",
+    ],
+    endNote: "Early waitlist members may receive launch bonuses.",
+    description:
+      "A calm system for planning meals, groceries, and nutrient awareness without the chaos.",
     shortDescription: "A structured meal planner + nutrition tracking system.",
     badge: {
       label: "Coming soon",
@@ -368,15 +440,16 @@ export const products: ProductConfig[] = [
     },
     bullets: [
       "Weekly meal planning dashboard",
-      "Smart grocery automation",
-      "Macro tracking (calories, protein, fats, carbs, fiber)",
-      "Vitamin & mineral tracking",
-      "Ingredient intelligence library",
-      "Thyroid-friendly support",
-      "Cycle-aware meal guidance",
+      "Grocery list auto-build from meals",
+      "Macros: calories, protein, fats, carbs, fiber",
+      "Vitamins & minerals overview",
+      "Ingredient nutrient library",
+      "Thyroid-friendly view",
+      "Cycle-aware guidance",
       "Gentle daily alerts",
     ],
     galleryImages: nutritionPreviewImages,
+    thumbnail: "/images/nutrition-meal-planner/main-preview.jpg",
     mainPreviewImage: {
       src: "/images/nutrition-meal-planner/main-preview.jpg",
       alt: "Nutrition Meal Planner main preview",
@@ -384,139 +457,74 @@ export const products: ProductConfig[] = [
     cta: "Coming soon",
     priceLabel: "Estimated delivery: 20 March",
     status: "waiting",
-    detailsAccordion: [
+    detailsAccordion: [],
+    keyFeatures: [
       {
-        id: "who-its-for",
-        title: "Who It’s For",
-        content: (
-          <ul className="list-disc space-y-2 pl-5">
-            <li>Women who want to understand their bodies better</li>
-            <li>People managing thyroid health</li>
-            <li>Those tracking micronutrients beyond calories</li>
-            <li>Structured thinkers who love systems</li>
-            <li>Anyone tired of chaotic eating patterns</li>
-          </ul>
-        ),
+        title: "Weekly Planning Dashboard",
+        descriptionShort: "Plan meals once and move through the week with ease.",
       },
       {
-        id: "whats-inside",
-        title: "What’s Inside",
-        content: (
-          <ul className="list-disc space-y-2 pl-5">
-            <li>Weekly Meal Planner Dashboard</li>
-            <li>Recipe Database</li>
-            <li>Ingredient Nutrient Library</li>
-            <li>Grocery Automation System</li>
-            <li>Macro &amp; Micronutrient Tracker</li>
-            <li>Deficiency Awareness Engine</li>
-            <li>Thyroid Support View</li>
-            <li>Cycle-Based Planning View</li>
-          </ul>
-        ),
+        title: "Smart Grocery Automation",
+        descriptionShort: "Ingredients auto-build a clean grocery list.",
       },
       {
-        id: "release",
-        title: "Release Plan",
-        content: (
-          <div className="space-y-2">
-            <p>
-              We’re finishing the first release and will share access in small
-              waves to keep feedback focused and intentional.
-            </p>
-            <p>Planned Release: March 29</p>
-          </div>
-        ),
+        title: "Macro Tracking",
+        descriptionShort:
+          "Track calories, protein, fats, carbs, and fiber in one place.",
+      },
+      {
+        title: "Vitamin & Mineral Tracking",
+        descriptionShort:
+          "See key vitamins and minerals with gentle, quiet highlights.",
+      },
+      {
+        title: "Ingredient Intelligence Library",
+        descriptionShort:
+          "Each ingredient shows nutrients, benefits, and deficiency signals.",
+      },
+      {
+        title: "Thyroid-Friendly Support",
+        descriptionShort:
+          "Focus on iodine, selenium, zinc, and anti-inflammatory patterns.",
+      },
+      {
+        title: "Cycle-Aware Meal Guidance",
+        descriptionShort:
+          "Guidance aligned to follicular, ovulatory, luteal, and menstrual phases.",
+      },
+      {
+        title: "Gentle Daily Alerts",
+        descriptionShort:
+          "Soft nudges for low protein, fiber, calories, or missing micros.",
       },
     ],
-    benefits: {
-      title: "Key Features",
-      items: [
-        {
-          title: "Weekly Planning Dashboard",
-          text: (
-            <>
-              <p>Plan meals once and flow through the week with ease.</p>
-              <p>Meals, ingredients, and totals stay connected automatically.</p>
-            </>
-          ),
-        },
-        {
-          title: "Smart Grocery Flow",
-          text: (
-            <>
-              <p>Ingredients from planned meals auto-fill your grocery list.</p>
-              <p>Reduce waste and shop with clear structure.</p>
-            </>
-          ),
-        },
-        {
-          title: "Complete Macro Tracking",
-          text: (
-            <>
-              <p>Track calories, protein, fats, carbs, and fiber in one place.</p>
-              <p>Daily summaries keep you balanced without obsessing.</p>
-            </>
-          ),
-        },
-        {
-          title: "Micronutrient Awareness",
-          text: (
-            <>
-              <p>
-                Track vitamins and minerals like A, B-complex, C, D, E, K, iron,
-                magnesium, zinc, selenium, iodine.
-              </p>
-              <p>Missed targets are highlighted gently for awareness.</p>
-            </>
-          ),
-        },
-        {
-          title: "Ingredient Intelligence Library",
-          text: (
-            <>
-              <p>
-                Each ingredient shows nutrients, benefits, and deficiency signals.
-              </p>
-              <p>
-                Example: Iron → fatigue; Magnesium → sleep disruption, cramps.
-              </p>
-            </>
-          ),
-        },
-        {
-          title: "Thyroid-Friendly Nutrition Layer",
-          text: (
-            <>
-              <p>Focus on iodine, selenium, zinc, and anti-inflammatory foods.</p>
-              <p>Designed for support, not restriction.</p>
-            </>
-          ),
-        },
-        {
-          title: "Cycle-Aware Meal Guidance",
-          text: (
-            <>
-              <p>
-                Nutrition suggestions aligned to follicular, ovulatory, luteal,
-                and menstrual phases.
-              </p>
-              <p>Balanced macros and micronutrients for each phase.</p>
-            </>
-          ),
-        },
-        {
-          title: "Gentle Daily Alerts",
-          text: (
-            <>
-              <p>
-                Soft alerts flag low protein, fiber, calories, or missing
-                micronutrients.
-              </p>
-              <p>Designed to guide, not pressure.</p>
-            </>
-          ),
-        },
-      ],
+    sections: {
+      keyFeaturesSectionTitle: "Key Features",
+      keyFeaturesSectionSubtitle:
+        "A calm system that keeps nutrition clear and simple.",
+      accordionItems: {
+        whoItsFor: [
+          "Women who want to understand their bodies better",
+          "People managing thyroid health",
+          "Those tracking micronutrients beyond calories",
+          "Structured thinkers who love systems",
+          "Anyone tired of chaotic eating patterns",
+        ],
+        whatsInside: [
+          "Weekly Meal Planner Dashboard",
+          "Recipe Database",
+          "Ingredient Nutrient Library",
+          "Grocery Automation System",
+          "Macro & Micronutrient Tracker",
+          "Deficiency Awareness Engine",
+          "Thyroid Support View",
+          "Cycle-Based Planning View",
+        ],
+        releasePlan: [
+          "We’re finishing the first release and will share access in small waves to keep feedback focused and intentional.",
+          "Planned Release: March 29",
+        ],
+      },
     },
     pairsWith: ["yearly-goals"],
     pairsWithOverrides: {

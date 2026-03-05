@@ -11,6 +11,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 type GalleryImage = {
   src: string;
   alt: string;
+  headline?: string;
+  lines?: string[];
+  bullets?: string[];
 };
 
 type ProductGalleryEmblaProps = {
@@ -84,12 +87,28 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
     [galleryImages]
   );
 
+  const normalizeLines = (lines: string[] | undefined) => {
+    if (!lines) {
+      return [];
+    }
+    return lines
+      .map((line) => line.replace(/^[\s•\-–—]+/, "").trim())
+      .filter(Boolean)
+      .slice(0, 2);
+  };
+
   return (
     <div className="w-full">
       <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-[#FBF3F4] shadow-[0_12px_35px_rgba(0,0,0,0.06),inset_0_0_0_1px_rgba(223,194,192,0.25)]">
         <div className="h-full overflow-hidden" ref={mainViewportRef}>
           <div className="flex h-full">
-            {galleryImages.map((image, index) => (
+            {galleryImages.map((image, index) => {
+              const overlayLines = normalizeLines(
+                image.lines?.length ? image.lines : image.bullets
+              );
+              const showOverlay =
+                Boolean(image.headline) || overlayLines.length > 0;
+              return (
               <div className="flex-[0_0_100%] h-full" key={`${image.src}-${index}`}>
                 <button
                   type="button"
@@ -110,9 +129,30 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
                     ) : (
                     <GalleryPlaceholder className="h-full w-full" />
                   )}
+                  {showOverlay ? (
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 p-5 md:p-6">
+                      <div className="rounded-2xl bg-white/80 px-4 py-3 shadow-[0_10px_30px_rgba(43,89,104,0.18)] backdrop-blur">
+                        {image.headline ? (
+                          <p className="text-[16px] md:text-[18px] font-medium text-deep/90 font-serif">
+                            {image.headline}
+                          </p>
+                        ) : null}
+                        {overlayLines.length ? (
+                          <div className="mt-1 space-y-1 text-[12px] md:text-[13px] text-deep/60">
+                            {overlayLines.map((line, lineIndex) => (
+                              <p key={`${lineIndex}-${line.slice(0, 10)}`}>
+                                {line}
+                              </p>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : null}
                 </button>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         <button

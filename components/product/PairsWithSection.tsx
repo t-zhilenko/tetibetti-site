@@ -2,12 +2,26 @@ import Image from "next/image";
 import Link from "next/link";
 import Container from "@/components/Container";
 
+const placeholderSvg = encodeURIComponent(`
+  <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#f7dce0" stop-opacity="0.55"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.85"/>
+      </linearGradient>
+    </defs>
+    <rect width="96" height="96" rx="18" fill="url(#g)"/>
+    <rect x="22" y="28" width="52" height="32" rx="10" fill="rgba(223,194,192,0.35)"/>
+  </svg>
+`);
+const placeholderSrc = `data:image/svg+xml;utf8,${placeholderSvg}`;
+
 type PairsWithItem = {
   title: string;
   subtitle: string;
   href: string;
-  imageSrc: string;
-  imageAlt: string;
+  imageSrc?: string | null;
+  imageAlt?: string;
 };
 
 type PairsWithSectionProps = {
@@ -35,8 +49,8 @@ function PairsWithCard({
     <Wrapper {...wrapperProps}>
       <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl border border-[#dfc2c0]/35 bg-white/70">
         <Image
-          src={imageSrc}
-          alt={imageAlt}
+          src={imageSrc ?? placeholderSrc}
+          alt={imageAlt ?? title}
           fill
           sizes="48px"
           className="object-cover"

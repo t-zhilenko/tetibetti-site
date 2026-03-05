@@ -29,20 +29,19 @@ export default function Accordion({ items, variant = "card" }: AccordionProps) {
   };
 
   return (
-    <div className={isMinimal ? "space-y-0" : "space-y-4"}>
+    <div className={isMinimal ? "space-y-3" : "space-y-4"}>
       {items.map((item, index) => {
         const isOpen = openId === item.id;
         const contentId = `${item.id}-content`;
         const triggerId = `${item.id}-trigger`;
-        const isLast = index === items.length - 1;
 
         return (
           <div
             key={item.id}
             className={
               isMinimal
-                ? `border-t border-[#dfc2c0]/35 ${isLast ? "border-b border-[#dfc2c0]/35" : ""}`
-                : "rounded-2xl border border-[#cabab1]/30 bg-[#fdf9f9]"
+                ? "rounded-2xl border border-[#dfc2c0]/30 bg-white/75 shadow-[0_12px_28px_rgba(43,89,104,0.06)]"
+                : "rounded-2xl border border-[#cabab1]/30 bg-white/80 shadow-[0_10px_24px_rgba(43,89,104,0.05)]"
             }
           >
             <button
@@ -50,7 +49,7 @@ export default function Accordion({ items, variant = "card" }: AccordionProps) {
               type="button"
               className={
                 isMinimal
-                  ? "group w-full flex items-center justify-between gap-4 px-0 py-4 text-left transition-colors duration-150 hover:text-deep/85 focus-visible:text-deep/85"
+                  ? "group w-full flex items-center justify-between gap-4 px-5 py-4 text-left transition-colors duration-150 hover:text-deep/85 focus-visible:text-deep/85"
                   : "group w-full flex items-center justify-between gap-4 px-5 py-4 text-left transition-colors duration-150 hover:text-deep/85 focus-visible:text-deep/85"
               }
               aria-expanded={isOpen}
@@ -76,8 +75,8 @@ export default function Accordion({ items, variant = "card" }: AccordionProps) {
               <span
                 className={
                   isMinimal
-                    ? "text-deep/45 text-lg font-light group-hover:text-deep/65 transition-colors"
-                    : "text-deep/45 text-xl font-light group-hover:text-deep/65 transition-colors"
+                    ? "text-deep/35 text-lg font-light group-hover:text-deep/55 transition-colors"
+                    : "text-deep/35 text-xl font-light group-hover:text-deep/55 transition-colors"
                 }
                 aria-hidden="true"
               >
@@ -98,7 +97,7 @@ export default function Accordion({ items, variant = "card" }: AccordionProps) {
               <div
                 className={
                   isMinimal
-                    ? "px-0 pb-4 text-sm text-deep/70 leading-relaxed [&_a]:underline-offset-4 [&_a:hover]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_p]:mb-3 [&_p:last-child]:mb-0"
+                    ? "px-5 pb-5 text-sm text-deep/70 leading-relaxed [&_a]:underline-offset-4 [&_a:hover]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_p]:mb-3 [&_p:last-child]:mb-0"
                     : "px-5 pb-5 text-sm text-deep/70 leading-relaxed [&_a]:underline-offset-4 [&_a:hover]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_p]:mb-3 [&_p:last-child]:mb-0"
                 }
               >

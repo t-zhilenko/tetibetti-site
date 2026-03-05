@@ -1,13 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
-import { Share2, Mail } from "lucide-react";
 import ProductGalleryEmbla from "@/components/ProductGalleryEmbla";
 import Modal from "@/components/Modal";
-import LanguageSelector from "@/components/LanguageSelector";
 import ProductPageLayout from "@/components/product/ProductPageLayout";
 import PairsWithSection from "@/components/product/PairsWithSection";
+import ProductActions from "@/components/product/ProductActions";
 import {
   DEFAULT_PAIRS_WITH_TITLE,
   getProductBySlug,
@@ -30,7 +36,6 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     return null;
   }
   const router = useRouter();
-  const [language, setLanguage] = useState<"en" | "uk">("en");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<ModalState>("idle");
@@ -39,10 +44,8 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const [waitlistStatus, setWaitlistStatus] =
     useState<WaitlistStatus>("idle");
   const [waitlistError, setWaitlistError] = useState("");
-  const [waitlistHasSubmitted, setWaitlistHasSubmitted] = useState(false);
+  const [waitlistTouched, setWaitlistTouched] = useState(false);
   const [redirectTimer, setRedirectTimer] = useState<number | null>(null);
-  const [shareStatus, setShareStatus] = useState<"idle" | "copied">("idle");
-  const shareTimerRef = useRef<number | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const waitlistInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -66,12 +69,20 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
         const title = override?.title ?? related.title;
         const subtitle = override?.subtitle ?? related.badge.label;
         const imageSrc =
-          override?.imageSrc ?? related.mainPreviewImage.src ?? "";
-        if (!imageSrc) {
-          return null;
+          override?.imageSrc ??
+          related.thumbnail ??
+          related.galleryImages?.[0]?.src ??
+          related.mainPreviewImage?.src ??
+          null;
+        if (!imageSrc && process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn("PairsWith missing thumbnail", {
+            source: product.slug,
+            target: related.slug,
+          });
         }
         const imageAlt =
-          override?.imageAlt ?? related.mainPreviewImage.alt ?? title;
+          override?.imageAlt ?? related.mainPreviewImage?.alt ?? title;
         return {
           title,
           subtitle,
@@ -85,8 +96,8 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
           title: string;
           subtitle: string;
           href: string;
-          imageSrc: string;
-          imageAlt: string;
+          imageSrc: string | null;
+          imageAlt?: string;
         } => Boolean(item)
       );
   }, [product]);
@@ -95,9 +106,6 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     return () => {
       if (redirectTimer) {
         window.clearTimeout(redirectTimer);
-      }
-      if (shareTimerRef.current) {
-        window.clearTimeout(shareTimerRef.current);
       }
     };
   }, [redirectTimer]);
@@ -148,30 +156,22 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
         setRedirectTimer(null);
       }
 
-      const response = await fetch(waitlistEndpoint, {
+      const response = await fetch("/api/subscribe", {
         method: "POST",
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify(
-          isNutritionWaitlist
-            ? {
-                email: trimmedEmail,
-                product: "nutrition-meal-planner",
-                lang: language,
-              }
-            : {
-                email: trimmedEmail,
-                tag: product.downloadTag ?? product.slug,
-              }
-        ),
+        body: JSON.stringify({
+          email: trimmedEmail,
+          tag: product.downloadTag ?? product.slug,
+        }),
       });
 
       const result = (await response.json().catch(() => null)) as
-        | { success?: boolean; ok?: boolean; error?: string }
+        | { success?: boolean; error?: string }
         | null;
 
-      if (!response.ok || (!result?.success && !result?.ok)) {
+      if (!response.ok || !result?.success) {
         throw new Error(result?.error || "Something went wrong.");
       }
 
@@ -194,19 +194,19 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const handleWaitlistSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setWaitlistHasSubmitted(true);
     if (waitlistStatus === "loading") {
       return;
     }
 
     const trimmedEmail = waitlistEmail.trim();
+    setWaitlistTouched(true);
     if (!trimmedEmail) {
-      setWaitlistError("");
+      setWaitlistError("Email is required");
       return;
     }
 
     if (!EMAIL_RE.test(trimmedEmail)) {
-      setWaitlistError("Please enter a valid email");
+      setWaitlistError("That email doesn't look right.");
       return;
     }
 
@@ -224,7 +224,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
             ? {
                 email: trimmedEmail,
                 product: "nutrition-meal-planner",
-                lang: language,
+                lang: "en",
               }
             : {
                 email: trimmedEmail,
@@ -243,7 +243,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
 
       setWaitlistStatus("success");
       setWaitlistEmail("");
-      setWaitlistHasSubmitted(false);
+      setWaitlistTouched(false);
       setWaitlistError("");
     } catch (error) {
       setWaitlistStatus("error");
@@ -255,60 +255,102 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     }
   };
 
-  const handleShare = async () => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const url = window.location.href;
-
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: product.title, url });
-      } else if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(url);
-        setShareStatus("copied");
-        if (shareTimerRef.current) {
-          window.clearTimeout(shareTimerRef.current);
-        }
-        shareTimerRef.current = window.setTimeout(
-          () => setShareStatus("idle"),
-          2000
-        );
-      }
-    } catch {
-      setShareStatus("copied");
-      if (shareTimerRef.current) {
-        window.clearTimeout(shareTimerRef.current);
-      }
-      shareTimerRef.current = window.setTimeout(
-        () => setShareStatus("idle"),
-        2000
-      );
-    }
+  const isWaitingStatus = product.status === "waiting";
+  const primaryCta = product.primaryCta ?? {
+    type: isWaitingStatus ? "waitlist" : "download",
+    label: isWaitingStatus ? "Join waitlist" : product.ctaLabel ?? "Download",
+    helperText: isWaitingStatus
+      ? "We’ll email you when the product is ready."
+      : product.ctaNote,
   };
-
-  const handleAskQuestion = () => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    const subject = encodeURIComponent(`Question about ${product.title}`);
-    window.location.href = `mailto:support@tetibetti.com?subject=${subject}`;
-  };
-
+  const isWaitlist = primaryCta.type === "waitlist";
+  const isNutritionWaitlist = isWaitlist && product.slug === "nutrition-meal-planner";
   const isLoading = status === "loading";
-  const isWaiting = product.status === "waiting";
-  const isNutritionWaitlist = product.slug === "nutrition-meal-planner";
   const isWaitlistLoading = waitlistStatus === "loading";
   const waitlistEndpoint = isNutritionWaitlist ? "/api/waitlist" : "/api/subscribe";
-  const waitlistValidationError =
-    waitlistHasSubmitted && waitlistEmail.trim() === ""
-      ? "Email is required"
-      : "";
-  const waitlistInlineError = waitlistValidationError || waitlistError;
+  const waitlistInlineError =
+    waitlistTouched && waitlistError ? waitlistError : "";
   const waitlistHelperTone = "text-deep/60";
-  const actionLinkClass =
-    "inline-flex items-center gap-[6px] bg-transparent p-0 text-[11px] md:text-[12px] font-normal text-[#2b5968]/55 hover:text-[#2b5968]/80 transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#dfc2c0]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]";
+  const statusBadgeText = product.statusBadgeText ?? product.badge.label;
+  const waitlistHelperText =
+    primaryCta.helperText ?? "We’ll email you when the product is ready.";
+  const waitlistSuccessLines =
+    product.successMessageLines ?? ["You’re on the waitlist."];
+  const ctaNote =
+    primaryCta.type === "download" && primaryCta.helperText ? (
+      <p className="mt-2 text-[12px] text-deep/60">
+        {primaryCta.helperText}
+      </p>
+    ) : null;
+
+  const keyFeatures = product.keyFeatures ?? [];
+  const keyFeaturesTitle =
+    product.sections?.keyFeaturesSectionTitle ?? product.benefits?.title;
+  const keyFeaturesSubtitle =
+    product.sections?.keyFeaturesSectionSubtitle ?? product.benefits?.description;
+  const benefitsSection =
+    keyFeatures.length > 0
+      ? {
+          title: keyFeaturesTitle ?? "Key Features",
+          description: keyFeaturesSubtitle,
+          items: keyFeatures.map((feature) => ({
+            title: feature.title,
+            text: feature.descriptionShort,
+          })),
+        }
+      : product.benefits;
+
+  const sectionAccordion = product.sections?.accordionItems;
+  const buildAccordionContent = (value?: string[] | string) => {
+    if (!value) {
+      return null;
+    }
+    if (Array.isArray(value)) {
+      return (
+        <ul className="list-disc space-y-2 pl-5">
+          {value.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      );
+    }
+    return <p>{value}</p>;
+  };
+  const detailsAccordionItems = sectionAccordion
+    ? ([
+        {
+          id: `${product.slug}-who-its-for`,
+          title: "Who It’s For",
+          content: buildAccordionContent(sectionAccordion.whoItsFor),
+        },
+        {
+          id: `${product.slug}-whats-inside`,
+          title: "What’s Inside",
+          content: buildAccordionContent(sectionAccordion.whatsInside),
+        },
+        {
+          id: `${product.slug}-release-plan`,
+          title: "Release Plan",
+          content: buildAccordionContent(sectionAccordion.releasePlan),
+        },
+      ] as const).filter(
+        (
+          item
+        ): item is {
+          id: string;
+          title: string;
+          content: ReactNode;
+        } => Boolean(item.content)
+      )
+    : product.detailsAccordion;
+
+  const faqSection = product.faq
+    ? {
+        ...product.faq,
+        title: product.sections?.faqTitle ?? product.faq.title,
+        description: product.sections?.faqSubtitle ?? product.faq.description,
+      }
+    : undefined;
 
   const relatedContent = pairsWithItems?.length ? (
     <PairsWithSection
@@ -327,67 +369,73 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   return (
     <ProductPageLayout
       title={product.title}
-      description={product.description}
-      badgeLabel={product.badge.label}
+      tags={product.tags}
+      tagline={product.tagline}
+      badgeLabel={statusBadgeText}
       bullets={product.bullets}
-      languageSelector={
-        product.showLanguageSelector ? (
-          <LanguageSelector
-            label="Language"
-            value={language}
-            onChange={setLanguage}
-            options={[
-              { value: "en", label: "English" },
-              { value: "uk", label: "Ukrainian" },
-            ]}
-          />
-        ) : null
-      }
       cta={
-        isWaiting ? (
+        isWaitlist ? (
           <div className="w-full">
             <form
               onSubmit={handleWaitlistSubmit}
               noValidate
-              className="flex w-full items-center gap-3"
+              className="flex w-full items-start gap-3"
             >
               <label htmlFor={`${product.slug}-waitlist-email`} className="sr-only">
                 Email
               </label>
-              <input
-                id={`${product.slug}-waitlist-email`}
-                ref={waitlistInputRef}
-                type="text"
-                inputMode="email"
-                autoComplete="email"
-                value={waitlistEmail}
-                onChange={(event) => {
-                  const nextValue = event.target.value;
-                  setWaitlistEmail(nextValue);
-                  if (waitlistHasSubmitted) {
-                    setWaitlistHasSubmitted(false);
-                  }
-                  if (waitlistError) {
+              <div className="flex-[3_1_0%]">
+                <input
+                  id={`${product.slug}-waitlist-email`}
+                  ref={waitlistInputRef}
+                  type="text"
+                  inputMode="email"
+                  autoComplete="email"
+                  value={waitlistEmail}
+                  onChange={(event) => {
+                    const nextValue = event.target.value;
+                    setWaitlistEmail(nextValue);
+                    if (waitlistError) {
+                      setWaitlistError("");
+                    }
+                    if (waitlistStatus === "error") {
+                      setWaitlistStatus("idle");
+                    }
+                  }}
+                  onBlur={() => {
+                    const trimmed = waitlistEmail.trim();
+                    setWaitlistTouched(true);
+                    if (!trimmed) {
+                      setWaitlistError("");
+                      return;
+                    }
+                    if (!EMAIL_RE.test(trimmed)) {
+                      setWaitlistError("That email doesn't look right.");
+                      return;
+                    }
                     setWaitlistError("");
-                  }
-                  if (waitlistStatus === "error") {
-                    setWaitlistStatus("idle");
-                  }
-                }}
-                placeholder="you@example.com"
-                className={`h-14 w-full flex-[3_1_0%] rounded-full bg-[#fdfcfa] border px-5 text-sm text-deep placeholder:text-deep/30 focus-visible:outline-none focus-visible:border-[rgba(43,89,104,0.35)] focus-visible:ring-1 focus-visible:ring-[rgba(43,89,104,0.15)] ${
-                  waitlistInlineError
-                    ? "border-[rgba(223,194,192,0.65)]"
-                    : "border-[rgba(43,89,104,0.2)]"
-                }`}
-                disabled={isWaitlistLoading}
-                aria-invalid={Boolean(waitlistInlineError)}
-              />
-              {waitlistInlineError ? (
-                <p className="mt-2 text-[12px] text-[#b9999f]/80">
-                  {waitlistInlineError}
-                </p>
-              ) : null}
+                  }}
+                  placeholder="you@example.com"
+                  className={`h-14 w-full rounded-full border px-5 text-sm text-deep placeholder:text-deep/30 focus-visible:outline-none focus-visible:border-[rgba(43,89,104,0.35)] focus-visible:ring-1 focus-visible:ring-[rgba(43,89,104,0.15)] ${
+                    waitlistInlineError
+                      ? "border-rose-200 bg-rose-50/40"
+                      : "border-[rgba(43,89,104,0.2)] bg-[#fdfcfa]"
+                  }`}
+                  disabled={isWaitlistLoading}
+                  aria-invalid={Boolean(waitlistInlineError)}
+                />
+                <div className="mt-2 min-h-[18px]">
+                  {waitlistInlineError ? (
+                    <p className="text-[12px] leading-4 text-rose-400">
+                      {waitlistInlineError}
+                    </p>
+                  ) : waitlistStatus !== "success" ? (
+                    <p className="text-[12px] leading-4 text-slate-400/70">
+                      {waitlistHelperText}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
               <button
                 type="submit"
                 disabled={isWaitlistLoading}
@@ -395,32 +443,33 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                   isWaitlistLoading ? "opacity-60 cursor-not-allowed" : ""
                 }`}
               >
-                {isWaitlistLoading ? "Adding..." : "Join waitlist"}
+                {isWaitlistLoading ? "Adding..." : primaryCta.label}
               </button>
             </form>
-            <div className="min-h-[18px] mt-2 text-left">
-              {isNutritionWaitlist ? (
-                waitlistStatus === "success" ? (
-                  <div className={`space-y-1 text-[12px] ${waitlistHelperTone}`}>
-                    <p>You're on the waitlist 🌿</p>
-                    <p>We'll email you when Nutrition Meal Planner launches.</p>
-                    <p>Planned release: March 29.</p>
-                  </div>
-                ) : (
-                  <p className={`text-[12px] ${waitlistHelperTone}`}>
-                    No spam. Just one email when the planner launches.
-                  </p>
-                )
-              ) : waitlistStatus === "success" ? (
-                <p className={`text-[12px] ${waitlistHelperTone}`}>
-                  You’re on the waitlist.
-                </p>
-              ) : (
-                <p className={`text-[12px] ${waitlistHelperTone}`}>
-                  We’ll email you when the product is ready.
-                </p>
-              )}
-            </div>
+            {waitlistStatus === "success" ? (
+              <div className="mt-2 text-left">
+                <div className={`space-y-1 text-[12px] ${waitlistHelperTone}`}>
+                  {waitlistSuccessLines.map((line, index) => (
+                    <p key={`${index}-${line.slice(0, 12)}`}>{line}</p>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWaitlistStatus("idle");
+                      setWaitlistError("");
+                      setWaitlistTouched(false);
+                      window.setTimeout(
+                        () => waitlistInputRef.current?.focus(),
+                        0
+                      );
+                    }}
+                    className="text-[12px] text-[#2b5968]/70 hover:text-[#2b5968]/90 transition"
+                  >
+                    Add another email
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
         ) : (
           <a
@@ -431,45 +480,27 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
             }}
             className="inline-flex h-14 w-full items-center justify-center rounded-full bg-[#dfc2c0]/75 px-6 text-base font-medium text-deep border border-[#dfc2c0]/50 transition-all duration-200 hover:bg-[#d7b7b4]/85 hover:-translate-y-[1px] hover:shadow-[0_6px_14px_rgba(223,194,192,0.22)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[rgba(223,194,192,0.2)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]"
           >
-            {product.ctaLabel ?? "Download"}
+            {primaryCta.label}
           </a>
         )
       }
       ctaNote={
-        product.ctaNote ? (
-          <p className="mt-2 text-[12px] text-deep/60">{product.ctaNote}</p>
-        ) : null
+        ctaNote
       }
       media={<ProductGalleryEmbla images={carouselImages} />}
       relatedContent={relatedContent}
       relatedContentClassName="mt-4"
-      detailsAccordion={product.detailsAccordion}
+      detailsAccordion={detailsAccordionItems}
       actions={
         (product.showActions ?? true) ? (
-          <>
-            <button
-              type="button"
-              onClick={handleShare}
-              aria-label="Share this product page"
-              className={actionLinkClass}
-            >
-              <Share2 className="h-[14px] w-[14px]" />
-              {shareStatus === "copied" ? "Copied" : "Share"}
-            </button>
-            <button
-              type="button"
-              onClick={handleAskQuestion}
-              aria-label={`Ask a question about ${product.title}`}
-              className={actionLinkClass}
-            >
-              <Mail className="h-[14px] w-[14px]" />
-              Ask a question
-            </button>
-          </>
+          <ProductActions
+            productSlug={product.slug}
+            productTitle={product.title}
+          />
         ) : null
       }
-      benefits={product.benefits}
-      faq={product.faq}
+      benefits={benefitsSection}
+      faq={faqSection}
       afterContent={
         <Modal open={isModalOpen} title={modalTitle} onClose={closeModal}>
           {status === "success" ? (

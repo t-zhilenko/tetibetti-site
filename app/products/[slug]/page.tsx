@@ -25,15 +25,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {};
   }
 
-  const description =
-    product.seo?.description ??
-    (typeof product.description === "string"
-      ? product.description
-      : product.shortDescription);
-
   return {
     title: product.seo?.title ?? product.title,
-    description,
+    description: product.seo?.description ?? product.description,
   };
 }
 
