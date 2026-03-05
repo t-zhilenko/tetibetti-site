@@ -14,6 +14,8 @@ type MessageState = {
 
 type SubscribeFormProps = {
   tag?: string;
+  endpoint?: string;
+  extraBody?: Record<string, unknown>;
   className?: string;
   buttonLabel?: string;
   inputClassName?: string;
@@ -25,6 +27,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SubscribeForm({
   tag,
+  endpoint = "/api/subscribe",
+  extraBody,
   className,
   buttonLabel,
   inputClassName,
@@ -84,7 +88,7 @@ export default function SubscribeForm({
     setStatus("loading");
 
     try {
-      const response = await fetch("/api/subscribe", {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -93,6 +97,7 @@ export default function SubscribeForm({
           email: trimmedEmail,
           tag: trimmedTag || undefined,
           company,
+          ...(extraBody ?? {}),
         }),
       });
 

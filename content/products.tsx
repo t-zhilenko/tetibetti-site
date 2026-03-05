@@ -16,7 +16,7 @@ export type AccordionSection = {
 
 export type ProductBenefit = {
   title: string;
-  text: string;
+  text: ReactNode;
 };
 
 export type ProductBenefitsSection = {
@@ -46,7 +46,7 @@ export type ProductPairsWithOverride = {
 export type ProductConfig = {
   slug: string;
   title: string;
-  description: string;
+  description: ReactNode;
   shortDescription: string;
   badge: ProductBadge;
   bullets: string[];
@@ -94,20 +94,24 @@ const createPreviewSvg = (label: string, from: string, to: string) => {
 
 const nutritionPreviewImages: ProductImage[] = [
   {
-    src: createPreviewSvg("Preview 1", "#f7dce0", "#eaf3f6"),
-    alt: "Preview 1",
+    src: "/images/nutrition-meal-planner/2.jpg",
+    alt: "Nutrition Meal Planner preview 2",
   },
   {
-    src: createPreviewSvg("Preview 2", "#f2efe9", "#f3f7f2"),
-    alt: "Preview 2",
+    src: "/images/nutrition-meal-planner/3.jpg",
+    alt: "Nutrition Meal Planner preview 3",
   },
   {
-    src: createPreviewSvg("Preview 3", "#f5dfe6", "#fdf9f9"),
-    alt: "Preview 3",
+    src: "/images/nutrition-meal-planner/4.jpg",
+    alt: "Nutrition Meal Planner preview 4",
   },
   {
-    src: createPreviewSvg("Preview 4", "#eaf3f6", "#fdf9f9"),
-    alt: "Preview 4",
+    src: "/images/nutrition-meal-planner/5.jpg",
+    alt: "Nutrition Meal Planner preview 5",
+  },
+  {
+    src: "/images/nutrition-meal-planner/6.jpg",
+    alt: "Nutrition Meal Planner preview 6",
   },
 ];
 
@@ -341,8 +345,22 @@ export const products: ProductConfig[] = [
   {
     slug: "nutrition-meal-planner",
     title: "Nutrition Meal Planner",
-    description:
-      "A calm system for planning meals, groceries, and macros without the chaos.",
+    description: (
+      <div className="space-y-3 text-[15px] leading-7 text-deep/80">
+        <p>
+          Nutrition Meal Planner is a calm Notion system for weekly meal
+          planning, groceries, and nutrient awareness.
+        </p>
+        <p>
+          Plan once, cook with intention, and stay gently on track with macros
+          and key vitamins.
+        </p>
+        <div className="space-y-1.5">
+          <p>No rigid rules. Just structure and gentle guidance.</p>
+        </div>
+        <p>Early waitlist members may receive launch bonuses.</p>
+      </div>
+    ),
     shortDescription: "A structured meal planner + nutrition tracking system.",
     badge: {
       label: "Coming soon",
@@ -350,74 +368,153 @@ export const products: ProductConfig[] = [
     },
     bullets: [
       "Weekly meal planning dashboard",
-      "Grocery list auto-structure",
-      "Prep-friendly workflow",
-      "Macro & calorie tracking (optional)",
+      "Smart grocery automation",
+      "Macro tracking (calories, protein, fats, carbs, fiber)",
+      "Vitamin & mineral tracking",
+      "Ingredient intelligence library",
+      "Thyroid-friendly support",
+      "Cycle-aware meal guidance",
+      "Gentle daily alerts",
     ],
     galleryImages: nutritionPreviewImages,
-    mainPreviewImage: nutritionPreviewImages[0],
+    mainPreviewImage: {
+      src: "/images/nutrition-meal-planner/main-preview.jpg",
+      alt: "Nutrition Meal Planner main preview",
+    },
     cta: "Coming soon",
     priceLabel: "Estimated delivery: 20 March",
     status: "waiting",
     detailsAccordion: [
       {
-        id: "inside",
-        title: "What’s inside",
+        id: "who-its-for",
+        title: "Who It’s For",
         content: (
-          <p>
-            A calm, connected system for weekly planning, grocery structure, and
-            flexible macro tracking — all in one place.
-          </p>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>Women who want to understand their bodies better</li>
+            <li>People managing thyroid health</li>
+            <li>Those tracking micronutrients beyond calories</li>
+            <li>Structured thinkers who love systems</li>
+            <li>Anyone tired of chaotic eating patterns</li>
+          </ul>
         ),
       },
       {
-        id: "for",
-        title: "Who it’s for",
+        id: "whats-inside",
+        title: "What’s Inside",
         content: (
-          <p>
-            For anyone who wants a clear meal plan without overwhelm, whether you
-            cook daily or batch once a week.
-          </p>
+          <ul className="list-disc space-y-2 pl-5">
+            <li>Weekly Meal Planner Dashboard</li>
+            <li>Recipe Database</li>
+            <li>Ingredient Nutrient Library</li>
+            <li>Grocery Automation System</li>
+            <li>Macro &amp; Micronutrient Tracker</li>
+            <li>Deficiency Awareness Engine</li>
+            <li>Thyroid Support View</li>
+            <li>Cycle-Based Planning View</li>
+          </ul>
         ),
       },
       {
         id: "release",
-        title: "Release plan",
+        title: "Release Plan",
         content: (
-          <p>
-            We’re finishing the first release and will share access in small waves
-            to keep feedback focused and intentional.
-          </p>
+          <div className="space-y-2">
+            <p>
+              We’re finishing the first release and will share access in small
+              waves to keep feedback focused and intentional.
+            </p>
+            <p>Planned Release: March 29</p>
+          </div>
         ),
       },
     ],
     benefits: {
-      title: "5 Reasons This Planner Brings Calm to Your Nutrition",
-      description: "A structured approach that removes daily decision fatigue.",
+      title: "Key Features",
       items: [
         {
-          title: "Weekly Structure",
-          text:
-            "Plan meals once and move through the week without constant food decisions.",
+          title: "Weekly Planning Dashboard",
+          text: (
+            <>
+              <p>Plan meals once and flow through the week with ease.</p>
+              <p>Meals, ingredients, and totals stay connected automatically.</p>
+            </>
+          ),
         },
         {
           title: "Smart Grocery Flow",
-          text:
-            "Automatically structured shopping lists reduce waste and last-minute stress.",
+          text: (
+            <>
+              <p>Ingredients from planned meals auto-fill your grocery list.</p>
+              <p>Reduce waste and shop with clear structure.</p>
+            </>
+          ),
         },
         {
-          title: "Prep with Intention",
-          text: "Batch-friendly workflow makes cooking feel organized, not overwhelming.",
+          title: "Complete Macro Tracking",
+          text: (
+            <>
+              <p>Track calories, protein, fats, carbs, and fiber in one place.</p>
+              <p>Daily summaries keep you balanced without obsessing.</p>
+            </>
+          ),
         },
         {
-          title: "Optional Macro Awareness",
-          text:
-            "Track calories and macros only if you need them — no pressure, no noise.",
+          title: "Micronutrient Awareness",
+          text: (
+            <>
+              <p>
+                Track vitamins and minerals like A, B-complex, C, D, E, K, iron,
+                magnesium, zinc, selenium, iodine.
+              </p>
+              <p>Missed targets are highlighted gently for awareness.</p>
+            </>
+          ),
         },
         {
-          title: "One Connected Space",
-          text:
-            "Meals, groceries, prep and tracking stay aligned in a single calm system.",
+          title: "Ingredient Intelligence Library",
+          text: (
+            <>
+              <p>
+                Each ingredient shows nutrients, benefits, and deficiency signals.
+              </p>
+              <p>
+                Example: Iron → fatigue; Magnesium → sleep disruption, cramps.
+              </p>
+            </>
+          ),
+        },
+        {
+          title: "Thyroid-Friendly Nutrition Layer",
+          text: (
+            <>
+              <p>Focus on iodine, selenium, zinc, and anti-inflammatory foods.</p>
+              <p>Designed for support, not restriction.</p>
+            </>
+          ),
+        },
+        {
+          title: "Cycle-Aware Meal Guidance",
+          text: (
+            <>
+              <p>
+                Nutrition suggestions aligned to follicular, ovulatory, luteal,
+                and menstrual phases.
+              </p>
+              <p>Balanced macros and micronutrients for each phase.</p>
+            </>
+          ),
+        },
+        {
+          title: "Gentle Daily Alerts",
+          text: (
+            <>
+              <p>
+                Soft alerts flag low protein, fiber, calories, or missing
+                micronutrients.
+              </p>
+              <p>Designed to guide, not pressure.</p>
+            </>
+          ),
         },
       ],
     },

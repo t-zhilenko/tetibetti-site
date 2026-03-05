@@ -25,7 +25,7 @@ type ProductFaqSection = {
 
 type ProductPageLayoutProps = {
   title: string;
-  description: string;
+  description: ReactNode;
   badgeLabel?: string;
   bullets?: string[];
   languageSelector?: ReactNode;
@@ -62,6 +62,29 @@ export default function ProductPageLayout({
   betweenSections,
   afterContent,
 }: ProductPageLayoutProps) {
+  const benefitColumnsClass = (() => {
+    if (!benefits) {
+      return "lg:grid-cols-3";
+    }
+    const count = benefits.items.length;
+    if (count <= 5) {
+      return `lg:grid-cols-${Math.max(1, count)}` as const;
+    }
+    if (count % 4 === 0) {
+      return "lg:grid-cols-4";
+    }
+    if (count % 3 === 0) {
+      return "lg:grid-cols-3";
+    }
+    if (count % 5 === 0) {
+      return "lg:grid-cols-5";
+    }
+    if (count % 2 === 0) {
+      return "lg:grid-cols-2";
+    }
+    return "lg:grid-cols-4";
+  })();
+
   return (
     <section className="bg-[#fdf9f9]">
       <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-[50px] overflow-visible">
@@ -73,9 +96,15 @@ export default function ProductPageLayout({
             <h1 className="text-[28px] md:text-[40px] lg:text-[44px] font-medium leading-[1.1] lg:leading-[52px] text-deep/90">
               {title}
             </h1>
-            <p className="mt-3.5 text-base font-normal leading-7 text-deep/80">
-              {description}
-            </p>
+            <div className="mt-3.5">
+              {typeof description === "string" ? (
+                <p className="text-base font-normal leading-7 text-deep/80">
+                  {description}
+                </p>
+              ) : (
+                description
+              )}
+            </div>
             {badgeLabel ? (
               <div className="mt-3.5">
                 <PriceBadge label={badgeLabel} />
@@ -130,7 +159,9 @@ export default function ProductPageLayout({
                 </p>
               ) : null}
             </div>
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <div
+              className={`mt-10 grid gap-4 sm:grid-cols-2 ${benefitColumnsClass}`}
+            >
               {benefits.items.map((benefit) => (
                 <BenefitCard
                   key={benefit.title}

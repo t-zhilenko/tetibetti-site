@@ -44,6 +44,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const [shareStatus, setShareStatus] = useState<"idle" | "copied">("idle");
   const shareTimerRef = useRef<number | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const waitlistInputRef = useRef<HTMLInputElement | null>(null);
 
   const carouselImages = useMemo<ProductImage[]>(
     () => product.galleryImages ?? [],
@@ -147,22 +148,30 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
         setRedirectTimer(null);
       }
 
-      const response = await fetch("/api/subscribe", {
+      const response = await fetch(waitlistEndpoint, {
         method: "POST",
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({
-          email: trimmedEmail,
-          tag: product.downloadTag ?? product.slug,
-        }),
+        body: JSON.stringify(
+          isNutritionWaitlist
+            ? {
+                email: trimmedEmail,
+                product: "nutrition-meal-planner",
+                lang: language,
+              }
+            : {
+                email: trimmedEmail,
+                tag: product.downloadTag ?? product.slug,
+              }
+        ),
       });
 
       const result = (await response.json().catch(() => null)) as
-        | { success?: boolean; error?: string }
+        | { success?: boolean; ok?: boolean; error?: string }
         | null;
 
-      if (!response.ok || !result?.success) {
+      if (!response.ok || (!result?.success && !result?.ok)) {
         throw new Error(result?.error || "Something went wrong.");
       }
 
@@ -205,28 +214,37 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     setWaitlistError("");
 
     try {
-      const response = await fetch("/api/subscribe", {
+      const response = await fetch(waitlistEndpoint, {
         method: "POST",
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({
-          email: trimmedEmail,
-          tag: product.downloadTag ?? product.slug,
-        }),
+        body: JSON.stringify(
+          isNutritionWaitlist
+            ? {
+                email: trimmedEmail,
+                product: "nutrition-meal-planner",
+                lang: language,
+              }
+            : {
+                email: trimmedEmail,
+                tag: product.downloadTag ?? product.slug,
+              }
+        ),
       });
 
       const result = (await response.json().catch(() => null)) as
-        | { success?: boolean; error?: string }
+        | { success?: boolean; ok?: boolean; error?: string }
         | null;
 
-      if (!response.ok || !result?.success) {
+      if (!response.ok || (!result?.success && !result?.ok)) {
         throw new Error(result?.error || "Something went wrong.");
       }
 
-      setWaitlistHasSubmitted(false);
       setWaitlistStatus("success");
       setWaitlistEmail("");
+      setWaitlistHasSubmitted(false);
+      setWaitlistError("");
     } catch (error) {
       setWaitlistStatus("error");
       setWaitlistError(
@@ -280,20 +298,15 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
 
   const isLoading = status === "loading";
   const isWaiting = product.status === "waiting";
+  const isNutritionWaitlist = product.slug === "nutrition-meal-planner";
   const isWaitlistLoading = waitlistStatus === "loading";
+  const waitlistEndpoint = isNutritionWaitlist ? "/api/waitlist" : "/api/subscribe";
   const waitlistValidationError =
     waitlistHasSubmitted && waitlistEmail.trim() === ""
       ? "Email is required"
       : "";
   const waitlistInlineError = waitlistValidationError || waitlistError;
-  const waitlistHint =
-    waitlistInlineError ||
-    (waitlistStatus === "success"
-      ? "You’re on the waitlist."
-      : "We’ll email you when the product is ready.");
-  const waitlistHintTone = waitlistInlineError
-    ? "text-[#cfa0a6]/80"
-    : "text-deep/60";
+  const waitlistHelperTone = "text-deep/60";
   const actionLinkClass =
     "inline-flex items-center gap-[6px] bg-transparent p-0 text-[11px] md:text-[12px] font-normal text-[#2b5968]/55 hover:text-[#2b5968]/80 transition focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#dfc2c0]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]";
 
@@ -343,6 +356,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
               </label>
               <input
                 id={`${product.slug}-waitlist-email`}
+                ref={waitlistInputRef}
                 type="text"
                 inputMode="email"
                 autoComplete="email"
@@ -369,6 +383,11 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                 disabled={isWaitlistLoading}
                 aria-invalid={Boolean(waitlistInlineError)}
               />
+              {waitlistInlineError ? (
+                <p className="mt-2 text-[12px] text-[#b9999f]/80">
+                  {waitlistInlineError}
+                </p>
+              ) : null}
               <button
                 type="submit"
                 disabled={isWaitlistLoading}
@@ -376,11 +395,31 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                   isWaitlistLoading ? "opacity-60 cursor-not-allowed" : ""
                 }`}
               >
-                Join waitlist
+                {isWaitlistLoading ? "Adding..." : "Join waitlist"}
               </button>
             </form>
             <div className="min-h-[18px] mt-2 text-left">
-              <p className={`text-[12px] ${waitlistHintTone}`}>{waitlistHint}</p>
+              {isNutritionWaitlist ? (
+                waitlistStatus === "success" ? (
+                  <div className={`space-y-1 text-[12px] ${waitlistHelperTone}`}>
+                    <p>You're on the waitlist 🌿</p>
+                    <p>We'll email you when Nutrition Meal Planner launches.</p>
+                    <p>Planned release: March 29.</p>
+                  </div>
+                ) : (
+                  <p className={`text-[12px] ${waitlistHelperTone}`}>
+                    No spam. Just one email when the planner launches.
+                  </p>
+                )
+              ) : waitlistStatus === "success" ? (
+                <p className={`text-[12px] ${waitlistHelperTone}`}>
+                  You’re on the waitlist.
+                </p>
+              ) : (
+                <p className={`text-[12px] ${waitlistHelperTone}`}>
+                  We’ll email you when the product is ready.
+                </p>
+              )}
             </div>
           </div>
         ) : (

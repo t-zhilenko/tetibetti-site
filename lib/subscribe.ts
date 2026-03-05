@@ -20,6 +20,7 @@ type SubscribeBody = {
   tag?: unknown;
   company?: unknown;
   website?: unknown;
+  product?: unknown;
 };
 
 const getClientIp = (request: Request) => {
@@ -75,6 +76,12 @@ export async function handleSubscribe(
 
   const email = typeof body.email === "string" ? body.email.trim() : "";
   const tag = typeof body.tag === "string" ? body.tag.trim() : "";
+  const product = typeof body.product === "string" ? body.product.trim() : "";
+
+  console.log("SUBSCRIBE endpoint hit", {
+    email,
+    product: product || undefined,
+  });
 
   if (!email || !EMAIL_RE.test(email)) {
     return jsonResponse({ success: false, error: "Invalid email address." }, 400);
