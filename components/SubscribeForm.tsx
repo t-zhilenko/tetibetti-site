@@ -27,7 +27,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SubscribeForm({
   tag,
-  endpoint = "/api/subscribe",
+  endpoint = "/api/brevo/subscribe",
   extraBody,
   className,
   buttonLabel,
@@ -102,10 +102,10 @@ export default function SubscribeForm({
       });
 
       const result = (await response.json().catch(() => null)) as
-        | { success?: boolean; error?: string }
+        | { success?: boolean; ok?: boolean; error?: string }
         | null;
 
-      if (!response.ok || !result?.success) {
+      if (!response.ok || (!result?.success && !result?.ok)) {
         const messageText = result?.error || "Something went wrong.";
         throw new Error(messageText);
       }

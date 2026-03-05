@@ -7,9 +7,18 @@ type ModalProps = {
   title: string;
   onClose: () => void;
   children: React.ReactNode;
+  panelClassName?: string;
+  contentClassName?: string;
 };
 
-export default function Modal({ open, title, onClose, children }: ModalProps) {
+export default function Modal({
+  open,
+  title,
+  onClose,
+  children,
+  panelClassName,
+  contentClassName,
+}: ModalProps) {
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
@@ -120,10 +129,12 @@ export default function Modal({ open, title, onClose, children }: ModalProps) {
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="w-full max-w-lg rounded-2xl border border-[#cabab1]/40 bg-[#fdf9f9] p-6 shadow-[0_24px_60px_rgba(43,89,104,0.12)] focus-visible:outline-none"
+        className={`w-[min(920px,92vw)] max-w-none rounded-[32px] border border-[#cabab1]/40 bg-[#fdf9f9] p-6 sm:p-10 shadow-[0_24px_60px_rgba(43,89,104,0.12)] focus-visible:outline-none${
+          panelClassName ? ` ${panelClassName}` : ""
+        }`}
       >
         <div className="flex items-start justify-between gap-4">
-          <h2 id={titleId} className="text-xl text-deep/85">
+          <h2 id={titleId} className="text-xl text-deep/85 text-center flex-1">
             {title}
           </h2>
           <button
@@ -135,7 +146,7 @@ export default function Modal({ open, title, onClose, children }: ModalProps) {
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div className="mt-4">{children}</div>
+        <div className={contentClassName ?? "mt-4"}>{children}</div>
       </div>
     </div>
   );
