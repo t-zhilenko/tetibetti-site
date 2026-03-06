@@ -110,7 +110,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           ) : (
             <button
               type="button"
-              className={`${secondaryButtonClassName} cursor-not-allowed`}
+              className={`${secondaryButtonClassName} cursor-default`}
               disabled
               aria-disabled="true"
             >

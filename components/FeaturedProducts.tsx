@@ -17,7 +17,7 @@ export default function FeaturedProducts() {
           </p>
         </div>
         <div className="mt-16">
-          <div className="grid gap-12 md:grid-cols-3 md:gap-10 lg:gap-12">
+          <div className="grid gap-12 md:gap-10 lg:gap-12 md:[grid-template-columns:repeat(auto-fit,minmax(240px,340px))] md:justify-center">
             {products.map((product) => (
               <div key={product.slug} className="mx-auto w-full max-w-[340px]">
                 <ProductCard product={product} />

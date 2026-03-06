@@ -455,7 +455,7 @@ export const products: ProductConfig[] = [
       alt: "Nutrition Meal Planner main preview",
     },
     cta: "Coming soon",
-    priceLabel: "Estimated delivery: 20 March",
+    priceLabel: "Estimated delivery: 29 March",
     status: "waiting",
     detailsAccordion: [],
     keyFeatures: [
@@ -539,69 +539,6 @@ export const products: ProductConfig[] = [
       title: "Nutrition Meal Planner",
       description:
         "A calm system for planning meals, groceries, and macros without the chaos.",
-    },
-  },
-  {
-    slug: "java-cheat-sheets",
-    title: "Java Cheat Sheets",
-    description:
-      "Practical Java notes and interview-ready references for faster study sessions.",
-    shortDescription: "Practical Java notes + interview-ready cheat sheets.",
-    badge: {
-      label: "Coming soon",
-      tone: "soft",
-    },
-    bullets: [
-      "Topic-by-topic syntax refreshers",
-      "Interview-ready reference tables",
-      "Focused patterns and gotchas",
-      "Printable, distraction-free layout",
-    ],
-    galleryImages: [],
-    mainPreviewImage: {
-      src: "",
-      alt: "Java Cheat Sheets preview",
-    },
-    cta: "Coming soon",
-    priceLabel: "Estimated delivery: 15 April",
-    status: "waiting",
-    detailsAccordion: [
-      {
-        id: "inside",
-        title: "What’s inside",
-        content: (
-          <p>
-            A focused set of Java references covering core syntax, collections, and
-            common interview topics.
-          </p>
-        ),
-      },
-      {
-        id: "for",
-        title: "Who it’s for",
-        content: (
-          <p>
-            For students, career switchers, and developers who want quick, reliable
-            Java refreshers.
-          </p>
-        ),
-      },
-      {
-        id: "release",
-        title: "Release plan",
-        content: (
-          <p>
-            The first edition is in progress. Early access and updates will be
-            shared as it launches.
-          </p>
-        ),
-      },
-    ],
-    showLanguageSelector: false,
-    seo: {
-      title: "Java Cheat Sheets",
-      description:
-        "Practical Java notes and interview-ready references for faster study sessions.",
     },
   },
 ];

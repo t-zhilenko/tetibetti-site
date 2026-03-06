@@ -28,9 +28,9 @@ export default function FeatureCards({ items }: FeatureCardsProps) {
   const desktopColumns = getDesktopColumns(items.length);
 
   return (
-    <div className="mt-10 max-w-6xl mx-auto">
+    <div className="mt-10 max-w-5xl mx-auto">
       <div
-        className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:[grid-template-columns:repeat(var(--feature-cols),minmax(0,1fr))]"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5 lg:[grid-template-columns:repeat(var(--feature-cols),minmax(0,1fr))]"
         style={{ "--feature-cols": desktopColumns } as CSSProperties}
       >
         {items.map((benefit) => (
