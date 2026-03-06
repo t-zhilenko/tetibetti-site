@@ -87,7 +87,10 @@ export default function Footer() {
         </Container>
       </section>
 
-      <footer className="bg-[linear-gradient(180deg,#fbf3f4_0%,#fdf8f8_60%,#fdf9f9_100%)] text-deep/80">
+      <footer
+        id="footer"
+        className="bg-[linear-gradient(180deg,#fbf3f4_0%,#fdf8f8_60%,#fdf9f9_100%)] text-deep/80"
+      >
         <Container className="py-24 md:py-28">
           <div className="grid gap-12 md:grid-cols-[1fr_1fr_1fr]">
             <div className="space-y-4 text-center md:text-left">
@@ -150,6 +153,13 @@ export default function Footer() {
                 className={`${linkClassName} ${underlineFadeClassName}`}
               >
                 Terms & Conditions
+              </Link>
+              <span className="text-deep/40">{"\u00b7"}</span>
+              <Link
+                href="/license"
+                className={`${linkClassName} ${underlineFadeClassName}`}
+              >
+                License
               </Link>
             </div>
             <div className="text-center md:text-right space-y-1 text-deep/60">

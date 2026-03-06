@@ -93,11 +93,6 @@ export default function Header() {
                 </Link>
               ))}
             </nav>
-            <div className="ml-4 flex shrink-0 items-center">
-              <span className="text-[11px] uppercase tracking-[0.2em] border border-deep/20 rounded-full px-3 py-1 text-deep/70">
-                UK | EN
-              </span>
-            </div>
           </div>
         </Container>
       </div>

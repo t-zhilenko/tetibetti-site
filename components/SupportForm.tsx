@@ -8,6 +8,7 @@ type SupportFormProps = {
   productSlug: string;
   variant?: SupportFormVariant;
   className?: string;
+  rows?: number;
   showSuccessAction?: boolean;
   successActionLabel?: string;
   onSuccessAction?: () => void;
@@ -21,6 +22,7 @@ export default function SupportForm({
   productSlug,
   variant = "modal",
   className,
+  rows,
   showSuccessAction = false,
   successActionLabel = "Close",
   onSuccessAction,
@@ -210,7 +212,7 @@ export default function SupportForm({
             setSupportTouched((prev) => ({ ...prev, message: true }));
           }}
           placeholder="Your message"
-          rows={isInline ? 3 : 4}
+          rows={rows ?? (isInline ? 3 : 4)}
           className={textareaClassName}
         />
         <div className={isInline ? "mt-1.5 min-h-[14px]" : "mt-2 min-h-[18px]"}>
