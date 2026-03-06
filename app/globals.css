@@ -68,6 +68,13 @@ a {
   pointer-events: none;
 }
 
+.varya-tilt {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  transform-origin: center;
+}
+
 .lightbox-jewelry .yarl__container {
   pointer-events: auto;
 }
