@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -57,7 +57,9 @@ export default function Header() {
                   key={item.label}
                   href={item.href}
                   aria-label={item.label}
-                  className={`hover:text-deep/85 ${index === 2 ? "hidden sm:inline-flex" : "inline-flex"}`}
+                  className={`hover:text-deep/85 ${
+                    index === 2 ? "hidden sm:inline-flex" : "inline-flex"
+                  }`}
                 >
                   <item.Icon size={16} strokeWidth={1.5} />
                 </Link>

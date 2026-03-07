@@ -3,6 +3,7 @@ import { Allura, Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Providers from "@/app/providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,18 +36,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/fav.svg" type="image/svg+xml" />
+        <link rel="shortcut icon" href="/fav.svg" />
+        <link rel="apple-touch-icon" href="/fav.svg" />
+      </head>
       <body
         className={`${inter.variable} ${playfair.variable} ${allura.variable} antialiased`}
       >
-        <div className="min-h-screen flex flex-col bg-soft">
-          <Header />
+        <Providers>
+          <div className="min-h-screen flex flex-col bg-soft">
+            <Header />
 
-          <main className="flex-1">
-            <div>{children}</div>
-          </main>
+            <main className="flex-1">
+              <div>{children}</div>
+            </main>
 
-          <Footer />
-        </div>
+            <Footer />
+          </div>
+        </Providers>
       </body>
     </html>
   );

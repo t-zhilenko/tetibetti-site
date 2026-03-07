@@ -34,7 +34,18 @@ export default function Page() {
             </p>
           </div>
           <div className="w-full max-w-[560px] lg:mt-[46px]">
-            <SupportForm productSlug="contact" variant="inline" rows={4} />
+            <SupportForm
+              productSlug="contact"
+              variant="inline"
+              rows={4}
+              analyticsEvent={{
+                name: "contact message sent",
+                properties: {
+                  source: "contact_page",
+                  form_type: "contact",
+                },
+              }}
+            />
           </div>
         </div>
       </Container>

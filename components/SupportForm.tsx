@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 type SupportFormVariant = "modal" | "inline";
 
@@ -12,6 +13,10 @@ type SupportFormProps = {
   showSuccessAction?: boolean;
   successActionLabel?: string;
   onSuccessAction?: () => void;
+  analyticsEvent?: {
+    name: string;
+    properties?: Record<string, unknown>;
+  };
 };
 
 type SupportStatus = "idle" | "loading" | "success" | "error";
@@ -26,6 +31,7 @@ export default function SupportForm({
   showSuccessAction = false,
   successActionLabel = "Close",
   onSuccessAction,
+  analyticsEvent,
 }: SupportFormProps) {
   const [supportEmail, setSupportEmail] = useState("");
   const [supportMessage, setSupportMessage] = useState("");
@@ -100,6 +106,10 @@ export default function SupportForm({
       }
 
       setSupportStatus("success");
+      // Capture successful contact submissions without message content.
+      if (analyticsEvent) {
+        trackEvent(analyticsEvent.name, analyticsEvent.properties);
+      }
     } catch (error) {
       setSupportStatus("error");
       setSupportError(

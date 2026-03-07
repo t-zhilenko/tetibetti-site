@@ -84,18 +84,18 @@ export default function Page() {
         <Container className="py-16 md:py-20">
           <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] items-start">
             <div className="space-y-5">
-              <p className="text-[11px] uppercase tracking-[0.35em] text-deep/50">
+              <p className="text-[11px] uppercase tracking-[0.35em] text-deep/50 text-center">
                 FAQ
               </p>
-              <h1 className="text-3xl md:text-4xl leading-[1.12] tracking-[-0.02em] text-deep/90">
+              <h1 className="text-3xl md:text-4xl leading-[1.12] tracking-[-0.02em] text-deep/90 text-center">
                 Questions &amp; answers
               </h1>
-              <p className="text-[13px] md:text-[15px] leading-relaxed text-deep/70 max-w-[420px]">
+              <p className="text-[13px] md:text-[15px] leading-relaxed text-deep/70 max-w-[420px] text-center mx-auto">
                 Here you&apos;ll find answers to common questions about downloads,
                 Notion templates, and how everything works.
               </p>
               <div className="mt-8 flex flex-col items-start gap-2 max-w-[360px] sm:max-w-[440px] lg:max-w-[470px]">
-                <div className="relative w-full flex justify-center">
+                <div className="relative w-full max-w-[320px] sm:max-w-[360px] lg:max-w-[380px] mx-auto flex justify-center">
                   <Image
                     src="/images/faq.png"
                     alt="Varya the cat"

@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import EmailCaptureForm from "@/components/EmailCaptureForm";
 import ProductGalleryEmbla from "@/components/ProductGalleryEmbla";
 import Modal from "@/components/Modal";
 import ProductPageLayout from "@/components/product/ProductPageLayout";
 import PairsWithSection from "@/components/product/PairsWithSection";
 import ProductActions from "@/components/product/ProductActions";
+import { trackEvent } from "@/lib/analytics";
 import {
   DEFAULT_PAIRS_WITH_TITLE,
   getProductBySlug,
@@ -24,6 +25,15 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     return null;
   }
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    // Track product views once per product page.
+    trackEvent("product viewed", {
+      product_slug: product.slug,
+      product_name: product.title,
+      page_type: "product",
+    });
+  }, [product.slug, product.title]);
 
   const carouselImages = useMemo<ProductImage[]>(
     () => product.galleryImages ?? [],
@@ -211,6 +221,11 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
               submittingLabel="Adding..."
               helperText={waitlistHelperText}
               successLines={waitlistSuccessLines}
+              analytics={{
+                source: "product_page",
+                productSlug: product.slug,
+                productName: product.title,
+              }}
             />
           </div>
         ) : (
@@ -262,6 +277,11 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
             successHelpText={modalSuccessHelp}
             supportEmail={modalSupportEmail}
             onContinue={closeModal}
+            analytics={{
+              source: "download_modal",
+              productSlug: product.slug,
+              productName: product.title,
+            }}
           />
         </Modal>
       }

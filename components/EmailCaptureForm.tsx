@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -17,6 +18,11 @@ type EmailCaptureFormProps = {
   supportEmail?: string;
   introText?: string;
   onContinue?: () => void;
+  analytics?: {
+    source?: string;
+    productSlug?: string;
+    productName?: string;
+  };
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,6 +40,7 @@ export default function EmailCaptureForm({
   supportEmail,
   introText,
   onContinue,
+  analytics,
 }: EmailCaptureFormProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -90,6 +97,22 @@ export default function EmailCaptureForm({
       }
 
       setStatus("success");
+      // Capture successful waitlist/download requests without storing email content.
+      if (variant === "waitlist") {
+        trackEvent("waitlist joined", {
+          source: analytics?.source,
+          product_slug: analytics?.productSlug,
+          form_type: "waitlist",
+        });
+      }
+      if (variant === "download") {
+        trackEvent("download requested", {
+          source: analytics?.source,
+          product_slug: analytics?.productSlug,
+          product_name: analytics?.productName,
+          form_type: "download",
+        });
+      }
       setEmail("");
     } catch (error) {
       setStatus("error");
