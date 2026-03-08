@@ -16,6 +16,8 @@ Build settings for Cloudflare Pages/Workers using the OpenNext Cloudflare adapte
 - Build command: `npm run build:cf`
 - Build output directory: `.open-next`
 - Root directory: `/`
+- This project is migrated off `@cloudflare/next-on-pages`; keep using `@opennextjs/cloudflare`.
+- Pages build output for static assets is `.vercel/output/static` (see `wrangler.toml`).
 
 ## Styling Notes
 

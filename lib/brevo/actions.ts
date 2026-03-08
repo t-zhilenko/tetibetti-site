@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { brevoConfig, type BrevoActionKey } from "@/lib/brevo/config";
 import {
   getBrevoEnv,
@@ -7,6 +6,11 @@ import {
 } from "@/lib/brevo/client";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8" },
+  });
 
 export async function handleBrevoAction(
   request: Request,
@@ -17,21 +21,18 @@ export async function handleBrevoAction(
   try {
     payload = (await request.json()) as { email?: unknown };
   } catch {
-    return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
+    return jsonResponse({ ok: false, error: "Invalid JSON" }, 400);
   }
 
   const email = typeof payload.email === "string" ? payload.email.trim() : "";
 
   if (!EMAIL_RE.test(email)) {
-    return NextResponse.json({ ok: false, error: "Invalid email" }, { status: 400 });
+    return jsonResponse({ ok: false, error: "Invalid email" }, 400);
   }
 
   const actionConfig = brevoConfig.actions[action];
   if (!actionConfig) {
-    return NextResponse.json(
-      { ok: false, error: "Unsupported action" },
-      { status: 400 }
-    );
+    return jsonResponse({ ok: false, error: "Unsupported action" }, 400);
   }
 
   const sendTemplateId =
@@ -55,10 +56,7 @@ export async function handleBrevoAction(
     console.error("BREVO env missing", {
       message: error instanceof Error ? error.message : "Unknown error",
     });
-    return NextResponse.json(
-      { ok: false, error: "Server configuration error" },
-      { status: 500 }
-    );
+    return jsonResponse({ ok: false, error: "Server configuration error" }, 500);
   }
 
   try {
@@ -71,10 +69,7 @@ export async function handleBrevoAction(
     });
   } catch (error) {
     console.error("Brevo contact error", error);
-    return NextResponse.json(
-      { ok: false, error: "Brevo contact error" },
-      { status: 502 }
-    );
+    return jsonResponse({ ok: false, error: "Brevo contact error" }, 502);
   }
 
   if (sendTemplateId) {
@@ -92,5 +87,5 @@ export async function handleBrevoAction(
     }
   }
 
-  return NextResponse.json({ ok: true });
+  return jsonResponse({ ok: true });
 }

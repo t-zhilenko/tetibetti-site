@@ -1,7 +1,12 @@
-import { NextResponse } from "next/server";
+export const runtime = "edge";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SUPPORT_EMAIL = "teti.betti.studio@gmail.com";
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json; charset=utf-8" },
+  });
 
 type SupportPayload = {
   productSlug?: string;
@@ -16,7 +21,7 @@ export async function POST(request: Request) {
   try {
     payload = (await request.json()) as SupportPayload;
   } catch {
-    return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
+    return jsonResponse({ ok: false, error: "Invalid JSON" }, 400);
   }
 
   const productSlug =
@@ -28,24 +33,15 @@ export async function POST(request: Request) {
     typeof payload.pageUrl === "string" ? payload.pageUrl.trim() : "";
 
   if (!productSlug) {
-    return NextResponse.json(
-      { ok: false, error: "Missing product" },
-      { status: 400 }
-    );
+    return jsonResponse({ ok: false, error: "Missing product" }, 400);
   }
 
   if (email && !EMAIL_RE.test(email)) {
-    return NextResponse.json(
-      { ok: false, error: "Invalid email" },
-      { status: 400 }
-    );
+    return jsonResponse({ ok: false, error: "Invalid email" }, 400);
   }
 
   if (!message || message.length < 10) {
-    return NextResponse.json(
-      { ok: false, error: "Message too short" },
-      { status: 400 }
-    );
+    return jsonResponse({ ok: false, error: "Message too short" }, 400);
   }
 
   const apiKey = process.env.BREVO_API_KEY;
@@ -58,10 +54,7 @@ export async function POST(request: Request) {
       hasSenderEmail: Boolean(senderEmail),
       hasSenderName: Boolean(senderName),
     });
-    return NextResponse.json(
-      { ok: false, error: "Server configuration error" },
-      { status: 500 }
-    );
+    return jsonResponse({ ok: false, error: "Server configuration error" }, 500);
   }
 
   const subject = `Product question: ${productSlug}`;
@@ -105,18 +98,12 @@ export async function POST(request: Request) {
     if (!response.ok) {
       const errorText = await response.text().catch(() => "");
       console.error("Brevo support send failed:", response.status, errorText);
-      return NextResponse.json(
-        { ok: false, error: "Unable to send message" },
-        { status: 502 }
-      );
+      return jsonResponse({ ok: false, error: "Unable to send message" }, 502);
     }
   } catch (error) {
     console.error("Brevo support send error:", error);
-    return NextResponse.json(
-      { ok: false, error: "Unable to send message" },
-      { status: 502 }
-    );
+    return jsonResponse({ ok: false, error: "Unable to send message" }, 502);
   }
 
-  return NextResponse.json({ ok: true });
+  return jsonResponse({ ok: true });
 }
