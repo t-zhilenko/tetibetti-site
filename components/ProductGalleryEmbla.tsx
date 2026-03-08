@@ -6,7 +6,6 @@ import useEmblaCarousel from "embla-carousel-react";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import GalleryPlaceholder from "@/components/GalleryPlaceholder";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type GalleryImage = {
   src: string;
@@ -21,7 +20,7 @@ type ProductGalleryEmblaProps = {
 };
 
 export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps) {
-  const fallbackImages = useMemo(
+  const fallbackImages = useMemo<GalleryImage[]>(
     () =>
       Array.from({ length: 5 }, (_, index) => ({
         src: "",
@@ -58,7 +57,6 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
     if (!emblaMain) {
       return;
     }
-    onSelect();
     emblaMain.on("select", onSelect);
     emblaMain.on("reInit", onSelect);
     return () => {
@@ -261,10 +259,12 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
                 style={{ width: "min(90vw, 90vh)", height: "min(90vw, 90vh)" }}
               >
                 {slide.src ? (
-                  <img
+                  <Image
                     src={slide.src}
                     alt={slide.alt ?? ""}
-                    className="h-full w-full object-contain"
+                    fill
+                    sizes="(min-width: 1024px) 70vh, 90vw"
+                    className="object-contain"
                     draggable={false}
                   />
                 ) : (

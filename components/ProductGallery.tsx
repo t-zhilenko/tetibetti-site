@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import ScreenshotFrame from "@/components/ScreenshotFrame";
 
 type ProductImage = {
@@ -49,11 +50,17 @@ export default function ProductGallery({ images = [], title }: ProductGalleryPro
                 }`}
                 aria-label={`View image ${index + 1} of ${images.length}`}
               >
-                <img
-                  src={image.src}
-                  alt={image.alt || title}
-                  className="h-full w-full object-cover"
-                />
+                {image.src ? (
+                  <Image
+                    src={image.src}
+                    alt={image.alt || title}
+                    width={64}
+                    height={64}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-[#f7dce0]/40" aria-hidden />
+                )}
               </button>
             );
           })}

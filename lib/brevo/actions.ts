@@ -34,11 +34,18 @@ export async function handleBrevoAction(
     );
   }
 
+  const sendTemplateId =
+    "sendTemplateId" in actionConfig ? actionConfig.sendTemplateId : undefined;
+  const attributes =
+    "attributes" in actionConfig ? actionConfig.attributes : undefined;
+  const templateParams =
+    "templateParams" in actionConfig ? actionConfig.templateParams : undefined;
+
   console.log("BREVO action", {
     action,
     listIds: actionConfig.listIdsToAdd,
     tags: actionConfig.tagsToAdd,
-    templateId: actionConfig.sendTemplateId ?? null,
+    templateId: sendTemplateId ?? null,
   });
 
   let env: ReturnType<typeof getBrevoEnv>;
@@ -60,7 +67,7 @@ export async function handleBrevoAction(
       email,
       listIds: actionConfig.listIdsToAdd,
       tags: actionConfig.tagsToAdd,
-      attributes: actionConfig.attributes,
+      attributes,
     });
   } catch (error) {
     console.error("Brevo contact error", error);
@@ -70,15 +77,15 @@ export async function handleBrevoAction(
     );
   }
 
-  if (actionConfig.sendTemplateId) {
+  if (sendTemplateId) {
     try {
       await sendTransactionalEmail({
         apiKey: env.apiKey,
-        templateId: actionConfig.sendTemplateId,
+        templateId: sendTemplateId,
         toEmail: email,
         senderEmail: env.senderEmail,
         senderName: env.senderName,
-        params: actionConfig.templateParams,
+        params: templateParams,
       });
     } catch (error) {
       console.error("Brevo SMTP error", error);

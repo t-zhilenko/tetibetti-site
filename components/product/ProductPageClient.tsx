@@ -20,28 +20,27 @@ type ProductPageClientProps = {
 
 export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const product = getProductBySlug(slug);
-
-  if (!product) {
-    return null;
-  }
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    if (!product) {
+      return;
+    }
     // Track product views once per product page.
     trackEvent("product viewed", {
       product_slug: product.slug,
       product_name: product.title,
       page_type: "product",
     });
-  }, [product.slug, product.title]);
+  }, [product]);
 
   const carouselImages = useMemo<ProductImage[]>(
-    () => product.galleryImages ?? [],
-    [product.galleryImages]
+    () => product?.galleryImages ?? [],
+    [product?.galleryImages]
   );
 
   const pairsWithItems = useMemo(() => {
-    if (!product.pairsWith?.length) {
+    if (!product?.pairsWith?.length) {
       return null;
     }
 
@@ -58,10 +57,8 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
           override?.imageSrc ??
           related.thumbnail ??
           related.galleryImages?.[0]?.src ??
-          related.mainPreviewImage?.src ??
-          null;
+          related.mainPreviewImage?.src;
         if (!imageSrc && process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-console
           console.warn("PairsWith missing thumbnail", {
             source: product.slug,
             target: related.slug,
@@ -82,8 +79,8 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
           title: string;
           subtitle: string;
           href: string;
-          imageSrc: string | null;
-          imageAlt?: string;
+          imageSrc: string;
+          imageAlt: string;
         } => Boolean(item)
       );
   }, [product]);
@@ -91,6 +88,10 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
+  if (!product) {
+    return null;
+  }
 
   const isWaitingStatus = product.status === "waiting";
   const primaryCta = product.primaryCta ?? {
@@ -136,7 +137,9 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
       : product.benefits;
 
   const sectionAccordion = product.sections?.accordionItems;
-  const buildAccordionContent = (value?: string[] | string) => {
+  const buildAccordionContent = (
+    value?: string[] | string
+  ): ReactNode | null => {
     if (!value) {
       return null;
     }
@@ -152,15 +155,15 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     return <p>{value}</p>;
   };
   const detailsAccordionItems = sectionAccordion
-    ? ([
+    ? [
         {
           id: `${product.slug}-who-its-for`,
-          title: "Who It’s For",
+          title: "Who It's For",
           content: buildAccordionContent(sectionAccordion.whoItsFor),
         },
         {
           id: `${product.slug}-whats-inside`,
-          title: "What’s Inside",
+          title: "What's Inside",
           content: buildAccordionContent(sectionAccordion.whatsInside),
         },
         {
@@ -168,15 +171,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
           title: "Release Plan",
           content: buildAccordionContent(sectionAccordion.releasePlan),
         },
-      ] as const).filter(
-        (
-          item
-        ): item is {
-          id: string;
-          title: string;
-          content: ReactNode;
-        } => Boolean(item.content)
-      )
+      ].filter((item) => Boolean(item.content))
     : product.detailsAccordion;
 
   const faqSection = product.faq
@@ -201,7 +196,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const modalSuccessDescription =
     "Your template link and setup instructions are on the way.";
   const modalSuccessHelp =
-    "If you don’t see it in a minute, check Promotions/Spam.";
+    "If you don't see it in a minute, check Promotions/Spam.";
   const modalSupportEmail = "support@tetibetti.com";
 
   return (

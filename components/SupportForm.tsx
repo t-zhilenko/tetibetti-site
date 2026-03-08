@@ -153,9 +153,9 @@ export default function SupportForm({
       <div className={className}>
         <div className={isInline ? "space-y-3 text-center" : "space-y-4"}>
           <div>
-            <p className="text-lg text-deep/85">Sent. We'll reply soon.</p>
+            <p className="text-lg text-deep/85">Sent. We&apos;ll reply soon.</p>
             <p className="mt-2 text-sm text-deep/60">
-              Thanks for reaching out. We'll get back to you by email.
+              Thanks for reaching out. We&apos;ll get back to you by email.
             </p>
           </div>
           {showSuccessAction ? (

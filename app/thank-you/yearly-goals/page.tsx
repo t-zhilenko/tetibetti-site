@@ -19,10 +19,10 @@ export default function Page() {
 
           <div className="mt-8 pt-6 border-t border-[#cabab1]/25 text-center text-[12.5px] md:text-sm text-deep/60 leading-relaxed">
             <p className="text-[11px] uppercase tracking-[0.3em] text-deep/50">
-              Didn't receive the email?
+              Didn&apos;t receive the email?
             </p>
             <p className="mt-4">
-              If you don't see it in a minute, check your Promotions or Spam
+              If you don&apos;t see it in a minute, check your Promotions or Spam
               folder.
             </p>
             <p className="mt-4">

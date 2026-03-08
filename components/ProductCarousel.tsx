@@ -18,7 +18,7 @@ export default function ProductGalleryCarousel({ images }: ProductGalleryProps) 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
-  const fallbackImages = Array.from({ length: 5 }, (_, index) => ({
+  const fallbackImages: CarouselImage[] = Array.from({ length: 5 }, (_, index) => ({
     src: "",
     alt: `Preview placeholder ${index + 1}`,
   }));

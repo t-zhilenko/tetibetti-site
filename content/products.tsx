@@ -110,23 +110,6 @@ export type ProductConfig = {
 
 export const DEFAULT_PAIRS_WITH_TITLE = "Pairs well with";
 
-const createPreviewSvg = (label: string, from: string, to: string) => {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900">
-    <defs>
-      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="${from}"/>
-        <stop offset="100%" stop-color="${to}"/>
-      </linearGradient>
-    </defs>
-    <rect width="900" height="900" fill="url(#g)"/>
-    <rect x="90" y="110" width="720" height="460" rx="40" fill="rgba(255,255,255,0.6)"/>
-    <rect x="90" y="600" width="420" height="24" rx="12" fill="rgba(43,89,104,0.16)"/>
-    <rect x="90" y="640" width="320" height="24" rx="12" fill="rgba(43,89,104,0.12)"/>
-    <text x="90" y="720" fill="rgba(43,89,104,0.55)" font-size="30" font-family="Georgia, serif">${label}</text>
-  </svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-};
-
 const nutritionPreviewImages: ProductImage[] = [
   {
     src: "/images/nutrition-meal-planner/1.jpg",

@@ -94,7 +94,10 @@ export default function ProductActions({
   };
 
   const handleShareNative = async () => {
-    if (typeof window === "undefined" || !navigator.share) {
+    if (
+      typeof window === "undefined" ||
+      typeof navigator.share !== "function"
+    ) {
       return;
     }
     try {
@@ -148,7 +151,8 @@ export default function ProductActions({
               >
                 Copy link
               </button>
-              {typeof navigator !== "undefined" && navigator.share ? (
+              {typeof navigator !== "undefined" &&
+              typeof navigator.share === "function" ? (
                 <button
                   type="button"
                   onClick={handleShareNative}

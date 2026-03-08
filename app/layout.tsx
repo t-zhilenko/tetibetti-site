@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Allura, Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -123,7 +124,6 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(structuredData),
           }}
@@ -132,17 +132,19 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${playfair.variable} ${allura.variable} antialiased`}
       >
-        <Providers>
-          <div className="min-h-screen flex flex-col bg-soft">
-            <Header />
+        <Suspense fallback={null}>
+          <Providers>
+            <div className="min-h-screen flex flex-col bg-soft">
+              <Header />
 
-            <main className="flex-1">
-              <div>{children}</div>
-            </main>
+              <main className="flex-1">
+                <div>{children}</div>
+              </main>
 
-            <Footer />
-          </div>
-        </Providers>
+              <Footer />
+            </div>
+          </Providers>
+        </Suspense>
       </body>
     </html>
   );
