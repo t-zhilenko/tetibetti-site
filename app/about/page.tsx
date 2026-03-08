@@ -13,7 +13,7 @@ export default function Page() {
                 <div className="inline-block md:-rotate-2 rotate-0">
                   <div className="polaroid-frame">
                     <Image
-                      src="/images/about.png"
+                      src="/images/about.jpg"
                       alt="Tetiana portrait"
                       width={480}
                       height={600}

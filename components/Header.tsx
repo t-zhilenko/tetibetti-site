@@ -15,10 +15,26 @@ const navLinks = [
 ];
 
 const socialLinks = [
-  { href: "#", label: "Instagram", Icon: Instagram },
-  { href: "#", label: "YouTube", Icon: Youtube },
-  { href: "#", label: "Pinterest", Icon: Pin },
-  { href: "#", label: "Telegram", Icon: Send },
+  {
+    href: process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "#",
+    label: "Instagram",
+    Icon: Instagram,
+  },
+  {
+    href: process.env.NEXT_PUBLIC_YOUTUBE_URL ?? "#",
+    label: "YouTube",
+    Icon: Youtube,
+  },
+  {
+    href: process.env.NEXT_PUBLIC_PINTEREST_URL ?? "#",
+    label: "Pinterest",
+    Icon: Pin,
+  },
+  {
+    href: process.env.NEXT_PUBLIC_TELEGRAM_URL ?? "#",
+    label: "Telegram",
+    Icon: Send,
+  },
 ];
 
 export default function Header() {

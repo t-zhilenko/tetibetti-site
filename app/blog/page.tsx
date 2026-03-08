@@ -1,6 +1,29 @@
+import type { Metadata } from "next";
 import Container from "@/components/Container";
 import Image from "next/image";
 import Link from "next/link";
+
+const description =
+  "Essays on digital systems, thoughtful productivity, and the quiet work of building.";
+
+export const metadata: Metadata = {
+  title: "Blog",
+  description,
+  alternates: {
+    canonical: "/blog",
+  },
+  openGraph: {
+    title: "Blog",
+    description,
+    url: "/blog",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Blog",
+    description,
+  },
+};
 
 export default function Page() {
   return (
@@ -12,7 +35,7 @@ export default function Page() {
               <div className="inline-block md:-rotate-2 rotate-0">
                 <div className="polaroid-frame">
                   <Image
-                    src="/images/blog.png"
+                    src="/images/blog.jpg"
                     alt="Blog illustration"
                     width={480}
                     height={600}
@@ -66,4 +89,3 @@ export default function Page() {
     </section>
   );
 }
-

@@ -1,0 +1,16 @@
+{
+  "name": "Teti Betti",
+  "short_name": "Teti Betti",
+  "description": "Minimal digital tools for thoughtful productivity",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f7f5f2",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

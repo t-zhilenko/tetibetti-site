@@ -12,10 +12,26 @@ const navLinks = [
 ];
 
 const socialLinks = [
-  { href: "#", label: "Instagram", Icon: Instagram },
-  { href: "#", label: "YouTube", Icon: Youtube },
-  { href: "#", label: "Pinterest", Icon: Pin },
-  { href: "#", label: "Telegram", Icon: Send },
+  {
+    href: process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "#",
+    label: "Instagram",
+    Icon: Instagram,
+  },
+  {
+    href: process.env.NEXT_PUBLIC_YOUTUBE_URL ?? "#",
+    label: "YouTube",
+    Icon: Youtube,
+  },
+  {
+    href: process.env.NEXT_PUBLIC_PINTEREST_URL ?? "#",
+    label: "Pinterest",
+    Icon: Pin,
+  },
+  {
+    href: process.env.NEXT_PUBLIC_TELEGRAM_URL ?? "#",
+    label: "Telegram",
+    Icon: Send,
+  },
 ];
 
 const linkClassName =
@@ -38,7 +54,12 @@ export default function Footer() {
               <span className="text-[11.5px] uppercase tracking-[0.3em] font-light text-[#2b5968]/45" aria-hidden="true">
                 {" \u00b7 "}
               </span>
-              <Link href="#" className={stripLinkClassName}>
+              <Link
+                href={process.env.NEXT_PUBLIC_PATREON_URL ?? "#"}
+                className={stripLinkClassName}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Patreon
               </Link>
               <span className={`inline-flex items-center gap-2 ${stripBaseClassName}`}>
@@ -75,12 +96,12 @@ export default function Footer() {
                 {" \u00b7 "}
               </span>
               <Link
-                href="https://savelife.in.ua/en/"
+                href="https://u24.gov.ua/"
                 className={stripLinkClassName}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Come Back Alive Foundation
+                UNITED24 Foundation
               </Link>
             </div>
           </div>

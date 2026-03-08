@@ -1,8 +1,29 @@
-"use client";
-
+import type { Metadata } from "next";
 import Container from "@/components/Container";
 import ProductCard from "@/components/ProductCard";
 import { products } from "@/lib/products";
+
+const description =
+  "Browse calm, minimal Notion templates and digital planners from Teti Betti.";
+
+export const metadata: Metadata = {
+  title: "Shop",
+  description,
+  alternates: {
+    canonical: "/shop",
+  },
+  openGraph: {
+    title: "Shop",
+    description,
+    url: "/shop",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Shop",
+    description,
+  },
+};
 
 export default function ShopPage() {
   return (

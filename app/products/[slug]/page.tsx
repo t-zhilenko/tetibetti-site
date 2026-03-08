@@ -25,9 +25,42 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {};
   }
 
+  const title = product.seo?.title ?? product.title;
+  const description = product.seo?.description ?? product.description;
+  const canonical = `/products/${product.slug}`;
+  const imageSrc =
+    product.mainPreviewImage?.src ?? product.galleryImages?.[0]?.src ?? undefined;
+  const imageAlt = product.mainPreviewImage?.alt ?? product.title;
+
   return {
-    title: product.seo?.title ?? product.title,
-    description: product.seo?.description ?? product.description,
+    title,
+    description,
+    keywords: product.tags,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: canonical,
+      ...(imageSrc
+        ? {
+            images: [
+              {
+                url: imageSrc,
+                alt: imageAlt,
+              },
+            ],
+          }
+        : {}),
+    },
+    twitter: {
+      card: imageSrc ? "summary_large_image" : "summary",
+      title,
+      description,
+      ...(imageSrc ? { images: [imageSrc] } : {}),
+    },
   };
 }
 

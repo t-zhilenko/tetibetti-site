@@ -12,7 +12,7 @@ export default function Hero() {
               <div className="inline-block md:-rotate-2 rotate-0">
                 <div className="polaroid-frame">
                   <Image
-                    src="/images/hero-portrait.png"
+                    src="/images/hero-portrait.jpg"
                     alt="Tatiana – Founder of Teti Betti"
                     width={480}
                     height={600}

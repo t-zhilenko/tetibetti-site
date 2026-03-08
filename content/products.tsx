@@ -129,6 +129,10 @@ const createPreviewSvg = (label: string, from: string, to: string) => {
 
 const nutritionPreviewImages: ProductImage[] = [
   {
+    src: "/images/nutrition-meal-planner/1.jpg",
+    alt: "Nutrition Meal Planner preview 1",
+  },
+  {
     src: "/images/nutrition-meal-planner/2.jpg",
     alt: "Nutrition Meal Planner preview 2",
   },
@@ -209,37 +213,37 @@ export const products: ProductConfig[] = [
     },
     galleryImages: [
       {
-        src: "/images/yearly-goals/2.png",
+        src: "/images/yearly-goals/2.jpg",
         alt: "Yearly Goals overview detail",
       },
       {
-        src: "/images/yearly-goals/3.png",
+        src: "/images/yearly-goals/3.jpg",
         alt: "Yearly Goals layout detail",
       },
       {
-        src: "/images/yearly-goals/4.png",
+        src: "/images/yearly-goals/4.jpg",
         alt: "Yearly Goals calendar view",
       },
       {
-        src: "/images/yearly-goals/5.png",
+        src: "/images/yearly-goals/5.jpg",
         alt: "Yearly Goals goals table",
       },
       {
-        src: "/images/yearly-goals/6.png",
+        src: "/images/yearly-goals/6.jpg",
         alt: "Yearly Goals projects view",
       },
       {
-        src: "/images/yearly-goals/7.png",
+        src: "/images/yearly-goals/7.jpg",
         alt: "Yearly Goals tasks view",
       },
       {
-        src: "/images/yearly-goals/8.png",
+        src: "/images/yearly-goals/8.jpg",
         alt: "Yearly Goals planning view",
       },
     ],
-    thumbnail: "/images/yearly-goals/main-pveview.png",
+    thumbnail: "/images/yearly-goals/main-preview.jpg",
     mainPreviewImage: {
-      src: "/images/yearly-goals/main-pveview.png",
+      src: "/images/yearly-goals/main-preview.jpg",
       alt: "Yearly Goals preview",
     },
     downloadTag: "yearly-goals",
@@ -261,7 +265,7 @@ export const products: ProductConfig[] = [
               <li>Projects database connected to goals</li>
               <li>Task system with automatic progress calculation</li>
               <li>Monthly to-do view</li>
-              <li>Clean relational structure (Goals \u2194 Projects \u2194 Tasks)</li>
+              <li>Clean relational structure (Goals → Projects → Tasks)</li>
             </ul>
             <p>Everything is connected — nothing duplicated.</p>
           </div>
@@ -426,7 +430,7 @@ export const products: ProductConfig[] = [
       helperText: "No spam. Just one email when the planner launches.",
     },
     successMessageLines: [
-      "You're on the waitlist 🌿",
+      "You're on the waitlist ??",
       "We'll email you when Nutrition Meal Planner launches.",
       "Planned release: March 29.",
     ],
@@ -545,4 +549,6 @@ export const products: ProductConfig[] = [
 
 export const getProductBySlug = (slug: string) =>
   products.find((product) => product.slug === slug);
+
+
 
