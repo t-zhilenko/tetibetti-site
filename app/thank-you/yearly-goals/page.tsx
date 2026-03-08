@@ -1,4 +1,4 @@
-﻿import Container from "@/components/Container";
+import Container from "@/components/Container";
 
 export default function Page() {
   return (
@@ -42,3 +42,4 @@ export default function Page() {
     </section>
   );
 }
+

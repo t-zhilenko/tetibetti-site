@@ -413,7 +413,7 @@ export const products: ProductConfig[] = [
       helperText: "No spam. Just one email when the planner launches.",
     },
     successMessageLines: [
-      "You're on the waitlist ??",
+      "You're on the waitlist.",
       "We'll email you when Nutrition Meal Planner launches.",
       "Planned release: March 29.",
     ],
