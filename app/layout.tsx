@@ -88,8 +88,11 @@ export const metadata: Metadata = {
     "minimal tools",
   ],
   icons: {
-    icon: "/fav.svg",
-    shortcut: "/fav.svg",
+    icon: [
+      { url: "/fav.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",

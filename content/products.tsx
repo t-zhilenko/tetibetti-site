@@ -415,7 +415,7 @@ export const products: ProductConfig[] = [
     successMessageLines: [
       "You're on the waitlist.",
       "We'll email you when Nutrition Meal Planner launches.",
-      "Planned release: March 29.",
+      "Planned release: April 2026.",
     ],
     endNote: "Early waitlist members may receive launch bonuses.",
     description:
@@ -442,7 +442,7 @@ export const products: ProductConfig[] = [
       alt: "Nutrition Meal Planner main preview",
     },
     cta: "Coming soon",
-    priceLabel: "Estimated delivery: 29 March",
+    priceLabel: "Estimated delivery: April 2026",
     status: "waiting",
     detailsAccordion: [],
     keyFeatures: [
@@ -509,7 +509,7 @@ export const products: ProductConfig[] = [
         ],
         releasePlan: [
           "We’re finishing the first release and will share access in small waves to keep feedback focused and intentional.",
-          "Planned Release: March 29",
+          "Planned Release: April 2026",
         ],
       },
     },
