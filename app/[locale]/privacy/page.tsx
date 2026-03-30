@@ -14,6 +14,8 @@ type PrivacyPageProps = {
   params: Promise<{locale: string}>;
 };
 
+export const runtime = "edge";
+
 export async function generateMetadata({params}: PrivacyPageProps): Promise<Metadata> {
   return buildLocalizedPageMetadata({
     params,

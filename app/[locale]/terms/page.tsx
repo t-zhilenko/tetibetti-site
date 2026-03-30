@@ -14,6 +14,8 @@ type TermsPageProps = {
   params: Promise<{locale: string}>;
 };
 
+export const runtime = "edge";
+
 export async function generateMetadata({params}: TermsPageProps): Promise<Metadata> {
   return buildLocalizedPageMetadata({
     params,

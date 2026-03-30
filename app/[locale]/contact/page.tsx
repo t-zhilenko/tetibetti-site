@@ -9,6 +9,8 @@ type ContactPageProps = {
   params: Promise<{locale: string}>;
 };
 
+export const runtime = "edge";
+
 export async function generateMetadata({params}: ContactPageProps): Promise<Metadata> {
   return buildLocalizedPageMetadata({
     params,

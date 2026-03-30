@@ -11,6 +11,8 @@ type ShopPageProps = {
   params: Promise<{locale: string}>;
 };
 
+export const runtime = "edge";
+
 export async function generateMetadata({params}: ShopPageProps): Promise<Metadata> {
   return buildLocalizedPageMetadata({
     params,

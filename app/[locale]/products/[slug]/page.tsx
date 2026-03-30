@@ -1,11 +1,11 @@
 import type {Metadata} from "next";
 import {notFound} from "next/navigation";
 import ProductPageClient from "@/components/product/ProductPageClient";
-import {getAllProductSlugs, getProductBySlug, getProducts} from "@/content/products";
+import {getProductBySlug, getProducts} from "@/content/products";
 import {toValidLocale} from "@/i18n/locale";
 import {getHreflang, getLocalizedPath} from "@/i18n/seo";
 
-export const dynamicParams = false;
+export const runtime = "edge";
 
 type PageProps = {
   params: Promise<{
@@ -13,10 +13,6 @@ type PageProps = {
     slug: string;
   }>;
 };
-
-export function generateStaticParams() {
-  return getAllProductSlugs().map((slug) => ({slug}));
-}
 
 export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   const {locale: localeParam, slug} = await params;

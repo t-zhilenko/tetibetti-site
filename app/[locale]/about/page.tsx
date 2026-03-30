@@ -10,6 +10,8 @@ type AboutPageProps = {
   params: Promise<{locale: string}>;
 };
 
+export const runtime = "edge";
+
 export async function generateMetadata({params}: AboutPageProps): Promise<Metadata> {
   return buildLocalizedPageMetadata({
     params,

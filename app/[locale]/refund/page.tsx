@@ -8,6 +8,8 @@ type RefundPageProps = {
   params: Promise<{locale: string}>;
 };
 
+export const runtime = "edge";
+
 export async function generateMetadata({params}: RefundPageProps): Promise<Metadata> {
   return buildLocalizedPageMetadata({
     params,

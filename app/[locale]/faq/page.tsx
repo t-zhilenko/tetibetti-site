@@ -17,6 +17,8 @@ type FaqPageProps = {
   params: Promise<{locale: string}>;
 };
 
+export const runtime = "edge";
+
 export async function generateMetadata({params}: FaqPageProps): Promise<Metadata> {
   return buildLocalizedPageMetadata({
     params,

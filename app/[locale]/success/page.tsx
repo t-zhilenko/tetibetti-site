@@ -8,6 +8,8 @@ type SuccessPageProps = {
   params: Promise<{locale: string}>;
 };
 
+export const runtime = "edge";
+
 export async function generateMetadata({params}: SuccessPageProps): Promise<Metadata> {
   return buildLocalizedPageMetadata({
     params,
