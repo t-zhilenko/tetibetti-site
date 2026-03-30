@@ -1,7 +1,5 @@
 import "./globals.css";
-import {getLocale} from "next-intl/server";
 import {Allura, Inter, Playfair_Display} from "next/font/google";
-import {toValidLocale} from "@/i18n/locale";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,11 +24,9 @@ type RootLayoutProps = {
   children: React.ReactNode;
 };
 
-export default async function RootLayout({children}: RootLayoutProps) {
-  const locale = toValidLocale(await getLocale()) ?? "en";
-
+export default function RootLayout({children}: RootLayoutProps) {
   return (
-    <html lang={locale}>
+    <html lang="en">
       <body className={`${inter.variable} ${playfair.variable} ${allura.variable} antialiased`}>
         {children}
       </body>
