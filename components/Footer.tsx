@@ -1,14 +1,15 @@
-import Link from "next/link";
-import { Instagram, Pin, Send, Youtube } from "lucide-react";
+import {Instagram, Pin, Send, Youtube} from "lucide-react";
+import {useTranslations} from "next-intl";
 import Container from "@/components/Container";
+import {Link} from "@/i18n/navigation";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/shop", label: "Shop" },
-  { href: "/blog", label: "Blog" },
-  { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contact", label: "Contact" },
+  {href: "/", key: "home"},
+  {href: "/shop", key: "shop"},
+  {href: "/blog", key: "blog"},
+  {href: "/about", key: "about"},
+  {href: "/faq", key: "faq"},
+  {href: "/contact", key: "contact"},
 ];
 
 const socialLinks = [
@@ -44,15 +45,18 @@ const stripLinkClassName =
   "text-[11.5px] uppercase tracking-[0.3em] font-light text-[#2b5968]/70 transition-opacity duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-deep/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7dce0]";
 
 export default function Footer() {
+  const t = useTranslations("Footer");
+  const nav = useTranslations("Navigation");
+
   return (
     <div className="footer-fade">
       <section className="bg-[#dfc2c0]/20 border-t border-[#cabab1]/40 text-[#2b5968]/70">
         <Container className="py-2">
           <div className="flex items-center justify-center text-center">
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <span className={stripBaseClassName}>Support me</span>
+              <span className={stripBaseClassName}>{t("supportMe")}</span>
               <span className="text-[11.5px] uppercase tracking-[0.3em] font-light text-[#2b5968]/45" aria-hidden="true">
-                {" \u00b7 "}
+                {" · "}
               </span>
               <Link
                 href={process.env.NEXT_PUBLIC_PATREON_URL ?? "#"}
@@ -90,10 +94,10 @@ export default function Footer() {
                     strokeOpacity="0.6"
                   />
                 </svg>
-                Support Ukraine
+                {t("supportUkraine")}
               </span>
               <span className="text-[11.5px] uppercase tracking-[0.3em] font-light text-[#2b5968]/45" aria-hidden="true">
-                {" \u00b7 "}
+                {" · "}
               </span>
               <Link
                 href="https://u24.gov.ua/"
@@ -101,7 +105,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                UNITED24 Foundation
+                {t("united24")}
               </Link>
             </div>
           </div>
@@ -119,15 +123,11 @@ export default function Footer() {
                 <p className="text-[22px] font-script text-deep/85">Teti Betti</p>
                 <div className="mt-3 h-px w-12 bg-deep/15 mx-auto md:mx-0" />
               </div>
-              <p className="text-sm text-deep/65">
-                Digital systems & thoughtful reflections.
-              </p>
+              <p className="text-sm text-deep/65">{t("tagline")}</p>
             </div>
 
             <div className="text-center md:text-center">
-              <p className="text-xs uppercase tracking-[0.28em] text-deep/70">
-                Navigate
-              </p>
+              <p className="text-xs uppercase tracking-[0.28em] text-deep/70">{t("navigate")}</p>
               <div className="mt-4 grid grid-cols-2 gap-3 justify-items-center">
                 {navLinks.map((link) => (
                   <Link
@@ -135,16 +135,14 @@ export default function Footer() {
                     href={link.href}
                     className={`${linkClassName} ${underlineFadeClassName}`}
                   >
-                    {link.label}
+                    {nav(link.key)}
                   </Link>
                 ))}
               </div>
             </div>
 
             <div className="text-center md:text-right">
-              <p className="text-xs uppercase tracking-[0.28em] text-deep/70">
-                Connect
-              </p>
+              <p className="text-xs uppercase tracking-[0.28em] text-deep/70">{t("connect")}</p>
               <div className="mt-4 flex items-center justify-center md:justify-end gap-4">
                 {socialLinks.map((item) => (
                   <Link
@@ -162,30 +160,21 @@ export default function Footer() {
 
           <div className="mt-6 pt-8 border-t border-deep/10/60 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-deep/60">
             <div className="flex flex-wrap items-center justify-center gap-2">
-              <Link
-                href="/privacy"
-                className={`${linkClassName} ${underlineFadeClassName}`}
-              >
-                Privacy Policy
+              <Link href="/privacy" className={`${linkClassName} ${underlineFadeClassName}`}>
+                {t("privacy")}
               </Link>
-              <span className="text-deep/40">{"\u00b7"}</span>
-              <Link
-                href="/terms"
-                className={`${linkClassName} ${underlineFadeClassName}`}
-              >
-                Terms & Conditions
+              <span className="text-deep/40">{"·"}</span>
+              <Link href="/terms" className={`${linkClassName} ${underlineFadeClassName}`}>
+                {t("terms")}
               </Link>
-              <span className="text-deep/40">{"\u00b7"}</span>
-              <Link
-                href="/license"
-                className={`${linkClassName} ${underlineFadeClassName}`}
-              >
-                License
+              <span className="text-deep/40">{"·"}</span>
+              <Link href="/license" className={`${linkClassName} ${underlineFadeClassName}`}>
+                {t("license")}
               </Link>
             </div>
             <div className="text-center md:text-right space-y-1 text-deep/60">
-              <p>Made in Ukraine with love</p>
-              <p>(c) 2026 Teti Betti. All rights reserved.</p>
+              <p>{t("madeInUkraine")}</p>
+              <p>{t("copyright")}</p>
             </div>
           </div>
         </Container>

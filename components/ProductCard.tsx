@@ -1,9 +1,10 @@
 import Image from "next/image";
-import Link from "next/link";
-import type { Product } from "@/lib/products";
+import {useTranslations} from "next-intl";
+import {Link} from "@/i18n/navigation";
+import type {ProductConfig} from "@/content/products";
 
 type ProductCardProps = {
-  product: Product;
+  product: ProductConfig;
 };
 
 const primaryButtonClassName =
@@ -22,6 +23,7 @@ const PlaceholderImage = ({ title }: { title: string }) => {
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const t = useTranslations("Product");
   const productHref = `/products/${product.slug}`;
   const checkoutHref = `/checkout?product=${product.slug}`;
   const baseImageSrc =
@@ -61,7 +63,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Link
           href={productHref}
           className="group block w-full"
-          aria-label={`${product.title} details`}
+          aria-label={t("detailsAria", {title: product.title})}
         >
           {hasImage ? (
             <div className="relative aspect-square w-full overflow-hidden rounded-[12px]">

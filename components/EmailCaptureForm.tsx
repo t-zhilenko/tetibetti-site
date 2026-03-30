@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { trackEvent } from "@/lib/analytics";
+import {useState, type FormEvent} from "react";
+import {useTranslations} from "next-intl";
+import {trackEvent} from "@/lib/analytics";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -42,6 +43,7 @@ export default function EmailCaptureForm({
   onContinue,
   analytics,
 }: EmailCaptureFormProps) {
+  const t = useTranslations("Forms.emailCapture");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [submittedOnce, setSubmittedOnce] = useState(false);
@@ -52,10 +54,10 @@ export default function EmailCaptureForm({
 
   const validateEmail = (value: string) => {
     if (!value) {
-      return "Email is required";
+      return t("validationRequired");
     }
     if (!EMAIL_RE.test(value)) {
-      return "Please enter a valid email";
+      return t("validationEmail");
     }
     return "";
   };
@@ -85,19 +87,18 @@ export default function EmailCaptureForm({
         headers: {
           "content-type": "application/json",
         },
-        body: JSON.stringify({ email: trimmedEmail }),
+        body: JSON.stringify({email: trimmedEmail}),
       });
 
       const result = (await response.json().catch(() => null)) as
-        | { ok?: boolean; success?: boolean; error?: string }
+        | {ok?: boolean; success?: boolean; error?: string}
         | null;
 
       if (!response.ok || (!result?.ok && !result?.success)) {
-        throw new Error(result?.error || "Something went wrong.");
+        throw new Error(result?.error || t("errorGeneric"));
       }
 
       setStatus("success");
-      // Capture successful waitlist/download requests without storing email content.
       if (variant === "waitlist") {
         trackEvent("waitlist joined", {
           source: analytics?.source,
@@ -119,7 +120,7 @@ export default function EmailCaptureForm({
       setErrorMessage(
         error instanceof Error && error.message
           ? error.message
-          : "Something went wrong. Please try again."
+          : t("errorTryAgain")
       );
     }
   };
@@ -131,7 +132,7 @@ export default function EmailCaptureForm({
       <div className="space-y-6 sm:space-y-8 text-center">
         <div>
           <p className="text-[20px] sm:text-[22px] text-deep/85">
-            {successTitle}
+            {successTitle ?? t("downloadSuccessTitle")}
           </p>
           {successDescription ? (
             <p className="mt-3 text-sm sm:text-base text-deep/60">
@@ -145,7 +146,7 @@ export default function EmailCaptureForm({
           ) : null}
           {supportEmail ? (
             <p className="mt-3 text-sm sm:text-base text-deep/60">
-              Still nothing?{" "}
+              {t("stillNothing")}{" "}
               <a
                 href={`mailto:${supportEmail}`}
                 className="text-deep/70 underline underline-offset-4"
@@ -160,33 +161,27 @@ export default function EmailCaptureForm({
           onClick={onContinue}
           className="inline-flex items-center justify-center rounded-full bg-blush px-6 py-3 text-sm sm:text-base font-medium text-deep border border-deep/10 transition-all duration-200 hover:bg-[#d7b7b4] whitespace-nowrap"
         >
-          Close
+          {t("close")}
         </button>
       </div>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      noValidate
-      className="space-y-6 sm:space-y-8 text-center"
-    >
-      {introText ? (
-        <p className="text-sm sm:text-base text-deep/65">{introText}</p>
-      ) : null}
+    <form onSubmit={handleSubmit} noValidate className="space-y-6 sm:space-y-8 text-center">
+      {introText ? <p className="text-sm sm:text-base text-deep/65">{introText}</p> : null}
       <div className="w-full max-w-[720px] mx-auto text-left">
         <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 items-start">
           <div className="w-full">
             <label htmlFor={`email-capture-${variant}`} className="sr-only">
-              Email
+              {t("emailLabel")}
             </label>
             <input
               id={`email-capture-${variant}`}
               type="text"
               inputMode="email"
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder={t("placeholder")}
               value={email}
               onChange={(event) => {
                 setEmail(event.target.value);
@@ -207,9 +202,7 @@ export default function EmailCaptureForm({
             />
             <div className="mt-2 min-h-[18px]">
               {showError ? (
-                <p className="text-[12px] leading-4 text-rose-400">
-                  {errorMessage}
-                </p>
+                <p className="text-[12px] leading-4 text-rose-400">{errorMessage}</p>
               ) : variant === "waitlist" && isSuccess && successLines?.length ? (
                 <div className="space-y-1 text-[12px] text-deep/60">
                   {successLines.map((line, index) => (
@@ -217,9 +210,7 @@ export default function EmailCaptureForm({
                   ))}
                 </div>
               ) : helperText ? (
-                <p className="text-[12px] leading-4 text-slate-400/70">
-                  {helperText}
-                </p>
+                <p className="text-[12px] leading-4 text-slate-400/70">{helperText}</p>
               ) : null}
             </div>
           </div>
@@ -230,7 +221,7 @@ export default function EmailCaptureForm({
               isSubmitting ? "opacity-60 cursor-not-allowed" : ""
             }`}
           >
-            {isSubmitting ? submittingLabel ?? "Adding..." : submitLabel}
+            {isSubmitting ? submittingLabel ?? t("buttonLoading") : submitLabel}
           </button>
         </div>
       </div>

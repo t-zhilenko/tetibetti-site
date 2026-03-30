@@ -1,4 +1,6 @@
-﻿import Link from "next/link";
+import {useTranslations} from "next-intl";
+import {Link} from "@/i18n/navigation";
+
 type ProductInfoPanelProps = {
   title: string;
   priceLabel: string;
@@ -22,11 +24,13 @@ export default function ProductInfoPanel({
   secondaryCtaHref,
   meta,
 }: ProductInfoPanelProps) {
+  const t = useTranslations("Product");
+
   return (
     <div className="space-y-4">
       <div className="space-y-2">
         <p className="text-[11px] uppercase tracking-[0.32em] text-deep/45">
-          Notion template
+          {t("templateLabel")}
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-3xl md:text-4xl text-deep/90">{title}</h1>

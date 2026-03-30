@@ -6,7 +6,7 @@ type GalleryPlaceholderProps = {
 
 export default function GalleryPlaceholder({
   className,
-  label = "Preview coming soon",
+  label = "Preview",
   variant = "main",
 }: GalleryPlaceholderProps) {
   const showText = variant === "main";
@@ -58,7 +58,7 @@ export default function GalleryPlaceholder({
             fontSize={textSize}
             fontFamily="Georgia, serif"
           >
-            Preview coming soon
+            {label}
           </text>
         ) : null}
       </svg>

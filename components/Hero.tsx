@@ -1,8 +1,11 @@
-﻿import Container from "@/components/Container";
 import Image from "next/image";
-import Link from "next/link";
+import {useTranslations} from "next-intl";
+import Container from "@/components/Container";
+import {Link} from "@/i18n/navigation";
 
 export default function Hero() {
+  const t = useTranslations("Home.hero");
+
   return (
     <section className="relative overflow-hidden bg-soft bg-[radial-gradient(900px_420px_at_80%_85%,rgba(223,194,192,0.08),transparent_70%)]">
       <Container className="py-16 md:py-15">
@@ -13,7 +16,7 @@ export default function Hero() {
                 <div className="polaroid-frame">
                   <Image
                     src="/images/hero-portrait.jpg"
-                    alt="Tatiana – Founder of Teti Betti"
+                    alt={t("portraitAlt")}
                     width={480}
                     height={600}
                     className="w-full h-auto object-cover rounded-sm"
@@ -25,34 +28,32 @@ export default function Hero() {
                 </div>
               </div>
               <p className="mt-3 text-center text-xs tracking-wide text-deep/40">
-                Tetiana • Teti Betti
+                {t("caption")}
               </p>
             </div>
           </div>
           <div className="space-y-5 order-2 max-w-[560px] lg:justify-self-start">
             <p className="text-xs uppercase tracking-[0.3em] text-deep/50">
-              Digital systems & reflections
+              {t("eyebrow")}
             </p>
             <h1 className="text-3xl md:text-4xl leading-[1.1] tracking-[-0.02em] max-w-xl">
-              Structure for clarity.{" "}
-              <span className="text-deep/90">Space for becoming.</span>
+              {t("title")} <span className="text-deep/90">{t("titleAccent")}</span>
             </h1>
             <p className="max-w-md text-[13px] md:text-[15px] leading-relaxed text-deep/75">
-              I build thoughtful systems and write about purpose, growth and
-              alignment — creating minimal tools to support the process.
+              {t("description")}
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
                 href="/shop"
                 className="inline-flex items-center justify-center rounded-full bg-blush/80 px-5 py-2.5 text-sm font-medium text-deep border border-deep/10 shadow-sm"
               >
-                View products
+                {t("primaryCta")}
               </Link>
               <Link
                 href="/blog"
                 className="inline-flex items-center justify-center rounded-full border border-deep/40 px-5 py-2.5 text-sm font-medium text-deep/75 hover:text-deep"
               >
-                Read blog
+                {t("secondaryCta")}
               </Link>
             </div>
           </div>

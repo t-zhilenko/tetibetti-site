@@ -3,9 +3,11 @@ export type {
   ProductBenefit,
   ProductBenefitsSection,
   ProductConfig as Product,
+  ProductContentBlock,
+  ProductFaqItem,
   ProductFaqSection,
   ProductImage,
   ProductStatus,
 } from "@/content/products";
 
-export { getProductBySlug, products } from "@/content/products";
+export { getAllProductSlugs, getProductBySlug, getProducts } from "@/content/products";

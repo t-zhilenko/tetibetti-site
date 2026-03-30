@@ -1,6 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
+import {useTranslations} from "next-intl";
 import Container from "@/components/Container";
+import {Link} from "@/i18n/navigation";
 
 const placeholderSvg = encodeURIComponent(`
   <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96">
@@ -36,11 +37,12 @@ function PairsWithCard({
   imageSrc,
   imageAlt,
 }: PairsWithItem) {
+  const t = useTranslations("Product");
   const isAnchor = href.startsWith("#");
   const Wrapper = isAnchor ? "a" : Link;
   const wrapperProps = {
     href,
-    "aria-label": `View ${title}`,
+    "aria-label": t("viewProductAria", {title}),
     className:
       "group flex items-center gap-3 rounded-2xl border border-[#dfc2c0]/25 bg-[#f7dce0]/20 px-4 py-3 transition-transform duration-200 hover:scale-[1.02] hover:bg-[#f7dce0]/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(223,194,192,0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fdf9f9]",
   };

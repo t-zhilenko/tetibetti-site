@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
+import {useEffect, useId, useRef, useState, type FormEvent} from "react";
+import {useTranslations} from "next-intl";
 
 type Status = "idle" | "loading";
-
 type MessageType = "error" | "success" | null;
 
 type MessageState = {
@@ -35,6 +35,7 @@ export default function SubscribeForm({
   buttonClassName,
   layout = "default",
 }: SubscribeFormProps) {
+  const t = useTranslations("Forms.subscribe");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -48,7 +49,6 @@ export default function SubscribeForm({
   const timersRef = useRef<number[]>([]);
   const inputId = useId();
   const honeypotId = useId();
-
   const isLoading = status === "loading";
 
   const clearTimers = () => {
@@ -74,17 +74,13 @@ export default function SubscribeForm({
       clearTimers();
       setShowSubscribed(false);
       setJustSucceeded(false);
-      setMessage({
-        type: "error",
-        text: "Please enter a valid email address.",
-        visible: true,
-      });
+      setMessage({type: "error", text: t("validationEmail"), visible: true});
       setStatus("idle");
       return;
     }
 
     clearTimers();
-    setMessage({ type: null, text: "", visible: false });
+    setMessage({type: null, text: "", visible: false});
     setStatus("loading");
 
     try {
@@ -102,22 +98,17 @@ export default function SubscribeForm({
       });
 
       const result = (await response.json().catch(() => null)) as
-        | { success?: boolean; ok?: boolean; error?: string }
+        | {success?: boolean; ok?: boolean; error?: string}
         | null;
 
       if (!response.ok || (!result?.success && !result?.ok)) {
-        const messageText = result?.error || "Something went wrong.";
-        throw new Error(messageText);
+        throw new Error(result?.error || t("errorGeneric"));
       }
 
       setStatus("idle");
       setEmail("");
       setShowSubscribed(true);
-      setMessage({
-        type: "success",
-        text: "Thank you. You're on the list.",
-        visible: true,
-      });
+      setMessage({type: "success", text: t("success"), visible: true});
       setJustSucceeded(true);
 
       const pulseTimer = window.setTimeout(() => setJustSucceeded(false), 120);
@@ -131,7 +122,7 @@ export default function SubscribeForm({
         4000
       );
       const clearTimer = window.setTimeout(
-        () => setMessage({ type: null, text: "", visible: false }),
+        () => setMessage({type: null, text: "", visible: false}),
         4200
       );
 
@@ -145,28 +136,21 @@ export default function SubscribeForm({
         text:
           error instanceof Error && error.message
             ? error.message
-            : "Something went wrong. Please try again.",
+            : t("errorTryAgain"),
         visible: true,
       });
     }
   };
 
-  const messageTone =
-    message.type === "error" ? "text-[#cda4a8]" : "text-deep/60";
+  const messageTone = message.type === "error" ? "text-[#cda4a8]" : "text-deep/60";
   const messageVisible = message.visible && message.text;
 
   if (layout === "aligned") {
     return (
-      <form
-        onSubmit={handleSubmit}
-        noValidate
-        className={`mt-10 w-full${
-          className ? ` ${className}` : ""
-        }`}
-      >
+      <form onSubmit={handleSubmit} noValidate className={`mt-10 w-full${className ? ` ${className}` : ""}`}>
         <div className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden">
           <label htmlFor={honeypotId} aria-hidden="true">
-            Company
+            {t("honeypotLabel")}
           </label>
           <input
             id={honeypotId}
@@ -180,7 +164,7 @@ export default function SubscribeForm({
           />
         </div>
         <label htmlFor={inputId} className="sr-only">
-          Email
+          {t("emailLabel")}
         </label>
         <div className="flex w-full items-center gap-3">
           <input
@@ -191,10 +175,10 @@ export default function SubscribeForm({
             onChange={(event) => {
               setEmail(event.target.value);
               if (message.type === "error") {
-                setMessage({ type: null, text: "", visible: false });
+                setMessage({type: null, text: "", visible: false});
               }
             }}
-            placeholder="Your email"
+            placeholder={t("placeholder")}
             disabled={isLoading}
             aria-invalid={message.type === "error"}
             aria-describedby={`${inputId}-feedback`}
@@ -216,10 +200,10 @@ export default function SubscribeForm({
             }`}
           >
             {isLoading
-              ? "Subscribing..."
+              ? t("buttonLoading")
               : showSubscribed
-                ? "Subscribed"
-                : buttonLabel ?? "Subscribe"}
+                ? t("buttonSuccess")
+                : buttonLabel ?? t("buttonIdle")}
           </button>
         </div>
         <div className="min-h-[18px] mt-2 text-left">
@@ -246,7 +230,7 @@ export default function SubscribeForm({
     >
       <div className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden">
         <label htmlFor={honeypotId} aria-hidden="true">
-          Company
+          {t("honeypotLabel")}
         </label>
         <input
           id={honeypotId}
@@ -260,7 +244,7 @@ export default function SubscribeForm({
         />
       </div>
       <label htmlFor={inputId} className="sr-only">
-        Email
+        {t("emailLabel")}
       </label>
       <div className="w-full sm:w-[360px]">
         <input
@@ -271,10 +255,10 @@ export default function SubscribeForm({
           onChange={(event) => {
             setEmail(event.target.value);
             if (message.type === "error") {
-              setMessage({ type: null, text: "", visible: false });
+              setMessage({type: null, text: "", visible: false});
             }
           }}
-          placeholder="Your email"
+          placeholder={t("placeholder")}
           disabled={isLoading}
           aria-invalid={message.type === "error"}
           aria-describedby={`${inputId}-feedback`}
@@ -307,10 +291,10 @@ export default function SubscribeForm({
         }`}
       >
         {isLoading
-          ? "Subscribing..."
+          ? t("buttonLoading")
           : showSubscribed
-            ? "Subscribed"
-            : buttonLabel ?? "Subscribe"}
+            ? t("buttonSuccess")
+            : buttonLabel ?? t("buttonIdle")}
       </button>
     </form>
   );

@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useId, useRef } from "react";
+import {useEffect, useId, useRef} from "react";
+import {useTranslations} from "next-intl";
 
 type ModalProps = {
   open: boolean;
@@ -19,6 +20,7 @@ export default function Modal({
   panelClassName,
   contentClassName,
 }: ModalProps) {
+  const t = useTranslations("Common");
   const titleId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
@@ -141,7 +143,7 @@ export default function Modal({
             type="button"
             onClick={onClose}
             className="text-deep/50 transition-colors hover:text-deep/70 focus-visible:outline-none"
-            aria-label="Close modal"
+            aria-label={t("closeModal")}
           >
             <span aria-hidden="true">×</span>
           </button>

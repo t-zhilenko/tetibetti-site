@@ -1,32 +1,52 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {useEffect, useMemo, useState, type ReactNode} from "react";
+import {useTranslations} from "next-intl";
 import EmailCaptureForm from "@/components/EmailCaptureForm";
 import ProductGalleryEmbla from "@/components/ProductGalleryEmbla";
 import Modal from "@/components/Modal";
 import ProductPageLayout from "@/components/product/ProductPageLayout";
 import PairsWithSection from "@/components/product/PairsWithSection";
 import ProductActions from "@/components/product/ProductActions";
-import { trackEvent } from "@/lib/analytics";
-import {
-  DEFAULT_PAIRS_WITH_TITLE,
-  getProductBySlug,
-  type ProductImage,
+import {trackEvent} from "@/lib/analytics";
+import type {
+  ProductConfig,
+  ProductContentBlock,
+  ProductImage,
 } from "@/content/products";
 
 type ProductPageClientProps = {
-  slug: string;
+  product: ProductConfig;
+  allProducts: ProductConfig[];
 };
 
-export default function ProductPageClient({ slug }: ProductPageClientProps) {
-  const product = getProductBySlug(slug);
+const renderContentBlock = (content: ProductContentBlock): ReactNode => (
+  <div className="space-y-3">
+    {content.intro ? <p>{content.intro}</p> : null}
+    {content.paragraphs?.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+    {content.bullets?.length ? (
+      <ul className="list-disc pl-5 space-y-2">
+        {content.bullets.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    ) : null}
+    {content.ordered?.length ? (
+      <ol className="list-decimal pl-5 space-y-2">
+        {content.ordered.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ol>
+    ) : null}
+    {content.outro ? <p>{content.outro}</p> : null}
+  </div>
+);
+
+export default function ProductPageClient({product, allProducts}: ProductPageClientProps) {
+  const t = useTranslations("Product");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!product) {
-      return;
-    }
-    // Track product views once per product page.
     trackEvent("product viewed", {
       product_slug: product.slug,
       product_name: product.title,
@@ -35,18 +55,18 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   }, [product]);
 
   const carouselImages = useMemo<ProductImage[]>(
-    () => product?.galleryImages ?? [],
-    [product?.galleryImages]
+    () => product.galleryImages ?? [],
+    [product.galleryImages]
   );
 
   const pairsWithItems = useMemo(() => {
-    if (!product?.pairsWith?.length) {
+    if (!product.pairsWith?.length) {
       return null;
     }
 
     return product.pairsWith
       .map((slug) => {
-        const related = getProductBySlug(slug);
+        const related = allProducts.find((item) => item.slug === slug);
         if (!related) {
           return null;
         }
@@ -64,8 +84,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
             target: related.slug,
           });
         }
-        const imageAlt =
-          override?.imageAlt ?? related.mainPreviewImage?.alt ?? title;
+        const imageAlt = override?.imageAlt ?? related.mainPreviewImage?.alt ?? title;
         return {
           title,
           subtitle,
@@ -83,51 +102,41 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
           imageAlt: string;
         } => Boolean(item)
       );
-  }, [product]);
+  }, [allProducts, product]);
 
   const closeModal = () => {
     setIsModalOpen(false);
   };
 
-  if (!product) {
-    return null;
-  }
-
   const isWaitingStatus = product.status === "waiting";
   const primaryCta = product.primaryCta ?? {
     type: isWaitingStatus ? "waitlist" : "download",
-    label: isWaitingStatus ? "Join waitlist" : product.ctaLabel ?? "Download",
-    helperText: isWaitingStatus
-      ? "We'll email you when the product is ready."
-      : product.ctaNote,
+    label: isWaitingStatus ? t("joinWaitlist") : product.ctaLabel ?? t("download"),
+    helperText: isWaitingStatus ? t("waitlistHelperDefault") : product.ctaNote,
   };
+
   const isWaitlist = primaryCta.type === "waitlist";
-  const isNutritionWaitlist =
-    isWaitlist && product.slug === "nutrition-meal-planner";
+  const isNutritionWaitlist = isWaitlist && product.slug === "nutrition-meal-planner";
   const waitlistEndpoint = isNutritionWaitlist
     ? "/api/brevo/nutrition-waitlist"
     : "/api/brevo/subscribe";
   const statusBadgeText = product.statusBadgeText ?? product.badge.label;
-  const waitlistHelperText =
-    primaryCta.helperText ?? "We'll email you when the product is ready.";
-  const waitlistSuccessLines =
-    product.successMessageLines ?? ["You're on the waitlist."];
+  const waitlistHelperText = primaryCta.helperText ?? t("waitlistHelperDefault");
+  const waitlistSuccessLines = product.successMessageLines ?? [t("waitlistSuccessDefault")];
   const ctaNote =
     primaryCta.type === "download" && primaryCta.helperText ? (
-      <p className="mt-2 text-[12px] text-deep/60">
-        {primaryCta.helperText}
-      </p>
+      <p className="mt-2 text-[12px] text-deep/60">{primaryCta.helperText}</p>
     ) : null;
 
   const keyFeatures = product.keyFeatures ?? [];
-  const keyFeaturesTitle =
-    product.sections?.keyFeaturesSectionTitle ?? product.benefits?.title;
+  const keyFeaturesTitle = product.sections?.keyFeaturesSectionTitle ?? product.benefits?.title;
   const keyFeaturesSubtitle =
     product.sections?.keyFeaturesSectionSubtitle ?? product.benefits?.description;
+
   const benefitsSection =
     keyFeatures.length > 0
       ? {
-          title: keyFeaturesTitle ?? "Key Features",
+          title: keyFeaturesTitle ?? t("keyFeatures"),
           description: keyFeaturesSubtitle,
           items: keyFeatures.map((feature) => ({
             title: feature.title,
@@ -137,9 +146,8 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
       : product.benefits;
 
   const sectionAccordion = product.sections?.accordionItems;
-  const buildAccordionContent = (
-    value?: string[] | string
-  ): ReactNode | null => {
+
+  const buildAccordionContent = (value?: string[] | string): ReactNode | null => {
     if (!value) {
       return null;
     }
@@ -154,50 +162,48 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     }
     return <p>{value}</p>;
   };
+
   const detailsAccordionItems = sectionAccordion
     ? [
         {
           id: `${product.slug}-who-its-for`,
-          title: "Who It's For",
+          title: t("whoItsFor"),
           content: buildAccordionContent(sectionAccordion.whoItsFor),
         },
         {
           id: `${product.slug}-whats-inside`,
-          title: "What's Inside",
+          title: t("whatsInside"),
           content: buildAccordionContent(sectionAccordion.whatsInside),
         },
         {
           id: `${product.slug}-release-plan`,
-          title: "Release Plan",
+          title: t("releasePlan"),
           content: buildAccordionContent(sectionAccordion.releasePlan),
         },
       ].filter((item) => Boolean(item.content))
-    : product.detailsAccordion;
+    : product.detailsAccordion
+        .map((section) => ({
+          id: section.id,
+          title: section.title,
+          content: renderContentBlock(section.content),
+        }))
+        .filter((item) => Boolean(item.content));
 
   const faqSection = product.faq
     ? {
-        ...product.faq,
         title: product.sections?.faqTitle ?? product.faq.title,
         description: product.sections?.faqSubtitle ?? product.faq.description,
+        items: product.faq.items.map((item) => ({
+          id: item.id,
+          title: item.title,
+          content: <p>{item.answer}</p>,
+        })),
       }
     : undefined;
 
   const relatedContent = pairsWithItems?.length ? (
-    <PairsWithSection
-      title={product.pairsWithTitle ?? DEFAULT_PAIRS_WITH_TITLE}
-      items={pairsWithItems}
-    />
+    <PairsWithSection title={product.pairsWithTitle ?? t("pairsWellWith")} items={pairsWithItems} />
   ) : null;
-
-  const modalTitle = "Download Free";
-  const modalDescription =
-    "Enter your email to receive the Notion template link and setup steps.";
-  const modalSuccessTitle = "Check your inbox \uD83D\uDC9F";
-  const modalSuccessDescription =
-    "Your template link and setup instructions are on the way.";
-  const modalSuccessHelp =
-    "If you don't see it in a minute, check Promotions/Spam.";
-  const modalSupportEmail = "support@tetibetti.com";
 
   return (
     <ProductPageLayout
@@ -213,7 +219,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
               variant="waitlist"
               endpoint={waitlistEndpoint}
               submitLabel={primaryCta.label}
-              submittingLabel="Adding..."
+              submittingLabel={t("adding")}
               helperText={waitlistHelperText}
               successLines={waitlistSuccessLines}
               analytics={{
@@ -236,41 +242,31 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
           </a>
         )
       }
-      ctaNote={
-        ctaNote
-      }
+      ctaNote={ctaNote}
       media={<ProductGalleryEmbla images={carouselImages} />}
       relatedContent={relatedContent}
       relatedContentClassName="mt-4"
       detailsAccordion={detailsAccordionItems}
       actions={
         (product.showActions ?? true) ? (
-          <ProductActions
-            productSlug={product.slug}
-            productTitle={product.title}
-          />
+          <ProductActions productSlug={product.slug} productTitle={product.title} />
         ) : null
       }
       benefits={benefitsSection}
       faq={faqSection}
       afterContent={
-        <Modal
-          open={isModalOpen}
-          title={modalTitle}
-          onClose={closeModal}
-          contentClassName="mt-6 sm:mt-8"
-        >
+        <Modal open={isModalOpen} title={t("downloadFree")} onClose={closeModal} contentClassName="mt-6 sm:mt-8">
           <EmailCaptureForm
             key={isModalOpen ? "open" : "closed"}
             variant="download"
             endpoint="/api/brevo/yearly-goals-download"
-            submitLabel="Send me the link"
-            submittingLabel="Sending..."
-            introText={modalDescription}
-            successTitle={modalSuccessTitle}
-            successDescription={modalSuccessDescription}
-            successHelpText={modalSuccessHelp}
-            supportEmail={modalSupportEmail}
+            submitLabel={t("sendMeLink")}
+            submittingLabel={t("sending")}
+            introText={t("downloadModalIntro")}
+            successTitle={t("downloadModalSuccessTitle")}
+            successDescription={t("downloadModalSuccessDescription")}
+            successHelpText={t("downloadModalSuccessHelp")}
+            supportEmail="support@tetibetti.com"
             onContinue={closeModal}
             analytics={{
               source: "download_modal",

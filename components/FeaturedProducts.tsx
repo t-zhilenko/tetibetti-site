@@ -1,20 +1,23 @@
 import Container from "@/components/Container";
 import ProductCard from "@/components/ProductCard";
-import Link from "next/link";
-import { products } from "@/lib/products";
+import {Link} from "@/i18n/navigation";
+import {useTranslations} from "next-intl";
+import type {ProductConfig} from "@/content/products";
 
-export default function FeaturedProducts() {
+type FeaturedProductsProps = {
+  products: ProductConfig[];
+};
+
+export default function FeaturedProducts({products}: FeaturedProductsProps) {
+  const t = useTranslations("Home.featured");
+
   return (
     <section className="bg-[#fbf3f4]">
       <Container className="py-24 md:py-18">
         <div className="space-y-3 text-center">
-          <p className="text-xs uppercase tracking-[0.3em] text-deep/50">
-            Featured Products
-          </p>
-          <h2 className="text-2xl md:text-3xl">Simple tools for steady progress.</h2>
-          <p className="mx-auto max-w-xl text-[13px] text-deep/70">
-            A minimal collection of systems built for clarity and calm.
-          </p>
+          <p className="text-xs uppercase tracking-[0.3em] text-deep/50">{t("label")}</p>
+          <h2 className="text-2xl md:text-3xl">{t("title")}</h2>
+          <p className="mx-auto max-w-xl text-[13px] text-deep/70">{t("description")}</p>
         </div>
         <div className="mt-16">
           <div className="grid gap-12 md:gap-10 lg:gap-12 md:[grid-template-columns:repeat(auto-fit,minmax(240px,340px))] md:justify-center">
@@ -30,7 +33,7 @@ export default function FeaturedProducts() {
             href="/shop"
             className="inline-flex items-center justify-center rounded-full border border-deep/30 px-5 py-2 text-[13px] font-medium text-deep/70 hover:text-deep"
           >
-            View all
+            {t("viewAll")}
           </Link>
         </div>
       </Container>

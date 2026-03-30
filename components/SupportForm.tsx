@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { trackEvent } from "@/lib/analytics";
+import {useState, type FormEvent} from "react";
+import {useTranslations} from "next-intl";
+import {trackEvent} from "@/lib/analytics";
 
 type SupportFormVariant = "modal" | "inline";
 
@@ -29,10 +30,11 @@ export default function SupportForm({
   className,
   rows,
   showSuccessAction = false,
-  successActionLabel = "Close",
+  successActionLabel,
   onSuccessAction,
   analyticsEvent,
 }: SupportFormProps) {
+  const t = useTranslations("Forms.support");
   const [supportEmail, setSupportEmail] = useState("");
   const [supportMessage, setSupportMessage] = useState("");
   const [supportTouched, setSupportTouched] = useState({
@@ -47,7 +49,7 @@ export default function SupportForm({
   const resetSupportForm = () => {
     setSupportEmail("");
     setSupportMessage("");
-    setSupportTouched({ email: false, message: false });
+    setSupportTouched({email: false, message: false});
     setSupportError("");
     setSupportStatus("idle");
   };
@@ -57,10 +59,10 @@ export default function SupportForm({
     const trimmedMessage = supportMessage.trim();
 
     if (trimmedEmail && !EMAIL_RE.test(trimmedEmail)) {
-      return "Please enter a valid email.";
+      return t("validationEmail");
     }
     if (trimmedMessage.length < 10) {
-      return "Please enter at least 10 characters.";
+      return t("validationMessage");
     }
     return "";
   };
@@ -71,7 +73,7 @@ export default function SupportForm({
       return;
     }
 
-    setSupportTouched({ email: true, message: true });
+    setSupportTouched({email: true, message: true});
     const validationError = validateSupportForm();
     if (validationError) {
       setSupportError("");
@@ -98,15 +100,14 @@ export default function SupportForm({
       });
 
       const result = (await response.json().catch(() => null)) as
-        | { ok?: boolean; error?: string }
+        | {ok?: boolean; error?: string}
         | null;
 
       if (!response.ok || !result?.ok) {
-        throw new Error(result?.error || "Something went wrong.");
+        throw new Error(result?.error || t("errorGeneric"));
       }
 
       setSupportStatus("success");
-      // Capture successful contact submissions without message content.
       if (analyticsEvent) {
         trackEvent(analyticsEvent.name, analyticsEvent.properties);
       }
@@ -115,7 +116,7 @@ export default function SupportForm({
       setSupportError(
         error instanceof Error && error.message
           ? error.message
-          : "Something went wrong. Please try again."
+          : t("errorTryAgain")
       );
     }
   };
@@ -124,19 +125,22 @@ export default function SupportForm({
     supportTouched.email &&
     supportEmail.trim() &&
     !EMAIL_RE.test(supportEmail.trim())
-      ? "Please enter a valid email."
+      ? t("validationEmail")
       : "";
+
   const messageError =
     supportTouched.message && supportMessage.trim().length < 10
-      ? "Please enter at least 10 characters."
+      ? t("validationMessage")
       : "";
 
   const inputClassName = `w-full rounded-full border px-5 text-deep placeholder:text-deep/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-deep/30 ${
     isInline ? "h-10 text-[13px]" : "h-11 text-sm"
   } ${emailError ? "border-rose-200 bg-rose-50/30" : "border-[rgba(43,89,104,0.2)] bg-[#fdfcfa]"}`;
+
   const textareaClassName = `w-full rounded-2xl border px-4 text-deep placeholder:text-deep/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-deep/30 ${
     isInline ? "py-2.5 text-[13px] leading-relaxed" : "py-3 text-sm"
   } ${messageError ? "border-rose-200 bg-rose-50/30" : "border-[rgba(43,89,104,0.2)] bg-[#fdfcfa]"}`;
+
   const buttonClassName = `inline-flex w-full items-center justify-center rounded-full px-5 font-medium border transition-all duration-200 ${
     isInline ? "py-2 text-[13px]" : "py-2 text-sm"
   } ${
@@ -144,6 +148,7 @@ export default function SupportForm({
       ? "bg-blush/60 text-deep/70 border-deep/10 opacity-60 cursor-not-allowed"
       : "bg-blush text-deep border-deep/10 hover:bg-[#d7b7b4]"
   }`;
+
   const errorTextClassName = isInline
     ? "text-[11px] leading-4 text-rose-400"
     : "text-[12px] leading-4 text-rose-400";
@@ -153,10 +158,8 @@ export default function SupportForm({
       <div className={className}>
         <div className={isInline ? "space-y-3 text-center" : "space-y-4"}>
           <div>
-            <p className="text-lg text-deep/85">Sent. We&apos;ll reply soon.</p>
-            <p className="mt-2 text-sm text-deep/60">
-              Thanks for reaching out. We&apos;ll get back to you by email.
-            </p>
+            <p className="text-lg text-deep/85">{t("successTitle")}</p>
+            <p className="mt-2 text-sm text-deep/60">{t("successDescription")}</p>
           </div>
           {showSuccessAction ? (
             <button
@@ -164,7 +167,7 @@ export default function SupportForm({
               onClick={onSuccessAction ?? resetSupportForm}
               className="inline-flex items-center justify-center rounded-full bg-blush px-5 py-2 text-sm font-medium text-deep border border-deep/10 transition-all duration-200 hover:bg-[#d7b7b4]"
             >
-              {successActionLabel}
+              {successActionLabel ?? t("successAction")}
             </button>
           ) : null}
         </div>
@@ -176,18 +179,24 @@ export default function SupportForm({
     <form
       onSubmit={handleSupportSubmit}
       noValidate
-      className={className ? `${className} ${isInline ? "space-y-3" : "space-y-4"}` : isInline ? "space-y-3" : "space-y-4"}
+      className={
+        className
+          ? `${className} ${isInline ? "space-y-3" : "space-y-4"}`
+          : isInline
+            ? "space-y-3"
+            : "space-y-4"
+      }
     >
       <div>
         <label htmlFor={`${productSlug}-support-email`} className="sr-only">
-          Email (optional)
+          {t("emailOptionalLabel")}
         </label>
         <input
           id={`${productSlug}-support-email`}
           type="text"
           inputMode="email"
           autoComplete="email"
-          placeholder="Your email (optional)"
+          placeholder={t("emailOptionalPlaceholder")}
           value={supportEmail}
           onChange={(event) => {
             setSupportEmail(event.target.value);
@@ -196,7 +205,7 @@ export default function SupportForm({
             }
           }}
           onBlur={() => {
-            setSupportTouched((prev) => ({ ...prev, email: true }));
+            setSupportTouched((prev) => ({...prev, email: true}));
           }}
           className={inputClassName}
         />
@@ -207,7 +216,7 @@ export default function SupportForm({
 
       <div>
         <label htmlFor={`${productSlug}-support-message`} className="sr-only">
-          Message
+          {t("messageLabel")}
         </label>
         <textarea
           id={`${productSlug}-support-message`}
@@ -219,16 +228,14 @@ export default function SupportForm({
             }
           }}
           onBlur={() => {
-            setSupportTouched((prev) => ({ ...prev, message: true }));
+            setSupportTouched((prev) => ({...prev, message: true}));
           }}
-          placeholder="Your message"
+          placeholder={t("messagePlaceholder")}
           rows={rows ?? (isInline ? 3 : 4)}
           className={textareaClassName}
         />
         <div className={isInline ? "mt-1.5 min-h-[14px]" : "mt-2 min-h-[18px]"}>
-          {messageError ? (
-            <p className={errorTextClassName}>{messageError}</p>
-          ) : null}
+          {messageError ? <p className={errorTextClassName}>{messageError}</p> : null}
         </div>
       </div>
 
@@ -239,7 +246,7 @@ export default function SupportForm({
       ) : null}
 
       <button type="submit" disabled={supportStatus === "loading"} className={buttonClassName}>
-        {supportStatus === "loading" ? "Sending..." : "Send"}
+        {supportStatus === "loading" ? t("buttonLoading") : t("buttonIdle")}
       </button>
     </form>
   );

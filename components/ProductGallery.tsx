@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import {useTranslations} from "next-intl";
 import ScreenshotFrame from "@/components/ScreenshotFrame";
 
 type ProductImage = {
@@ -15,6 +16,7 @@ type ProductGalleryProps = {
 };
 
 export default function ProductGallery({ images = [], title }: ProductGalleryProps) {
+  const t = useTranslations("Product.gallery");
   const [activeIndex, setActiveIndex] = useState(0);
   const activeImage = images[activeIndex] ?? images[0];
 
@@ -31,7 +33,7 @@ export default function ProductGallery({ images = [], title }: ProductGalleryPro
         />
       ) : (
         <div className="aspect-[16/10] rounded-3xl bg-[radial-gradient(circle_at_top,#f7dce0_0%,#fbf7f6_55%,#fdf9f9_100%)] text-deep/50 text-sm flex items-center justify-center">
-          Product preview
+          {t("placeholderMain")}
         </div>
       )}
       {images.length > 1 ? (
@@ -48,7 +50,7 @@ export default function ProductGallery({ images = [], title }: ProductGalleryPro
                     ? "border-[#2b5968]/40 ring-2 ring-[#dfc2c0]/60"
                     : "border-[#cabab1]/40 hover:border-[#2b5968]/30"
                 }`}
-                aria-label={`View image ${index + 1} of ${images.length}`}
+                aria-label={t("viewImage", {index: index + 1, total: images.length})}
               >
                 {image.src ? (
                   <Image

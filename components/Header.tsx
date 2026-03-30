@@ -1,18 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Instagram, Pin, Search, ShoppingBag, Youtube, Send } from "lucide-react";
+import {Instagram, Pin, Search, ShoppingBag, Youtube, Send} from "lucide-react";
+import {useLocale, useTranslations} from "next-intl";
 import Container from "@/components/Container";
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/shop", label: "Shop" },
-  { href: "/blog", label: "Blog" },
-  { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contact", label: "Contact" },
-];
+import {routing, type Locale} from "@/i18n/routing";
+import {Link, usePathname, useRouter} from "@/i18n/navigation";
 
 const socialLinks = [
   {
@@ -37,8 +29,21 @@ const socialLinks = [
   },
 ];
 
+const navLinks = [
+  {href: "/", key: "home"},
+  {href: "/shop", key: "shop"},
+  {href: "/blog", key: "blog"},
+  {href: "/about", key: "about"},
+  {href: "/faq", key: "faq"},
+  {href: "/contact", key: "contact"},
+];
+
 export default function Header() {
+  const t = useTranslations("Navigation");
+  const common = useTranslations("Common");
   const pathname = usePathname();
+  const locale = useLocale() as Locale;
+  const router = useRouter();
 
   const isActive = (href: string) => {
     if (href === "/") {
@@ -55,7 +60,7 @@ export default function Header() {
             <div className="flex items-center gap-3 text-deep/55">
               <button
                 type="button"
-                aria-label="Search"
+                aria-label={common("search")}
                 className="inline-flex hover:text-deep/85"
               >
                 <Search size={16} strokeWidth={1.5} />
@@ -82,7 +87,7 @@ export default function Header() {
               ))}
               <button
                 type="button"
-                aria-label="Cart"
+                aria-label={common("cart")}
                 className="relative inline-flex hover:text-deep/85"
               >
                 <ShoppingBag size={16} strokeWidth={1.5} />
@@ -95,7 +100,7 @@ export default function Header() {
 
       <div className="bg-beige/32 border-y border-deep/10">
         <Container>
-          <div className="min-h-[48px] md:min-h-[54px] py-2 flex items-center">
+          <div className="min-h-[48px] md:min-h-[54px] py-2 flex items-center justify-between gap-4">
             <nav className="mx-auto flex flex-wrap items-center justify-center gap-6 text-xs uppercase tracking-[0.25em]">
               {navLinks.map((link) => (
                 <Link
@@ -107,10 +112,33 @@ export default function Header() {
                       : "text-deep/60 font-light hover:text-deep hover:border-deep/30"
                   }`}
                 >
-                  {link.label}
+                  {t(link.key)}
                 </Link>
               ))}
             </nav>
+            <div className="flex items-center justify-end">
+              <div className="inline-flex items-center gap-1 rounded-full bg-white/55 p-1 border border-deep/10">
+                {routing.locales.map((value) => {
+                  const isCurrent = locale === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => router.replace(pathname, {locale: value})}
+                      className={`rounded-full px-2.5 py-1 text-[10px] tracking-[0.2em] uppercase transition-colors ${
+                        isCurrent
+                          ? "bg-blush/70 text-deep/85"
+                          : "text-deep/55 hover:text-deep/75"
+                      }`}
+                      aria-pressed={isCurrent}
+                      aria-label={value === "en" ? common("switchToEnglish") : common("switchToUkrainian")}
+                    >
+                      {value}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </Container>
       </div>

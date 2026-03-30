@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import {useTranslations} from "next-intl";
 import GalleryPlaceholder from "@/components/GalleryPlaceholder";
 
 type CarouselImage = {
@@ -15,12 +16,13 @@ type ProductGalleryProps = {
 };
 
 export default function ProductGalleryCarousel({ images }: ProductGalleryProps) {
+  const t = useTranslations("Product.gallery");
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const fallbackImages: CarouselImage[] = Array.from({ length: 5 }, (_, index) => ({
     src: "",
-    alt: `Preview placeholder ${index + 1}`,
+    alt: t("placeholder", {index: index + 1}),
   }));
 
   const safeImages = images.length ? images : fallbackImages;
@@ -64,7 +66,7 @@ export default function ProductGalleryCarousel({ images }: ProductGalleryProps) 
           type="button"
           onClick={() => setIsLightboxOpen(true)}
           className="relative block w-full overflow-hidden rounded-[20px] bg-white/60"
-          aria-label="Open image preview"
+          aria-label={t("openPreview")}
         >
           <div className="relative w-full aspect-square">
             {activeImage?.src ? (
@@ -84,10 +86,10 @@ export default function ProductGalleryCarousel({ images }: ProductGalleryProps) 
         </button>
         {hasMultiple ? (
           <>
-            <button
-              type="button"
-              onClick={goPrev}
-              aria-label="Previous image"
+        <button
+          type="button"
+          onClick={goPrev}
+          aria-label={t("previousImage")}
               className="absolute left-4 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full border border-[#dfc2c0]/35 bg-white/70 text-deep/70 shadow-sm backdrop-blur transition hover:text-deep/90"
             >
               <svg
@@ -108,7 +110,7 @@ export default function ProductGalleryCarousel({ images }: ProductGalleryProps) 
             <button
               type="button"
               onClick={goNext}
-              aria-label="Next image"
+              aria-label={t("nextImage")}
               className="absolute right-4 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full border border-[#dfc2c0]/35 bg-white/70 text-deep/70 shadow-sm backdrop-blur transition hover:text-deep/90"
             >
               <svg
@@ -146,7 +148,7 @@ export default function ProductGalleryCarousel({ images }: ProductGalleryProps) 
                     ? "shadow-[inset_0_0_0_1px_rgba(223,194,192,0.55),0_6px_18px_rgba(0,0,0,0.06)]"
                     : "shadow-[inset_0_0_0_1px_rgba(223,194,192,0.35)] hover:shadow-[inset_0_0_0_1px_rgba(223,194,192,0.55)]"
                 }`}
-                aria-label={`View image ${index + 1} of ${totalImages}`}
+                aria-label={t("viewImage", {index: index + 1, total: totalImages})}
                 aria-current={isActive}
               >
                 {image.src ? (
@@ -184,9 +186,9 @@ export default function ProductGalleryCarousel({ images }: ProductGalleryProps) 
               type="button"
               onClick={() => setIsLightboxOpen(false)}
               className="absolute -top-10 right-0 rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-white/80 transition hover:text-white"
-              aria-label="Close preview"
+              aria-label={t("closePreview")}
             >
-              Close
+              {t("closePreviewLabel")}
             </button>
             <div className="rounded-2xl bg-white p-4 shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
               <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-[#f7f3f3]">

@@ -101,7 +101,6 @@ export default function ProductPageLayout({
                 ))}
               </ul>
             ) : null}
-            {/* TODO: reintroduce multilingual support (EN/UA) in future release */}
             <div className="mt-5">{cta}</div>
             {ctaNote}
             {relatedContent ? (

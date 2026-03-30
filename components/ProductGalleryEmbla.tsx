@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Lightbox from "yet-another-react-lightbox";
+import {useTranslations} from "next-intl";
 import "yet-another-react-lightbox/styles.css";
 import GalleryPlaceholder from "@/components/GalleryPlaceholder";
 
@@ -20,13 +21,15 @@ type ProductGalleryEmblaProps = {
 };
 
 export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps) {
+  const t = useTranslations("Product.gallery");
+
   const fallbackImages = useMemo<GalleryImage[]>(
     () =>
       Array.from({ length: 5 }, (_, index) => ({
         src: "",
-        alt: `Preview placeholder ${index + 1}`,
+        alt: t("placeholder", {index: index + 1}),
       })),
-    []
+    [t]
   );
 
   const galleryImages = images.length ? images : fallbackImages;
@@ -112,7 +115,7 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
                   type="button"
                   onClick={() => setLightboxOpen(true)}
                   className="relative h-full w-full cursor-zoom-in"
-                  aria-label="Open image preview"
+                  aria-label={t("openPreview")}
                 >
                     {image.src ? (
                       <Image
@@ -125,7 +128,7 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
                         className="object-contain"
                       />
                     ) : (
-                    <GalleryPlaceholder className="h-full w-full" />
+                    <GalleryPlaceholder className="h-full w-full" label={t("placeholderMain")} />
                   )}
                   {showOverlay ? (
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 p-5 md:p-6">
@@ -156,7 +159,7 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
         <button
           type="button"
           onClick={scrollPrev}
-          aria-label="Previous image"
+          aria-label={t("previousImage")}
           className="absolute left-4 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#dfc2c0]/35 bg-white/70 text-deep/70 shadow-sm backdrop-blur transition hover:text-deep/90"
         >
           <svg viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4">
@@ -173,7 +176,7 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
         <button
           type="button"
           onClick={scrollNext}
-          aria-label="Next image"
+          aria-label={t("nextImage")}
           className="absolute right-4 top-1/2 -translate-y-1/2 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#dfc2c0]/35 bg-white/70 text-deep/70 shadow-sm backdrop-blur transition hover:text-deep/90"
         >
           <svg viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4">
@@ -206,7 +209,7 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
                       ? "shadow-[inset_0_0_0_1px_rgba(223,194,192,0.45),0_6px_18px_rgba(0,0,0,0.06)]"
                       : "shadow-[inset_0_0_0_1px_rgba(223,194,192,0.25)] hover:shadow-[inset_0_0_0_1px_rgba(223,194,192,0.4)]"
                   }`}
-                  aria-label={`Select image ${index + 1}`}
+                  aria-label={t("selectImage", {index: index + 1})}
                   aria-current={isActive}
                 >
                   {image.src ? (
@@ -268,7 +271,7 @@ export default function ProductGalleryEmbla({ images }: ProductGalleryEmblaProps
                     draggable={false}
                   />
                 ) : (
-                  <GalleryPlaceholder className="h-full w-full" />
+                  <GalleryPlaceholder className="h-full w-full" label={t("placeholderMain")} />
                 )}
               </div>
             </div>

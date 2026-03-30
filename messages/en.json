@@ -1,0 +1,444 @@
+{
+  "Metadata": {
+    "siteName": "Teti Betti",
+    "siteDescription": "Minimal digital tools for thoughtful productivity. Notion templates, planners, and learning systems.",
+    "organizationDescription": "Digital studio creating Notion templates, planners and learning tools.",
+    "keywords": [
+      "Teti Betti",
+      "Notion templates",
+      "digital planners",
+      "productivity systems",
+      "learning systems",
+      "minimal tools"
+    ]
+  },
+  "Navigation": {
+    "home": "Home",
+    "shop": "Shop",
+    "blog": "Blog",
+    "about": "About",
+    "faq": "FAQ",
+    "contact": "Contact"
+  },
+  "Common": {
+    "search": "Search",
+    "cart": "Cart",
+    "closeModal": "Close modal",
+    "switchToEnglish": "Switch to English",
+    "switchToUkrainian": "Switch to Ukrainian"
+  },
+  "Footer": {
+    "supportMe": "Support me",
+    "supportUkraine": "Support Ukraine",
+    "united24": "UNITED24 Foundation",
+    "tagline": "Digital systems and thoughtful reflections.",
+    "navigate": "Navigate",
+    "connect": "Connect",
+    "privacy": "Privacy Policy",
+    "terms": "Terms and Conditions",
+    "license": "License",
+    "madeInUkraine": "Made in Ukraine with love",
+    "copyright": "(c) 2026 Teti Betti. All rights reserved."
+  },
+  "Home": {
+    "hero": {
+      "portraitAlt": "Tetiana, founder of Teti Betti",
+      "caption": "Tetiana • Teti Betti",
+      "eyebrow": "Digital systems and reflections",
+      "title": "Structure for clarity.",
+      "titleAccent": "Space for becoming.",
+      "description": "I build thoughtful systems and write about purpose, growth and alignment, creating minimal tools to support the process.",
+      "primaryCta": "View products",
+      "secondaryCta": "Read blog"
+    },
+    "featured": {
+      "label": "Featured Products",
+      "title": "Simple tools for steady progress.",
+      "description": "A minimal collection of systems built for clarity and calm.",
+      "viewAll": "View all"
+    },
+    "subscription": {
+      "label": "STAY IN FLOW",
+      "title": "Receive quiet updates and new releases.",
+      "descriptionLine1": "I share new tools, reflections, and thoughtful systems.",
+      "descriptionLine2": "No noise. Only what matters.",
+      "caption": "No spam. Unsubscribe anytime.",
+      "button": "Subscribe"
+    }
+  },
+  "Forms": {
+    "subscribe": {
+      "validationEmail": "Please enter a valid email address.",
+      "errorGeneric": "Something went wrong.",
+      "errorTryAgain": "Something went wrong. Please try again.",
+      "success": "Thank you. You're on the list.",
+      "honeypotLabel": "Company",
+      "emailLabel": "Email",
+      "placeholder": "Your email",
+      "buttonIdle": "Subscribe",
+      "buttonLoading": "Subscribing...",
+      "buttonSuccess": "Subscribed"
+    },
+    "support": {
+      "validationEmail": "Please enter a valid email.",
+      "validationMessage": "Please enter at least 10 characters.",
+      "errorGeneric": "Something went wrong.",
+      "errorTryAgain": "Something went wrong. Please try again.",
+      "successTitle": "Sent. We'll reply soon.",
+      "successDescription": "Thanks for reaching out. We'll get back to you by email.",
+      "successAction": "Close",
+      "emailOptionalLabel": "Email (optional)",
+      "emailOptionalPlaceholder": "Your email (optional)",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Your message",
+      "buttonIdle": "Send",
+      "buttonLoading": "Sending..."
+    },
+    "emailCapture": {
+      "validationRequired": "Email is required.",
+      "validationEmail": "Please enter a valid email.",
+      "errorGeneric": "Something went wrong.",
+      "errorTryAgain": "Something went wrong. Please try again.",
+      "emailLabel": "Email",
+      "placeholder": "you@example.com",
+      "buttonLoading": "Adding...",
+      "downloadSuccessTitle": "Check your inbox",
+      "stillNothing": "Still nothing?",
+      "close": "Close"
+    }
+  },
+  "Product": {
+    "detailsAria": "{title} details",
+    "viewProductAria": "View {title}",
+    "templateLabel": "Notion template",
+    "pairsWellWith": "Pairs well with",
+    "joinWaitlist": "Join waitlist",
+    "download": "Download",
+    "waitlistHelperDefault": "We'll email you when the product is ready.",
+    "waitlistSuccessDefault": "You're on the waitlist.",
+    "keyFeatures": "Key Features",
+    "whoItsFor": "Who It's For",
+    "whatsInside": "What's Inside",
+    "releasePlan": "Release Plan",
+    "adding": "Adding...",
+    "downloadFree": "Download Free",
+    "sendMeLink": "Send me the link",
+    "sending": "Sending...",
+    "downloadModalIntro": "Enter your email to receive the Notion template link and setup steps.",
+    "downloadModalSuccessTitle": "Check your inbox",
+    "downloadModalSuccessDescription": "Your template link and setup instructions are on the way.",
+    "downloadModalSuccessHelp": "If you don't see it in a minute, check Promotions or Spam.",
+    "gallery": {
+      "placeholder": "Preview placeholder {index}",
+      "placeholderMain": "Preview coming soon",
+      "openPreview": "Open image preview",
+      "previousImage": "Previous image",
+      "nextImage": "Next image",
+      "selectImage": "Select image {index}",
+      "viewImage": "View image {index} of {total}",
+      "closePreview": "Close preview",
+      "closePreviewLabel": "Close"
+    },
+    "actions": {
+      "askQuestion": "Ask a question",
+      "askQuestionAria": "Ask a question",
+      "share": "Share",
+      "shareAria": "Share this product page",
+      "copyLink": "Copy link",
+      "shareNative": "Share...",
+      "linkCopied": "Link copied",
+      "copyFailed": "Couldn't copy. Please copy from address bar.",
+      "close": "Close"
+    }
+  },
+  "Pages": {
+    "home": {
+      "meta": {
+        "title": "Teti Betti",
+        "description": "Minimal digital tools for thoughtful productivity. Notion templates, planners, and learning systems."
+      }
+    },
+    "shop": {
+      "meta": {
+        "title": "Shop",
+        "description": "Browse calm, minimal Notion templates and digital planners from Teti Betti."
+      }
+    },
+    "products": {
+      "meta": {
+        "title": "Products",
+        "description": "Browse calm, minimal Notion templates and digital planners from Teti Betti."
+      }
+    },
+    "blog": {
+      "meta": {
+        "title": "Blog",
+        "description": "Essays on digital systems, thoughtful productivity, and the quiet work of building."
+      },
+      "label": "BLOG",
+      "title": "The blog is taking shape",
+      "description": "I'm preparing a space for essays about digital systems, thoughtful productivity, and the quiet process of building things.",
+      "comingSoonLabel": "Coming soon",
+      "comingSoonDate": "First writings arriving in April 2026",
+      "primaryCta": "View products",
+      "secondaryCta": "Find me online",
+      "imageAlt": "Blog illustration"
+    },
+    "about": {
+      "label": "ABOUT",
+      "title": "A little about me",
+      "portraitAlt": "Tetiana portrait",
+      "portraitCaption": "Quiet moments on the terrace",
+      "paragraph1": "I'm Tetiana, a Java developer who enjoys building thoughtful backend systems and learning every day.",
+      "paragraph2": "I love books, structured notes, and tools like Notion that help turn ideas into a calmer rhythm.",
+      "paragraph3": "This website is my small digital studio where I share what I'm building, learning, and discovering along the way.",
+      "pathTitle": "My path",
+      "pathItems": [
+        "Java backend systems",
+        "learning and note-taking",
+        "books and structured knowledge",
+        "a calmer, healthier life"
+      ],
+      "catNote": "My cat Varya keeps the studio light and playful, a small reminder to pause and enjoy quiet moments between tasks.",
+      "thingsTitle": "Things I love",
+      "things": [
+        "books",
+        "systems",
+        "Notion",
+        "quiet routines",
+        "cats",
+        "learning"
+      ],
+      "stayInTouchTitle": "Stay in touch",
+      "stayInTouchDescription": "If this path feels close to you, leave your email and let's stay connected.",
+      "stayInTouchButton": "Subscribe"
+    },
+    "contact": {
+      "label": "CONTACT",
+      "title": "Say hello",
+      "description1": "If you'd like to ask a question, share an idea, or simply say hello, I'd love to hear from you.",
+      "description2Prefix": "You can send me a message here, or write directly to",
+      "replyNote": "I usually reply as soon as I can."
+    },
+    "faq": {
+      "label": "FAQ",
+      "title": "Questions and answers",
+      "description": "Here you'll find answers to common questions about downloads, Notion templates, and how everything works.",
+      "imageAlt": "Varya the cat",
+      "imageCaption": "Varya is supervising the support department.",
+      "stillQuestionTitle": "Still have a question?",
+      "stillQuestionDescription": "Send me a message and I'll be happy to help.",
+      "items": [
+        {
+          "id": "products",
+          "title": "What are these products?",
+          "content": "They are digital templates, planners, and simple systems designed to help you organize ideas, routines, and projects with more clarity."
+        },
+        {
+          "id": "delivery",
+          "title": "How do I receive the product?",
+          "content": "After checkout, you'll receive an email with a download link. The download is also available on the success page right after purchase."
+        },
+        {
+          "id": "notion",
+          "title": "Do I need Notion to use the templates?",
+          "content": "Notion templates require a free Notion account. If a product is a PDF or printable, you can use it without Notion."
+        },
+        {
+          "id": "sharing",
+          "title": "Can I share the template with others?",
+          "content": "Please keep downloads for personal use only. If someone you know wants a copy, sharing the product link is the best way to support the work."
+        },
+        {
+          "id": "missing-email",
+          "title": "I didn't receive the email",
+          "content": "Check your Spam or Promotions folder and confirm the email was entered correctly. If it still doesn't arrive, send me a message and I'll help right away."
+        },
+        {
+          "id": "paid-products",
+          "title": "Are paid products coming?",
+          "content": "Yes. I'm preparing a small collection of paid templates and guides. Updates will appear on the shop page as they are ready."
+        },
+        {
+          "id": "requests",
+          "title": "Can I request a feature or template?",
+          "content": "Absolutely. Send me a short message with what you need and how you plan to use it. I read every note."
+        }
+      ]
+    },
+    "checkout": {
+      "title": "Checkout",
+      "description": "A checkout flow will live here. You selected",
+      "backToShop": "Return to shop",
+      "fallbackProduct": "selected product"
+    },
+    "success": {
+      "title": "Success",
+      "description": "Your request was received successfully."
+    },
+    "refund": {
+      "title": "Refund",
+      "description": "Refund details will be published here."
+    },
+    "thankYouYearlyGoals": {
+      "label": "Check your inbox",
+      "title": "Check your inbox",
+      "description": "Your template link and setup instructions are on the way.",
+      "missingEmailTitle": "Didn't receive the email?",
+      "missingEmailDescription": "If you don't see it in a minute, check your Promotions or Spam folder.",
+      "supportPrefix": "Still nothing? You can always reach us at"
+    },
+    "license": {
+      "label": "LICENSE",
+      "title": "Product License",
+      "updatedLabel": "Last updated: March 2026",
+      "intro": "This page explains how the digital products on this website can be used after download.",
+      "contactTitle": "Contact",
+      "contactPrefix": "If you have questions about this license, please contact",
+      "sections": [
+        {
+          "title": "Personal use",
+          "paragraphs": [
+            "Each product is licensed for personal use. You can use it for your own projects, planning, and learning, but not for resale or public distribution."
+          ]
+        },
+        {
+          "title": "What you can do",
+          "bullets": [
+            "Duplicate the template into your own Notion workspace",
+            "Customize and adapt it for your personal workflows",
+            "Use it for personal organization, learning, and planning"
+          ]
+        },
+        {
+          "title": "What you cannot do",
+          "bullets": [
+            "Resell the template or its content",
+            "Redistribute the template publicly",
+            "Share the template file or duplication link",
+            "Claim the template as your own work"
+          ]
+        },
+        {
+          "title": "Sharing with others",
+          "paragraphs": [
+            "If someone you know would benefit from a template, please share the product page instead of the file. This supports the work and keeps licensing clear for everyone."
+          ]
+        },
+        {
+          "title": "Updates",
+          "paragraphs": [
+            "If a product receives updates or improvements, you may receive access to the updated version at no additional cost unless stated otherwise."
+          ]
+        }
+      ]
+    },
+    "privacy": {
+      "label": "PRIVACY POLICY",
+      "title": "Privacy Policy",
+      "updatedLabel": "Last updated: March 2026",
+      "intro": "This page explains what information is collected on this website, how it is used, and how it is protected.",
+      "contactTitle": "Contact",
+      "contactPrefix": "If you have questions about this policy, please contact",
+      "sections": [
+        {
+          "title": "Information I collect",
+          "paragraphs": [
+            "When you send a message through the contact form, I collect the information you provide, such as your email address and message content.",
+            "The website may also collect basic usage information, such as page visits or device data, through cookies or analytics tools."
+          ]
+        },
+        {
+          "title": "How your information is used",
+          "paragraphs": [
+            "Your information is used to respond to your messages, provide support, and improve the website experience.",
+            "I do not sell or rent personal information."
+          ]
+        },
+        {
+          "title": "Email communications",
+          "paragraphs": [
+            "If you contact me, I reply to the email address you provide. You only receive emails related to your request unless you opted into updates.",
+            "You can request removal from communications at any time."
+          ]
+        },
+        {
+          "title": "Cookies and analytics",
+          "paragraphs": [
+            "Cookies may be used to keep the website running smoothly and to understand how visitors use the site.",
+            "You can disable cookies in your browser settings, though some features may not work as intended."
+          ]
+        },
+        {
+          "title": "Third-party services",
+          "paragraphs": [
+            "I may use trusted third-party services for hosting, email delivery, or analytics. These services receive only the information needed to perform their functions."
+          ]
+        },
+        {
+          "title": "Data protection",
+          "paragraphs": [
+            "Reasonable safeguards are used to protect your information, but no online system can guarantee complete security."
+          ]
+        },
+        {
+          "title": "Your rights",
+          "paragraphs": [
+            "You may request access to, correction of, or deletion of your personal information at any time."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "label": "TERMS",
+      "title": "Terms of Use",
+      "updatedLabel": "Last updated: March 2026",
+      "intro": "These terms describe the rules and conditions for using this website and accessing the digital products provided here.",
+      "contactTitle": "Contact",
+      "contactPrefix": "If you have questions about these terms, please contact",
+      "sections": [
+        {
+          "title": "Use of the website",
+          "paragraphs": [
+            "By accessing this website, you agree to use it in a respectful and lawful manner. You may browse, read, and download materials for personal use in accordance with these terms."
+          ]
+        },
+        {
+          "title": "Digital products",
+          "paragraphs": [
+            "Digital products provided on this website are delivered as downloads or access links. They are offered as is and intended for personal use unless otherwise stated."
+          ]
+        },
+        {
+          "title": "Personal use",
+          "paragraphs": [
+            "You may use the products for your own personal or internal purposes. Redistribution, resale, or public sharing is not permitted without written permission."
+          ]
+        },
+        {
+          "title": "Intellectual property",
+          "paragraphs": [
+            "All content, designs, and digital products on this website are the intellectual property of Teti Betti unless otherwise noted. You may not copy, reproduce, or create derivative works without permission."
+          ]
+        },
+        {
+          "title": "Limitation of liability",
+          "paragraphs": [
+            "The website and products are provided without warranties of any kind. Teti Betti is not liable for direct or indirect damages resulting from use of the website or digital products."
+          ]
+        },
+        {
+          "title": "Changes to the terms",
+          "paragraphs": [
+            "These terms may be updated from time to time. Continued use of the website after updates means you accept the revised terms."
+          ]
+        }
+      ]
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist or has moved.",
+      "goHome": "Return to home"
+    }
+  }
+}
