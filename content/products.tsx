@@ -1,4 +1,4 @@
-﻿import type { ReactNode } from "react";
+﻿import type { Locale } from "@/i18n/routing";
 
 export type ProductStatus = "available" | "waiting";
 
@@ -11,10 +11,18 @@ export type ProductImage = {
   bullets?: string[];
 };
 
-export type AccordionSection = {
+export type ProductContentBlock = {
+  intro?: string;
+  paragraphs?: string[];
+  bullets?: string[];
+  ordered?: string[];
+  outro?: string;
+};
+
+export type ProductAccordionSection = {
   id: string;
   title: string;
-  content: ReactNode;
+  content: ProductContentBlock;
 };
 
 export type ProductBenefit = {
@@ -28,10 +36,16 @@ export type ProductBenefitsSection = {
   items: ProductBenefit[];
 };
 
+export type ProductFaqItem = {
+  id: string;
+  title: string;
+  answer: string;
+};
+
 export type ProductFaqSection = {
   title: string;
   description?: string;
-  items: AccordionSection[];
+  items: ProductFaqItem[];
 };
 
 export type ProductPrimaryCta = {
@@ -94,7 +108,7 @@ export type ProductConfig = {
   priceLabel: string;
   status: ProductStatus;
   eta?: string;
-  detailsAccordion: AccordionSection[];
+  detailsAccordion: ProductAccordionSection[];
   benefits?: ProductBenefitsSection;
   faq?: ProductFaqSection;
   pairsWith?: string[];
@@ -108,121 +122,47 @@ export type ProductConfig = {
   };
 };
 
-export const DEFAULT_PAIRS_WITH_TITLE = "Pairs well with";
+type ProductSlug = "yearly-goals" | "nutrition-meal-planner";
+
+type ProductStaticConfig = Pick<
+  ProductConfig,
+  | "slug"
+  | "status"
+  | "galleryImages"
+  | "thumbnail"
+  | "mainPreviewImage"
+  | "downloadTag"
+  | "pairsWith"
+  | "showActions"
+  | "showLanguageSelector"
+>;
+
+type ProductLocalizedConfig = Omit<ProductConfig, keyof ProductStaticConfig>;
+
+const fallbackLocale: Locale = "en";
+const productOrder: ProductSlug[] = ["yearly-goals", "nutrition-meal-planner"];
 
 const nutritionPreviewImages: ProductImage[] = [
-  {
-    src: "/images/nutrition-meal-planner/1.jpg",
-    alt: "Nutrition Meal Planner preview 1",
-  },
-  {
-    src: "/images/nutrition-meal-planner/2.jpg",
-    alt: "Nutrition Meal Planner preview 2",
-  },
-  {
-    src: "/images/nutrition-meal-planner/3.jpg",
-    alt: "Nutrition Meal Planner preview 3",
-  },
-  {
-    src: "/images/nutrition-meal-planner/4.jpg",
-    alt: "Nutrition Meal Planner preview 4",
-  },
-  {
-    src: "/images/nutrition-meal-planner/5.jpg",
-    alt: "Nutrition Meal Planner preview 5",
-  },
-  {
-    src: "/images/nutrition-meal-planner/6.jpg",
-    alt: "Nutrition Meal Planner preview 6",
-  },
+  { src: "/images/nutrition-meal-planner/1.jpg", alt: "Nutrition Meal Planner preview 1" },
+  { src: "/images/nutrition-meal-planner/2.jpg", alt: "Nutrition Meal Planner preview 2" },
+  { src: "/images/nutrition-meal-planner/3.jpg", alt: "Nutrition Meal Planner preview 3" },
+  { src: "/images/nutrition-meal-planner/4.jpg", alt: "Nutrition Meal Planner preview 4" },
+  { src: "/images/nutrition-meal-planner/5.jpg", alt: "Nutrition Meal Planner preview 5" },
+  { src: "/images/nutrition-meal-planner/6.jpg", alt: "Nutrition Meal Planner preview 6" },
 ];
 
-export const products: ProductConfig[] = [
-  {
+const productStaticConfigs: Record<ProductSlug, ProductStaticConfig> = {
+  "yearly-goals": {
     slug: "yearly-goals",
-    title: "Yearly Goals",
-    tags: ["Planning System", "Quarterly Rhythm", "Minimal Notion", "For Real Life"],
-    tagline: "Turn clear goals into steady, focused action.",
-    statusBadgeText: "FREE DOWNLOAD",
-    primaryCta: {
-      type: "download",
-      label: "Download",
-      helperText: "Works with the free version of Notion.",
-    },
-    description:
-      "A calm, structured Notion system designed to help you plan your year with clarity and intention. Break big goals into focused quarters, connected projects, and meaningful daily action.",
-    shortDescription:
-      "Minimal Notion system for yearly planning & weekly clarity.",
-    badge: {
-      label: "Free download",
-      tone: "soft",
-    },
-    bullets: [
-      "Goals \u2192 Projects \u2192 Tasks (connected)",
-      "Built-in quarterly planning pages",
-      "Automatic progress tracking",
-      "Clean dashboard + focused views",
-      "Duplicate and start in minutes",
-    ],
-    keyFeatures: [
-      {
-        title: "Connected Goals",
-        descriptionShort:
-          "Goals, projects, and tasks stay linked with automatic rollups.",
-      },
-      {
-        title: "Quarterly Focus",
-        descriptionShort: "Plan in seasons so priorities stay clear and realistic.",
-      },
-      {
-        title: "Progress Clarity",
-        descriptionShort: "Built-in tracking shows momentum without manual updates.",
-      },
-      {
-        title: "Clean Structure",
-        descriptionShort: "A minimal layout that keeps your dashboard quiet and usable.",
-      },
-      {
-        title: "Instant Setup",
-        descriptionShort: "Duplicate the template and start planning in minutes.",
-      },
-    ],
-    sections: {
-      keyFeaturesSectionTitle: "Key Features",
-      keyFeaturesSectionSubtitle:
-        "A calm structure that turns intention into consistent action.",
-      faqTitle: "Frequently Asked Questions",
-      faqSubtitle: "Quick answers to keep your download smooth.",
-    },
+    status: "available",
     galleryImages: [
-      {
-        src: "/images/yearly-goals/2.jpg",
-        alt: "Yearly Goals overview detail",
-      },
-      {
-        src: "/images/yearly-goals/3.jpg",
-        alt: "Yearly Goals layout detail",
-      },
-      {
-        src: "/images/yearly-goals/4.jpg",
-        alt: "Yearly Goals calendar view",
-      },
-      {
-        src: "/images/yearly-goals/5.jpg",
-        alt: "Yearly Goals goals table",
-      },
-      {
-        src: "/images/yearly-goals/6.jpg",
-        alt: "Yearly Goals projects view",
-      },
-      {
-        src: "/images/yearly-goals/7.jpg",
-        alt: "Yearly Goals tasks view",
-      },
-      {
-        src: "/images/yearly-goals/8.jpg",
-        alt: "Yearly Goals planning view",
-      },
+      { src: "/images/yearly-goals/2.jpg", alt: "Yearly Goals overview detail" },
+      { src: "/images/yearly-goals/3.jpg", alt: "Yearly Goals layout detail" },
+      { src: "/images/yearly-goals/4.jpg", alt: "Yearly Goals calendar view" },
+      { src: "/images/yearly-goals/5.jpg", alt: "Yearly Goals goals table" },
+      { src: "/images/yearly-goals/6.jpg", alt: "Yearly Goals projects view" },
+      { src: "/images/yearly-goals/7.jpg", alt: "Yearly Goals tasks view" },
+      { src: "/images/yearly-goals/8.jpg", alt: "Yearly Goals planning view" },
     ],
     thumbnail: "/images/yearly-goals/main-preview.jpg",
     mainPreviewImage: {
@@ -230,308 +170,607 @@ export const products: ProductConfig[] = [
       alt: "Yearly Goals preview",
     },
     downloadTag: "yearly-goals",
-    cta: "Get now",
-    ctaLabel: "Download",
-    ctaNote: "Works with the free version of Notion.",
-    priceLabel: "Free download",
-    status: "available",
-    detailsAccordion: [
-      {
-        id: "what-you-get",
-        title: "What You Get",
-        content: (
-          <div className="space-y-3">
-            <p>Inside the template you’ll find:</p>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>Yearly Goals dashboard — your main control center</li>
-              <li>Quarterly pages (Q1–Q4) with focus planning</li>
-              <li>Projects database connected to goals</li>
-              <li>Task system with automatic progress calculation</li>
-              <li>Monthly to-do view</li>
-              <li>Clean relational structure (Goals → Projects → Tasks)</li>
-            </ul>
-            <p>Everything is connected — nothing duplicated.</p>
-          </div>
-        ),
-      },
-      {
-        id: "why-it-works",
-        title: "Why It Works",
-        content: (
-          <div className="space-y-3">
-            <p>This system works because it combines clarity with structure.</p>
-            <ul className="list-disc pl-5 space-y-2">
-              <li>Every goal is connected to projects and tasks</li>
-              <li>Progress updates automatically as tasks are completed</li>
-              <li>Quarterly focus prevents overwhelm</li>
-              <li>Clear “Why” blocks keep motivation visible</li>
-              <li>Relational databases remove chaos and duplication</li>
-            </ul>
-            <p>Instead of scattered to-do lists, you get a single thinking system.</p>
-          </div>
-        ),
-      },
-      {
-        id: "how-to-use",
-        title: "How To Use It",
-        content: (
-          <div className="space-y-3">
-            <p>
-              You’ll need a free Notion account (Notion is a free app available on
-              desktop and mobile).
-            </p>
-            <p>After download:</p>
-            <ol className="list-decimal pl-5 space-y-2">
-              <li>Open the template link</li>
-              <li>Click “Duplicate” in the top right corner</li>
-              <li>Add it to your workspace</li>
-              <li>Start customizing your goals</li>
-            </ol>
-            <p>
-              You can modify categories, timelines, and views to match your
-              personal workflow.
-            </p>
-          </div>
-        ),
-      },
-    ],
-    benefits: {
-      title: "Key Features",
-      description: "A calm structure that turns intention into consistent action.",
-      items: [
-        {
-          title: "Connected Goals",
-          text: "Goals, projects, and tasks stay linked with automatic rollups.",
-        },
-        {
-          title: "Quarterly Focus",
-          text: "Plan in seasons so priorities stay clear and realistic.",
-        },
-        {
-          title: "Progress Clarity",
-          text: "Built-in tracking shows momentum without manual updates.",
-        },
-        {
-          title: "Clean Structure",
-          text: "A minimal layout that keeps your dashboard quiet and usable.",
-        },
-        {
-          title: "Instant Setup",
-          text: "Duplicate the template and start planning in minutes.",
-        },
-      ],
-    },
-    faq: {
-      title: "Frequently Asked Questions",
-      description: "Quick answers to keep your download smooth.",
-      items: [
-        {
-          id: "faq-1",
-          title: "Do I need Notion Pro?",
-          content: (
-            <p>
-              No. The template works perfectly with the free version of Notion. You
-              only need a free Notion account to use it. After downloading,
-              duplicate the template into your own workspace and customize it as
-              you like — no paid features required.
-            </p>
-          ),
-        },
-        {
-          id: "faq-2",
-          title: "Can I customize it?",
-          content: (
-            <p>
-              Yes — completely. You can rename pages, adjust categories, add new
-              properties, change layouts, or simplify the system to fit your
-              workflow. The structure is clean and flexible, so it adapts to your
-              goals — not the other way around.
-            </p>
-          ),
-        },
-        {
-          id: "faq-3",
-          title: "Is this a one-time download?",
-          content: (
-            <p>
-              Yes. This is a one-time digital download. After download, you’ll
-              receive access to the template link and can duplicate it to your
-              workspace and use it indefinitely. If small improvements or fixes
-              are released later, you’ll receive updated access.
-            </p>
-          ),
-        },
-        {
-          id: "faq-4",
-          title: "Does it include automations?",
-          content: (
-            <p>
-              Yes — built-in setup buttons and relational links are included. The
-              system automatically connects goals, projects, and tasks. Progress
-              updates without manual tracking, so your dashboard stays clean and
-              accurate. No complex scripting or integrations needed.
-            </p>
-          ),
-        },
-        {
-          id: "faq-5",
-          title: "Can I share it with my team?",
-          content: (
-            <p>
-              Yes, you can share it inside Notion just like any other workspace
-              page. If you’re using it for a team, each member will need access to
-              the duplicated workspace. For larger teams or commercial use, please
-              refer to the license terms on the product page.
-            </p>
-          ),
-        },
-      ],
-    },
     pairsWith: ["nutrition-meal-planner"],
-    pairsWithOverrides: {
-      "nutrition-meal-planner": {
-        subtitle: "Coming soon",
-      },
-    },
     showActions: true,
     showLanguageSelector: true,
-    seo: {
-      title: "Yearly Goals",
-      description:
-        "A calm, structured Notion system designed to help you plan your year with clarity and intention.",
-    },
   },
-  {
+  "nutrition-meal-planner": {
     slug: "nutrition-meal-planner",
-    title: "Nutrition Meal Planner",
-    tags: ["Meal Planning", "Nutrient-Aware", "Body-Supportive", "Calm Structure"],
-    tagline: "Plan meals, track macros, and stay gently guided.",
-    statusBadgeText: "COMING SOON",
-    primaryCta: {
-      type: "waitlist",
-      label: "Join waitlist",
-      helperText: "No spam. Just one email when the planner launches.",
-    },
-    successMessageLines: [
-      "You're on the waitlist.",
-      "We'll email you when Nutrition Meal Planner launches.",
-      "Planned release: April 2026.",
-    ],
-    endNote: "Early waitlist members may receive launch bonuses.",
-    description:
-      "A calm system for planning meals, groceries, and nutrient awareness without the chaos.",
-    shortDescription: "A structured meal planner + nutrition tracking system.",
-    badge: {
-      label: "Coming soon",
-      tone: "soft",
-    },
-    bullets: [
-      "Weekly meal planning dashboard",
-      "Grocery list auto-build from meals",
-      "Macros: calories, protein, fats, carbs, fiber",
-      "Vitamins & minerals overview",
-      "Ingredient nutrient library",
-      "Thyroid-friendly view",
-      "Cycle-aware guidance",
-      "Gentle daily alerts",
-    ],
+    status: "waiting",
     galleryImages: nutritionPreviewImages,
     thumbnail: "/images/nutrition-meal-planner/main-preview.jpg",
     mainPreviewImage: {
       src: "/images/nutrition-meal-planner/main-preview.jpg",
       alt: "Nutrition Meal Planner main preview",
     },
-    cta: "Coming soon",
-    priceLabel: "Estimated delivery: April 2026",
-    status: "waiting",
-    detailsAccordion: [],
-    keyFeatures: [
-      {
-        title: "Weekly Planning Dashboard",
-        descriptionShort: "Plan meals once and move through the week with ease.",
-      },
-      {
-        title: "Smart Grocery Automation",
-        descriptionShort: "Ingredients auto-build a clean grocery list.",
-      },
-      {
-        title: "Macro Tracking",
-        descriptionShort:
-          "Track calories, protein, fats, carbs, and fiber in one place.",
-      },
-      {
-        title: "Vitamin & Mineral Tracking",
-        descriptionShort:
-          "See key vitamins and minerals with gentle, quiet highlights.",
-      },
-      {
-        title: "Ingredient Intelligence Library",
-        descriptionShort:
-          "Each ingredient shows nutrients, benefits, and deficiency signals.",
-      },
-      {
-        title: "Thyroid-Friendly Support",
-        descriptionShort:
-          "Focus on iodine, selenium, zinc, and anti-inflammatory patterns.",
-      },
-      {
-        title: "Cycle-Aware Meal Guidance",
-        descriptionShort:
-          "Guidance aligned to follicular, ovulatory, luteal, and menstrual phases.",
-      },
-      {
-        title: "Gentle Daily Alerts",
-        descriptionShort:
-          "Soft nudges for low protein, fiber, calories, or missing micros.",
-      },
-    ],
-    sections: {
-      keyFeaturesSectionTitle: "Key Features",
-      keyFeaturesSectionSubtitle:
-        "A calm system that keeps nutrition clear and simple.",
-      accordionItems: {
-        whoItsFor: [
-          "Women who want to understand their bodies better",
-          "People managing thyroid health",
-          "Those tracking micronutrients beyond calories",
-          "Structured thinkers who love systems",
-          "Anyone tired of chaotic eating patterns",
-        ],
-        whatsInside: [
-          "Weekly Meal Planner Dashboard",
-          "Recipe Database",
-          "Ingredient Nutrient Library",
-          "Grocery Automation System",
-          "Macro & Micronutrient Tracker",
-          "Deficiency Awareness Engine",
-          "Thyroid Support View",
-          "Cycle-Based Planning View",
-        ],
-        releasePlan: [
-          "We’re finishing the first release and will share access in small waves to keep feedback focused and intentional.",
-          "Planned Release: April 2026",
-        ],
-      },
-    },
     pairsWith: ["yearly-goals"],
-    pairsWithOverrides: {
-      "yearly-goals": {
-        title: "Yearly Goals System",
-        subtitle:
-          "Free · A calm, minimalist Notion workspace for yearly planning and aligned routines.",
+    showLanguageSelector: true,
+  },
+};
+
+const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocalizedConfig>> = {
+  en: {
+    "yearly-goals": {
+      title: "Yearly Goals",
+      tags: ["Planning System", "Quarterly Rhythm", "Minimal Notion", "For Real Life"],
+      tagline: "Turn clear goals into calm, consistent progress.",
+      statusBadgeText: "FREE DOWNLOAD",
+      primaryCta: {
+        type: "download",
+        label: "Download",
+        helperText: "Works with the free version of Notion.",
+      },
+      description:
+        "A calm, structured Notion system for planning your year with clarity and intention. Break bigger goals into focused quarters, connected projects, and meaningful daily steps.",
+      shortDescription: "A minimal Notion system for yearly planning and weekly clarity.",
+      badge: { label: "Free download", tone: "soft" },
+      bullets: [
+        "Goals -> Projects -> Tasks (connected)",
+        "Built-in quarterly planning pages",
+        "Automatic progress tracking",
+        "A clean dashboard with focused views",
+        "Duplicate the template and begin in minutes",
+      ],
+      keyFeatures: [
+        {
+          title: "Connected Goals",
+          descriptionShort: "Goals, projects, and tasks stay linked with automatic rollups.",
+        },
+        {
+          title: "Quarterly Focus",
+          descriptionShort: "Plan in seasons so priorities stay clear and realistic.",
+        },
+        {
+          title: "Progress Clarity",
+          descriptionShort: "Built-in tracking shows your progress without manual updates.",
+        },
+        {
+          title: "Clean Structure",
+          descriptionShort: "A minimal layout that keeps your space calm and usable.",
+        },
+        {
+          title: "Instant Setup",
+          descriptionShort: "Duplicate the template and begin in minutes.",
+        },
+      ],
+      sections: {
+        keyFeaturesSectionTitle: "Key Features",
+        keyFeaturesSectionSubtitle: "A calm structure that turns intention into consistent progress.",
+        faqTitle: "Frequently Asked Questions",
+        faqSubtitle: "Quick answers to keep your download simple.",
+      },
+      cta: "Download",
+      ctaLabel: "Download",
+      ctaNote: "Works with the free version of Notion.",
+      priceLabel: "Free download",
+      detailsAccordion: [
+        {
+          id: "what-you-get",
+          title: "What You Get",
+          content: {
+            intro: "Inside the template you'll find:",
+            bullets: [
+              "Yearly Goals dashboard - your main planning space",
+              "Quarterly pages (Q1-Q4) for focus planning",
+              "Projects database connected to goals",
+              "Task system with automatic progress calculation",
+              "Monthly task list",
+              "Clean relational structure (Goals -> Projects -> Tasks)",
+            ],
+            outro: "Everything is connected - nothing is duplicated.",
+          },
+        },
+        {
+          id: "why-it-works",
+          title: "Why It Works",
+          content: {
+            intro: "This system works by combining clarity with structure.",
+            bullets: [
+              "Every goal is connected to projects and tasks",
+              "Progress updates automatically as tasks are completed",
+              "Quarterly focus prevents overwhelm",
+              "Clear Why blocks keep motivation visible",
+              "Relational databases reduce chaos and duplication",
+            ],
+            outro: "Instead of scattered to-do lists, you get one thinking space.",
+          },
+        },
+        {
+          id: "how-to-use",
+          title: "How To Use It",
+          content: {
+            paragraphs: [
+              "You'll need a free Notion account (available on desktop and mobile).",
+              "After download:",
+            ],
+            ordered: [
+              "Open the template link",
+              "Click Duplicate in the top right corner",
+              "Add it to your workspace",
+              "Start customizing your goals",
+            ],
+            outro: "You can adjust categories, timelines, and views to match your workflow.",
+          },
+        },
+      ],
+      benefits: {
+        title: "Key Features",
+        description: "A calm structure that turns intention into consistent progress.",
+        items: [
+          {
+            title: "Connected Goals",
+            text: "Goals, projects, and tasks stay linked with automatic rollups.",
+          },
+          {
+            title: "Quarterly Focus",
+            text: "Plan in seasons so priorities stay clear and realistic.",
+          },
+          {
+            title: "Progress Clarity",
+            text: "Built-in tracking shows your progress without manual updates.",
+          },
+          {
+            title: "Clean Structure",
+            text: "A minimal layout that keeps your space calm and usable.",
+          },
+          {
+            title: "Instant Setup",
+            text: "Duplicate the template and begin in minutes.",
+          },
+        ],
+      },
+      faq: {
+        title: "Frequently Asked Questions",
+        description: "Quick answers to keep your download simple.",
+        items: [
+          {
+            id: "faq-1",
+            title: "Do I need Notion Pro?",
+            answer:
+              "No. The template works with the free version of Notion. You only need a free account to duplicate and use it.",
+          },
+          {
+            id: "faq-2",
+            title: "Can I customize it?",
+            answer:
+              "Yes. You can rename pages, adjust categories, add properties, and simplify the system to fit your workflow.",
+          },
+          {
+            id: "faq-3",
+            title: "Is this a one-time download?",
+            answer:
+              "Yes. After download, you receive template access and can use it indefinitely in your workspace.",
+          },
+          {
+            id: "faq-4",
+            title: "Does it include automations?",
+            answer:
+              "Yes. Built-in relations keep goals, projects, and tasks connected, with automatic progress updates.",
+          },
+          {
+            id: "faq-5",
+            title: "Can I share it with my team?",
+            answer:
+              "You can share a duplicated workspace in Notion with your team. For commercial usage, please refer to the license terms.",
+          },
+        ],
+      },
+      pairsWithTitle: "Pairs well with",
+      pairsWithOverrides: {
+        "nutrition-meal-planner": {
+          subtitle: "Coming soon",
+        },
+      },
+      seo: {
+        title: "Yearly Goals",
+        description:
+          "A calm, structured Notion system for planning your year with clarity and intention.",
       },
     },
-    showLanguageSelector: true,
-    seo: {
+    "nutrition-meal-planner": {
       title: "Nutrition Meal Planner",
-      description:
-        "A calm system for planning meals, groceries, and macros without the chaos.",
+      tags: ["Meal Planning", "Nutrient-Aware", "Body-Supportive", "Calm Structure"],
+      tagline: "Plan meals, track nutrition, and stay gently guided.",
+      statusBadgeText: "COMING SOON",
+      primaryCta: {
+        type: "waitlist",
+        label: "Join waitlist",
+        helperText: "No spam. Just one email when it's ready.",
+      },
+      successMessageLines: [
+        "You're on the waitlist.",
+        "We'll email you when Nutrition Meal Planner is ready.",
+        "Planned release: April 2026.",
+      ],
+      endNote: "Early waitlist members may receive something extra at launch.",
+      description: "A calm system for planning meals, groceries, and nutrition without the noise.",
+      shortDescription: "A structured meal planner with gentle nutrition tracking.",
+      badge: { label: "Coming soon", tone: "soft" },
+      bullets: [
+        "Weekly meal planning space",
+        "Grocery list auto-built from meals",
+        "Macros: calories, protein, fats, carbs, fiber",
+        "Vitamins & minerals overview",
+        "Ingredient nutrition library",
+        "Thyroid-friendly view",
+        "Cycle-aware guidance",
+        "Gentle daily nudges",
+      ],
+      cta: "Coming soon",
+      priceLabel: "Estimated delivery: April 2026",
+      detailsAccordion: [],
+      keyFeatures: [
+        {
+          title: "Weekly Planning Space",
+          descriptionShort: "Plan meals once and move through the week with ease.",
+        },
+        {
+          title: "Smart Grocery Automation",
+          descriptionShort: "Ingredients auto-build a simple grocery list.",
+        },
+        {
+          title: "Nutrition Tracking",
+          descriptionShort: "Track calories, protein, fats, carbs, and fiber in one place.",
+        },
+        {
+          title: "Vitamin & Mineral Tracking",
+          descriptionShort: "See key vitamins and minerals with gentle, quiet highlights.",
+        },
+        {
+          title: "Ingredient Intelligence Library",
+          descriptionShort: "Each ingredient shows nutrients, benefits, and early signals of imbalance.",
+        },
+        {
+          title: "Thyroid-Friendly Support",
+          descriptionShort: "Focus on iodine, selenium, zinc, and anti-inflammatory choices.",
+        },
+        {
+          title: "Cycle-Aware Meal Guidance",
+          descriptionShort:
+            "Guidance aligned to follicular, ovulatory, luteal, and menstrual phases.",
+        },
+        {
+          title: "Gentle Daily Nudges",
+          descriptionShort: "Soft nudges for low protein, fiber, calories, or missing micros.",
+        },
+      ],
+      sections: {
+        keyFeaturesSectionTitle: "Key Features",
+        keyFeaturesSectionSubtitle: "A calm system that keeps nutrition clear and simple.",
+        accordionItems: {
+          whoItsFor: [
+            "Women who want to understand their bodies better",
+            "People supporting thyroid health",
+            "Those tracking micronutrients beyond calories",
+            "Structured thinkers who value systems",
+            "Anyone tired of chaotic eating patterns",
+          ],
+          whatsInside: [
+            "Weekly Meal Planning Space",
+            "Recipe Database",
+            "Ingredient Nutrition Library",
+            "Grocery Automation System",
+            "Macro & Micronutrient Tracker",
+            "Imbalance Signals View",
+            "Thyroid Support View",
+            "Cycle-Based Planning View",
+          ],
+          releasePlan: [
+            "We're finishing the first release and will share access in small waves to keep feedback focused and thoughtful.",
+            "Planned release: April 2026.",
+          ],
+        },
+      },
+      pairsWithTitle: "Pairs well with",
+      pairsWithOverrides: {
+        "yearly-goals": {
+          title: "Yearly Goals System",
+          subtitle:
+            "Free · A calm, minimalist Notion space for yearly planning and aligned routines.",
+        },
+      },
+      seo: {
+        title: "Nutrition Meal Planner",
+        description: "A calm system for planning meals, groceries, and nutrition without the noise.",
+      },
     },
   },
-];
+  uk: {
+    "yearly-goals": {
+      title: "Yearly Goals",
+      tags: ["Система планування", "Квартальний ритм", "Мінімалістичний Notion", "Для реального життя"],
+      tagline: "Перетворюйте чіткі цілі на спокійний і послідовний рух.",
+      statusBadgeText: "БЕЗКОШТОВНО",
+      primaryCta: {
+        type: "download",
+        label: "Завантажити",
+        helperText: "Працює у безкоштовній версії Notion.",
+      },
+      description:
+        "Спокійна, структурована система в Notion, яка допомагає планувати рік з ясністю та наміром. Великі цілі розбиваються на квартали, проєкти й щоденні дії.",
+      shortDescription: "Мінімалістична система Notion для річного планування.",
+      badge: { label: "Безкоштовно", tone: "soft" },
+      bullets: [
+        "Цілі → Проєкти → Задачі (усе пов’язано)",
+        "Вбудовані сторінки квартального планування",
+        "Автоматичне відстеження прогресу",
+        "Чистий дашборд і фокусні перегляди",
+        "Скопіюйте шаблон і почніть за кілька хвилин",
+      ],
+      keyFeatures: [
+        {
+          title: "Пов’язані цілі",
+          descriptionShort: "Цілі, проєкти й задачі поєднані автоматичними зв’язками.",
+        },
+        {
+          title: "Квартальний фокус",
+          descriptionShort: "Плануйте сезонами, щоб пріоритети залишалися чіткими.",
+        },
+        {
+          title: "Прозорий прогрес",
+          descriptionShort: "Система показує рух уперед без ручних оновлень.",
+        },
+        {
+          title: "Чиста структура",
+          descriptionShort: "Мінімалістичний інтерфейс без зайвого шуму.",
+        },
+        {
+          title: "Швидкий старт",
+          descriptionShort: "Скопіюйте шаблон і почніть за кілька хвилин.",
+        },
+      ],
+      sections: {
+        keyFeaturesSectionTitle: "Ключові можливості",
+        keyFeaturesSectionSubtitle: "Спокійна, структурована система, що перетворює намір на стабільну дію.",
+        faqTitle: "Поширені запитання",
+        faqSubtitle: "Короткі відповіді, щоб усе працювало гладко.",
+      },
+      cta: "Завантажити",
+      ctaLabel: "Завантажити",
+      ctaNote: "Працює у безкоштовній версії Notion.",
+      priceLabel: "Безкоштовно",
+      detailsAccordion: [
+        {
+          id: "what-you-get",
+          title: "Що всередині",
+          content: {
+            intro: "У шаблоні ви знайдете:",
+            bullets: [
+              "Дашборд Yearly Goals — ваш головний центр керування",
+              "Квартальні сторінки (Q1–Q4) для фокусу",
+              "База проєктів, пов’язана з цілями",
+              "Система задач з автоматичним розрахунком прогресу",
+              "Щомісячний список задач",
+              "Чиста реляційна структура (Цілі → Проєкти → Задачі)",
+            ],
+            outro: "Усе пов’язано — без копіювання.",
+          },
+        },
+        {
+          id: "why-it-works",
+          title: "Чому це працює",
+          content: {
+            intro: "Система поєднує ясність і структуру.",
+            bullets: [
+              "Кожна ціль пов’язана з проєктами й задачами",
+              "Прогрес оновлюється автоматично",
+              "Квартальний фокус зменшує перевантаження",
+              "Блоки «Чому» підтримують мотивацію",
+              "Реляційні бази прибирають хаос і копіювання",
+            ],
+            outro: "Замість розрізнених списків ви отримуєте єдину мисленнєву систему.",
+          },
+        },
+        {
+          id: "how-to-use",
+          title: "Як користуватись",
+          content: {
+            paragraphs: [
+              "Потрібен лише безкоштовний акаунт Notion (доступний на комп’ютері й телефоні).",
+              "Після завантаження:",
+            ],
+            ordered: [
+              "Відкрийте посилання на шаблон",
+              "Натисніть «Duplicate» у правому верхньому куті",
+              "Додайте шаблон у свій робочий простір",
+              "Налаштуйте цілі під себе",
+            ],
+            outro: "Можна змінювати категорії, таймлайни та перегляди під власний ритм.",
+          },
+        },
+      ],
+      benefits: {
+        title: "Ключові можливості",
+        description: "Спокійна, структурована система, що перетворює намір на стабільну дію.",
+        items: [
+          {
+            title: "Пов’язані цілі",
+            text: "Цілі, проєкти й задачі залишаються в єдиній системі.",
+          },
+          {
+            title: "Квартальний фокус",
+            text: "Плануйте сезонами, щоб утримувати реалістичні пріоритети.",
+          },
+          {
+            title: "Прозорий прогрес",
+            text: "Вбудоване відстеження показує динаміку без ручної рутини.",
+          },
+          {
+            title: "Чиста структура",
+            text: "Мінімалістичний інтерфейс, який допомагає зосередитись.",
+          },
+          {
+            title: "Швидкий старт",
+            text: "Скопіюйте шаблон і одразу починайте планування.",
+          },
+        ],
+      },
+      faq: {
+        title: "Поширені запитання",
+        description: "Короткі відповіді для зручного старту.",
+        items: [
+          {
+            id: "faq-1",
+            title: "Чи потрібен Notion Pro?",
+            answer: "Ні. Шаблон повністю працює у безкоштовній версії Notion.",
+          },
+          {
+            id: "faq-2",
+            title: "Чи можна змінювати шаблон?",
+            answer: "Так, повністю. Можна адаптувати структуру під свій процес.",
+          },
+          {
+            id: "faq-3",
+            title: "Це одноразове завантаження?",
+            answer: "Так. Після завантаження ви отримуєте доступ без обмежень.",
+          },
+          {
+            id: "faq-4",
+            title: "Чи є автоматизації?",
+            answer: "Так. Зв’язки між цілями, проєктами та задачами працюють автоматично.",
+          },
+          {
+            id: "faq-5",
+            title: "Чи можна ділитися з командою?",
+            answer: "Так. Для комерційного використання дивіться умови ліцензії.",
+          },
+        ],
+      },
+      pairsWithTitle: "Добре поєднується з",
+      pairsWithOverrides: {
+        "nutrition-meal-planner": {
+          subtitle: "Незабаром",
+        },
+      },
+      seo: {
+        title: "Yearly Goals",
+        description:
+          "Спокійна, структурована система Notion для річного планування з ясністю та наміром.",
+      },
+    },
+    "nutrition-meal-planner": {
+      title: "Nutrition Meal Planner",
+      tags: ["Планування харчування", "Баланс нутрієнтів", "Підтримка тіла", "Спокійна структура"],
+      tagline: "Плануйте меню, відстежуйте макронутрієнти та рухайтеся м’яко.",
+      statusBadgeText: "СКОРО",
+      primaryCta: {
+        type: "waitlist",
+        label: "До списку очікування",
+        helperText: "Без спаму. Лише один лист, коли продукт буде готовий.",
+      },
+      successMessageLines: [
+        "Ви у списку очікування.",
+        "Ми напишемо вам, коли Nutrition Meal Planner буде готовий.",
+        "Плановий реліз: квітень 2026.",
+      ],
+      endNote: "Ранні учасники списку очікування можуть отримати бонуси запуску.",
+      description:
+        "Спокійна система для планування меню, списку покупок і нутрієнтів без хаосу.",
+      shortDescription: "Структурований планер харчування з трекінгом нутрієнтів.",
+      badge: { label: "Скоро", tone: "soft" },
+      bullets: [
+        "Тижневий дашборд планування меню",
+        "Список покупок формується автоматично",
+        "Макронутрієнти: калорії, білки, жири, вуглеводи, клітковина",
+        "Огляд вітамінів і мінералів",
+        "База інгредієнтів із нутрієнтами",
+        "Підтримка здоров’я щитоподібної залози",
+        "Підказки з урахуванням циклу",
+        "Делікатні щоденні нагадування",
+      ],
+      cta: "Скоро",
+      priceLabel: "Запуск у квітні 2026",
+      detailsAccordion: [],
+      keyFeatures: [
+        {
+          title: "Тижневий дашборд планування",
+          descriptionShort: "Плануйте меню один раз — і тиждень стає спокійнішим.",
+        },
+        {
+          title: "Розумна автоматизація покупок",
+          descriptionShort: "Інгредієнти автоматично формують зрозумілий список покупок.",
+        },
+        {
+          title: "Трекінг макронутрієнтів",
+          descriptionShort: "В одному місці: калорії, білки, жири, вуглеводи та клітковина.",
+        },
+        {
+          title: "Вітаміни та мінерали",
+          descriptionShort: "Ключові мікронутрієнти з делікатними підказками.",
+        },
+        {
+          title: "База інгредієнтів",
+          descriptionShort: "Кожен інгредієнт містить поживність і сигнали можливих дефіцитів.",
+        },
+        {
+          title: "Підтримка щитоподібної залози",
+          descriptionShort: "Фокус на йоді, селені, цинку та протизапальному підході.",
+        },
+        {
+          title: "Планування з урахуванням циклу",
+          descriptionShort:
+            "Підказки для фолікулярної, овуляторної, лютеїнової та менструальної фаз.",
+        },
+        {
+          title: "Делікатні щоденні нагадування",
+          descriptionShort:
+            "Делікатні нагадування про білок, клітковину, калорії та мікронутрієнти.",
+        },
+      ],
+      sections: {
+        keyFeaturesSectionTitle: "Ключові можливості",
+        keyFeaturesSectionSubtitle: "Спокійна система, що робить харчування простішим.",
+        accordionItems: {
+          whoItsFor: [
+            "Для жінок, які хочуть краще розуміти своє тіло",
+            "Для тих, хто дбає про здоров’я щитоподібної залози",
+            "Для тих, хто відстежує мікронутрієнти, а не лише калорії",
+            "Для людей, які люблять структуру",
+            "Для всіх, хто втомився від хаосу в харчуванні",
+          ],
+          whatsInside: [
+            "Тижневий дашборд планування меню",
+            "База рецептів",
+            "Бібліотека інгредієнтів і нутрієнтів",
+            "Система автоматизації списку покупок",
+            "Трекер макро- та мікронутрієнтів",
+            "Модуль виявлення дефіцитів",
+            "Підтримка щитоподібної залози",
+            "Харчування відповідно до фаз циклу",
+          ],
+          releasePlan: [
+            "Ми завершуємо перший реліз і відкриватимемо доступ хвилями, щоб зберегти фокусований фідбек.",
+            "Плановий реліз: квітень 2026.",
+          ],
+        },
+      },
+      pairsWithTitle: "Добре поєднується з",
+      pairsWithOverrides: {
+        "yearly-goals": {
+          title: "Yearly Goals System",
+          subtitle:
+            "Безкоштовно · Спокійний, мінімалістичний робочий простір у Notion для річного планування.",
+        },
+      },
+      seo: {
+        title: "Nutrition Meal Planner",
+        description: "Спокійна система для планування меню, покупок і макронутрієнтів без хаосу.",
+      },
+    },
+  },
+};
 
-export const getProductBySlug = (slug: string) =>
-  products.find((product) => product.slug === slug);
+const getLocalizedConfig = (locale: Locale, slug: ProductSlug): ProductLocalizedConfig =>
+  localizedProductConfigs[locale]?.[slug] ?? localizedProductConfigs[fallbackLocale][slug];
 
+export const getProducts = (locale: Locale): ProductConfig[] =>
+  productOrder.map((slug) => ({
+    ...productStaticConfigs[slug],
+    ...getLocalizedConfig(locale, slug),
+  }));
 
+export const getProductBySlug = (locale: Locale, slug: string): ProductConfig | undefined =>
+  getProducts(locale).find((product) => product.slug === slug);
+
+export const getAllProductSlugs = (): string[] => [...productOrder];
 

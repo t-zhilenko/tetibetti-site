@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Share2, MessageCircle } from "lucide-react";
+import {useEffect, useRef, useState} from "react";
+import {Share2, MessageCircle} from "lucide-react";
+import {useTranslations} from "next-intl";
 import Modal from "@/components/Modal";
 import SupportForm from "@/components/SupportForm";
 
@@ -18,16 +19,21 @@ export default function ProductActions({
   productSlug,
   productTitle,
   showShare = true,
-  supportLabel = "Ask a question",
-  supportAriaLabel = "Ask a question",
-  supportTitle = "Ask a question",
+  supportLabel,
+  supportAriaLabel,
+  supportTitle,
 }: ProductActionsProps) {
+  const t = useTranslations("Product.actions");
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastTimerRef = useRef<number | null>(null);
   const sharePopoverRef = useRef<HTMLDivElement | null>(null);
   const shareButtonRef = useRef<HTMLButtonElement | null>(null);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
+
+  const resolvedSupportLabel = supportLabel ?? t("askQuestion");
+  const resolvedSupportAriaLabel = supportAriaLabel ?? t("askQuestionAria");
+  const resolvedSupportTitle = supportTitle ?? t("askQuestion");
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -85,23 +91,20 @@ export default function ProductActions({
     const url = window.location.href;
     try {
       await navigator.clipboard.writeText(url);
-      showToast("Link copied");
+      showToast(t("linkCopied"));
     } catch {
-      showToast("Couldn't copy. Please copy from address bar.");
+      showToast(t("copyFailed"));
     } finally {
       setIsShareOpen(false);
     }
   };
 
   const handleShareNative = async () => {
-    if (
-      typeof window === "undefined" ||
-      typeof navigator.share !== "function"
-    ) {
+    if (typeof window === "undefined" || typeof navigator.share !== "function") {
       return;
     }
     try {
-      await navigator.share({ title: productTitle, url: window.location.href });
+      await navigator.share({title: productTitle, url: window.location.href});
     } catch {
       // Ignore share cancellation errors.
     } finally {
@@ -124,24 +127,24 @@ export default function ProductActions({
         </div>
       ) : null}
       {showShare ? (
-        <div className="relative">
+        <div className="relative inline-block">
           <button
             ref={shareButtonRef}
             type="button"
             onClick={() => setIsShareOpen((prev) => !prev)}
             className={actionButtonClass}
-            aria-label="Share this product page"
+            aria-label={t("shareAria")}
             aria-expanded={isShareOpen}
             aria-haspopup="menu"
           >
             <Share2 className="h-3.5 w-3.5" />
-            Share
+            {t("share")}
           </button>
           {isShareOpen ? (
             <div
               ref={sharePopoverRef}
               role="menu"
-              className="absolute left-0 top-full z-20 mt-2 w-40 rounded-2xl border border-black/10 bg-white/95 p-2 shadow-[0_18px_40px_rgba(43,89,104,0.12)]"
+              className="absolute left-0 top-full mt-2 w-52 rounded-2xl bg-white/90 backdrop-blur shadow-md border border-neutral-100 p-2 z-50"
             >
               <button
                 type="button"
@@ -149,7 +152,7 @@ export default function ProductActions({
                 className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-[12px] text-deep/75 transition-colors hover:bg-[#f7dce0]/35"
                 role="menuitem"
               >
-                Copy link
+                {t("copyLink")}
               </button>
               {typeof navigator !== "undefined" &&
               typeof navigator.share === "function" ? (
@@ -159,7 +162,7 @@ export default function ProductActions({
                   className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-[12px] text-deep/75 transition-colors hover:bg-[#f7dce0]/35"
                   role="menuitem"
                 >
-                  Share...
+                  {t("shareNative")}
                 </button>
               ) : null}
             </div>
@@ -171,22 +174,18 @@ export default function ProductActions({
         type="button"
         onClick={() => setIsSupportOpen(true)}
         className={actionButtonClass}
-        aria-label={supportAriaLabel}
+        aria-label={resolvedSupportAriaLabel}
       >
         <MessageCircle className="h-3.5 w-3.5" />
-        {supportLabel}
+        {resolvedSupportLabel}
       </button>
 
-      <Modal
-        open={isSupportOpen}
-        title={supportTitle}
-        onClose={handleSupportClose}
-      >
+      <Modal open={isSupportOpen} title={resolvedSupportTitle} onClose={handleSupportClose}>
         <SupportForm
           productSlug={productSlug}
           variant="modal"
           showSuccessAction
-          successActionLabel="Close"
+          successActionLabel={t("close")}
           onSuccessAction={handleSupportClose}
         />
       </Modal>
