@@ -1,7 +1,8 @@
-import {hasLocale} from "next-intl";
+import type {Metadata} from "next";
 import {getTranslations} from "next-intl/server";
 import LegalLayout from "@/components/LegalLayout";
-import {routing, type Locale} from "@/i18n/routing";
+import {resolveLocale} from "@/i18n/locale";
+import {buildLocalizedPageMetadata} from "@/i18n/metadata";
 
 type LegalSection = {
   title: string;
@@ -13,12 +14,16 @@ type PrivacyPageProps = {
   params: Promise<{locale: string}>;
 };
 
-const toValidLocale = (value: string): Locale | null =>
-  hasLocale(routing.locales, value) ? value : null;
+export async function generateMetadata({params}: PrivacyPageProps): Promise<Metadata> {
+  return buildLocalizedPageMetadata({
+    params,
+    pathname: "/privacy",
+    namespace: "Pages.privacy.meta",
+  });
+}
 
 export default async function PrivacyPage({params}: PrivacyPageProps) {
-  const {locale: localeParam} = await params;
-  const locale = toValidLocale(localeParam);
+  const locale = await resolveLocale(params);
   if (!locale) {
     return null;
   }

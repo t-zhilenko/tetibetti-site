@@ -1,9 +1,8 @@
 import type {Metadata} from "next";
-import {hasLocale} from "next-intl";
 import {notFound} from "next/navigation";
 import ProductPageClient from "@/components/product/ProductPageClient";
 import {getAllProductSlugs, getProductBySlug, getProducts} from "@/content/products";
-import {routing, type Locale} from "@/i18n/routing";
+import {toValidLocale} from "@/i18n/locale";
 import {getHreflang, getLocalizedPath} from "@/i18n/seo";
 
 export const dynamicParams = false;
@@ -14,9 +13,6 @@ type PageProps = {
     slug: string;
   }>;
 };
-
-const toValidLocale = (value: string): Locale | null =>
-  hasLocale(routing.locales, value) ? value : null;
 
 export function generateStaticParams() {
   return getAllProductSlugs().map((slug) => ({slug}));
@@ -90,5 +86,46 @@ export default async function ProductPage({params}: PageProps) {
   }
 
   const products = getProducts(locale);
-  return <ProductPageClient product={product} allProducts={products} />;
+  const productUrl = `https://tetibetti.com/${locale}/products/${product.slug}`;
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.title,
+      description: product.seo?.description ?? product.description,
+      brand: {
+        "@type": "Brand",
+        name: "Teti Betti",
+      },
+      category: "Digital Product",
+      url: productUrl,
+    },
+    ...(product.faq?.items?.length
+      ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            inLanguage: locale,
+            mainEntity: product.faq.items.map((item) => ({
+              "@type": "Question",
+              name: item.title,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: item.answer,
+              },
+            })),
+          },
+        ]
+      : []),
+  ];
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData)}}
+      />
+      <ProductPageClient product={product} allProducts={products} />
+    </>
+  );
 }

@@ -1,20 +1,25 @@
+import type {Metadata} from "next";
 import Image from "next/image";
-import {hasLocale} from "next-intl";
 import {getTranslations} from "next-intl/server";
 import Container from "@/components/Container";
 import SubscribeForm from "@/components/SubscribeForm";
-import {routing, type Locale} from "@/i18n/routing";
+import {resolveLocale} from "@/i18n/locale";
+import {buildLocalizedPageMetadata} from "@/i18n/metadata";
 
 type AboutPageProps = {
   params: Promise<{locale: string}>;
 };
 
-const toValidLocale = (value: string): Locale | null =>
-  hasLocale(routing.locales, value) ? value : null;
+export async function generateMetadata({params}: AboutPageProps): Promise<Metadata> {
+  return buildLocalizedPageMetadata({
+    params,
+    pathname: "/about",
+    namespace: "Pages.about.meta",
+  });
+}
 
 export default async function AboutPage({params}: AboutPageProps) {
-  const {locale: localeParam} = await params;
-  const locale = toValidLocale(localeParam);
+  const locale = await resolveLocale(params);
 
   if (!locale) {
     return null;

@@ -643,9 +643,9 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
         },
       },
       seo: {
-        title: "Yearly Goals",
+        title: "Yearly Goals — Notion шаблон для планування року",
         description:
-          "Спокійна, структурована система Notion для річного планування з ясністю та наміром.",
+          "Yearly Goals — мінімалістичний Notion шаблон для планування року: цілі, проєкти й задачі в одній спокійній системі.",
       },
     },
     "nutrition-meal-planner": {
@@ -753,8 +753,9 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
         },
       },
       seo: {
-        title: "Nutrition Meal Planner",
-        description: "Спокійна система для планування меню, покупок і макронутрієнтів без хаосу.",
+        title: "Nutrition Meal Planner — планер харчування в Notion",
+        description:
+          "Планер харчування в Notion для тижневого меню, списку покупок і відстеження нутрієнтів у спокійному ритмі.",
       },
     },
   },

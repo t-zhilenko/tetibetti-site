@@ -159,9 +159,11 @@
       }
     },
     "shop": {
+      "title": "Digital planners and Notion templates",
+      "description": "A calm collection of Notion templates and digital planners for yearly planning, everyday clarity, and thoughtful routines.",
       "meta": {
         "title": "Shop",
-        "description": "Browse calm, minimal Notion templates and digital planners from Teti Betti."
+        "description": "Browse calm Notion templates and digital planners for yearly planning, meal planning, and focused routines."
       }
     },
     "products": {
@@ -185,6 +187,10 @@
       "imageAlt": "Blog illustration"
     },
     "about": {
+      "meta": {
+        "title": "About",
+        "description": "About Tetiana and Teti Betti, a digital studio for calm Notion templates and thoughtful planning systems."
+      },
       "label": "ABOUT",
       "title": "A little about me",
       "portraitAlt": "Tetiana portrait",
@@ -214,6 +220,10 @@
       "stayInTouchButton": "Subscribe"
     },
     "contact": {
+      "meta": {
+        "title": "Contact",
+        "description": "Contact Teti Betti for support, product questions, and collaboration inquiries."
+      },
       "label": "CONTACT",
       "title": "Say hello",
       "description1": "If you'd like to ask a question, share an idea, or simply say hello, I'd love to hear from you.",
@@ -221,6 +231,10 @@
       "replyNote": "I usually reply as soon as I can."
     },
     "faq": {
+      "meta": {
+        "title": "FAQ",
+        "description": "Answers about Notion templates, downloads, product access, and support."
+      },
       "label": "FAQ",
       "title": "Questions and answers",
       "description": "Here you'll find answers to common questions about downloads, Notion templates, and how everything works.",
@@ -267,20 +281,36 @@
       ]
     },
     "checkout": {
+      "meta": {
+        "title": "Checkout",
+        "description": "Checkout details for your selected Teti Betti digital product."
+      },
       "title": "Checkout",
       "description": "A checkout flow will live here. You selected",
       "backToShop": "Return to shop",
       "fallbackProduct": "selected product"
     },
     "success": {
+      "meta": {
+        "title": "Success",
+        "description": "Your request has been received."
+      },
       "title": "Success",
       "description": "Your request was received successfully."
     },
     "refund": {
+      "meta": {
+        "title": "Refund Policy",
+        "description": "Refund policy and updates for Teti Betti digital products."
+      },
       "title": "Refund",
       "description": "Refund details will be published here."
     },
     "thankYouYearlyGoals": {
+      "meta": {
+        "title": "Yearly Goals download",
+        "description": "Check your inbox for your Yearly Goals Notion template link and setup instructions."
+      },
       "label": "Check your inbox",
       "title": "Check your inbox",
       "description": "Your template link and setup instructions are on the way.",
@@ -289,6 +319,10 @@
       "supportPrefix": "Still nothing? You can always reach us at"
     },
     "license": {
+      "meta": {
+        "title": "License",
+        "description": "License terms for using Teti Betti digital products and Notion templates."
+      },
       "label": "LICENSE",
       "title": "Product License",
       "updatedLabel": "Last updated: March 2026",
@@ -334,6 +368,10 @@
       ]
     },
     "privacy": {
+      "meta": {
+        "title": "Privacy Policy",
+        "description": "How Teti Betti collects, uses, and protects your information."
+      },
       "label": "PRIVACY POLICY",
       "title": "Privacy Policy",
       "updatedLabel": "Last updated: March 2026",
@@ -390,6 +428,10 @@
       ]
     },
     "terms": {
+      "meta": {
+        "title": "Terms of Use",
+        "description": "Terms and conditions for using the Teti Betti website and digital products."
+      },
       "label": "TERMS",
       "title": "Terms of Use",
       "updatedLabel": "Last updated: March 2026",

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Providers from "@/app/providers";
-import { routing, type Locale } from "@/i18n/routing";
+import {toValidLocale} from "@/i18n/locale";
+import { routing } from "@/i18n/routing";
 
 const siteUrl = "https://tetibetti.com";
 const ogImage = {
@@ -28,9 +29,6 @@ type LocaleLayoutProps = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 };
-
-const toValidLocale = (value: string): Locale | null =>
-  hasLocale(routing.locales, value) ? value : null;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

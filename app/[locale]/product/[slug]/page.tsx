@@ -1,6 +1,6 @@
-import {hasLocale} from "next-intl";
 import {redirect} from "next/navigation";
 import {getAllProductSlugs} from "@/content/products";
+import {toValidLocale} from "@/i18n/locale";
 import {routing} from "@/i18n/routing";
 
 export const dynamicParams = false;
@@ -26,7 +26,7 @@ export function generateStaticParams() {
 
 export default async function ProductRedirectPage({params}: ProductRedirectPageProps) {
   const {locale, slug} = await params;
-  const safeLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
+  const safeLocale = toValidLocale(locale) ?? routing.defaultLocale;
   const targetSlug = legacySlugMap[slug] ?? slug;
   redirect(`/${safeLocale}/products/${targetSlug}`);
 }

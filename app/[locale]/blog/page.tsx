@@ -1,54 +1,25 @@
 import type {Metadata} from "next";
 import Image from "next/image";
-import {hasLocale} from "next-intl";
 import {getTranslations} from "next-intl/server";
 import Container from "@/components/Container";
 import {Link} from "@/i18n/navigation";
-import {routing, type Locale} from "@/i18n/routing";
-import {getHreflang, getLocalizedPath} from "@/i18n/seo";
+import {resolveLocale} from "@/i18n/locale";
+import {buildLocalizedPageMetadata} from "@/i18n/metadata";
 
 type BlogPageProps = {
   params: Promise<{locale: string}>;
 };
 
-const toValidLocale = (value: string): Locale | null =>
-  hasLocale(routing.locales, value) ? value : null;
-
 export async function generateMetadata({params}: BlogPageProps): Promise<Metadata> {
-  const {locale: localeParam} = await params;
-  const locale = toValidLocale(localeParam);
-
-  if (!locale) {
-    return {};
-  }
-
-  const t = await getTranslations({locale, namespace: "Pages.blog.meta"});
-  const canonicalPath = getLocalizedPath(locale, "/blog");
-
-  return {
-    title: t("title"),
-    description: t("description"),
-    alternates: {
-      canonical: canonicalPath,
-      languages: getHreflang("/blog"),
-    },
-    openGraph: {
-      title: t("title"),
-      description: t("description"),
-      url: canonicalPath,
-      type: "website",
-    },
-    twitter: {
-      card: "summary",
-      title: t("title"),
-      description: t("description"),
-    },
-  };
+  return buildLocalizedPageMetadata({
+    params,
+    pathname: "/blog",
+    namespace: "Pages.blog.meta",
+  });
 }
 
 export default async function BlogPage({params}: BlogPageProps) {
-  const {locale: localeParam} = await params;
-  const locale = toValidLocale(localeParam);
+  const locale = await resolveLocale(params);
 
   if (!locale) {
     return null;

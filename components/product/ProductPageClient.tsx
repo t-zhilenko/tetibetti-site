@@ -193,10 +193,11 @@ export default function ProductPageClient({product, allProducts}: ProductPageCli
     ? {
         title: product.sections?.faqTitle ?? product.faq.title,
         description: product.sections?.faqSubtitle ?? product.faq.description,
-        items: product.faq.items.map((item) => ({
+        items: product.faq.items.map((item, index) => ({
           id: item.id,
           title: item.title,
           content: <p>{item.answer}</p>,
+          defaultOpen: index === 0,
         })),
       }
     : undefined;

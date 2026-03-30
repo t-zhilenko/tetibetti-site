@@ -6,7 +6,18 @@ const baseUrl = "https://tetibetti.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
-  const staticRoutes = ["/", "/products", "/shop", "/blog", "/about", "/faq", "/contact"];
+  const staticRoutes = [
+    "/",
+    "/shop",
+    "/blog",
+    "/about",
+    "/faq",
+    "/contact",
+    "/refund",
+    "/license",
+    "/privacy",
+    "/terms",
+  ];
   const productRoutes = getAllProductSlugs().map((slug) => `/products/${slug}`);
   const localizedRoutes = routing.locales.flatMap((locale) =>
     [...staticRoutes, ...productRoutes].map((route) => `/${locale}${route === "/" ? "" : route}`)

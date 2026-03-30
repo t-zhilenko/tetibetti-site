@@ -1,18 +1,23 @@
-import {hasLocale} from "next-intl";
+import type {Metadata} from "next";
 import {getTranslations} from "next-intl/server";
 import Container from "@/components/Container";
-import {routing, type Locale} from "@/i18n/routing";
+import {resolveLocale} from "@/i18n/locale";
+import {buildLocalizedPageMetadata} from "@/i18n/metadata";
 
 type RefundPageProps = {
   params: Promise<{locale: string}>;
 };
 
-const toValidLocale = (value: string): Locale | null =>
-  hasLocale(routing.locales, value) ? value : null;
+export async function generateMetadata({params}: RefundPageProps): Promise<Metadata> {
+  return buildLocalizedPageMetadata({
+    params,
+    pathname: "/refund",
+    namespace: "Pages.refund.meta",
+  });
+}
 
 export default async function RefundPage({params}: RefundPageProps) {
-  const {locale: localeParam} = await params;
-  const locale = toValidLocale(localeParam);
+  const locale = await resolveLocale(params);
   if (!locale) {
     return null;
   }
