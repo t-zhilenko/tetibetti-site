@@ -1,5 +1,3 @@
-export const runtime = "edge";
-
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SUPPORT_EMAIL = "teti.betti.studio@gmail.com";
 const jsonResponse = (body: Record<string, unknown>, status = 200) =>

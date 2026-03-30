@@ -1,7 +1,5 @@
 import { handleBrevoAction } from "@/lib/brevo/actions";
 
-export const runtime = "edge";
-
 export async function POST(request: Request) {
   const response = await handleBrevoAction(request, "subscribe");
   if (!response.ok) {

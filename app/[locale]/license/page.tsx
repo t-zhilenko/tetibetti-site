@@ -14,8 +14,6 @@ type LicensePageProps = {
   params: Promise<{locale: string}>;
 };
 
-export const runtime = "edge";
-
 export async function generateMetadata({params}: LicensePageProps): Promise<Metadata> {
   return buildLocalizedPageMetadata({
     params,

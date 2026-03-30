@@ -5,8 +5,6 @@ import {Link} from "@/i18n/navigation";
 import {resolveLocale} from "@/i18n/locale";
 import {buildLocalizedPageMetadata} from "@/i18n/metadata";
 
-export const runtime = "edge";
-
 type CheckoutPageProps = {
   params: Promise<{locale: string}>;
   searchParams: Promise<{product?: string}>;

@@ -11,13 +11,17 @@ npm run dev
 
 ## Cloudflare Deploy (OpenNext)
 
-Build settings for Cloudflare Pages/Workers using the OpenNext Cloudflare adapter:
+Use OpenNext with **Cloudflare Workers Builds** (not `@cloudflare/next-on-pages`):
 
-- Build command: `npm run build:cf`
-- Build output directory: `.open-next`
+- Build command: `npx @opennextjs/cloudflare build`
+- Deploy command: `npx @opennextjs/cloudflare deploy`
 - Root directory: `/`
-- This project is migrated off `@cloudflare/next-on-pages`; keep using `@opennextjs/cloudflare`.
-- Pages build output for static assets is `.vercel/output/static` (see `wrangler.toml`).
+- Worker entry and assets are configured in `wrangler.toml`:
+  - `main = ".open-next/worker.js"`
+  - `assets.directory = ".open-next/assets"`
+- Local commands:
+  - `npm run build:cf`
+  - `npm run deploy:cf`
 
 ## Styling Notes
 
@@ -36,7 +40,7 @@ Build settings for Cloudflare Pages/Workers using the OpenNext Cloudflare adapte
   - `i18n/routing.ts`
   - `i18n/navigation.ts`
   - `i18n/request.ts`
-  - `proxy.ts`
+  - `middleware.ts`
 - App routes are locale-segmented under `app/[locale]/...`.
 
 ### Add a new language

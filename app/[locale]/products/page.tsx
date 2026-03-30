@@ -1,8 +1,6 @@
 import {permanentRedirect} from "next/navigation";
 import {resolveLocale} from "@/i18n/locale";
 
-export const runtime = "edge";
-
 type ProductsPageProps = {
   params: Promise<{locale: string}>;
 };
