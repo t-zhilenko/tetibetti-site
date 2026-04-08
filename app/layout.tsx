@@ -1,4 +1,5 @@
 import "./globals.css";
+import type {Metadata} from "next";
 import {Allura, Inter, Playfair_Display} from "next/font/google";
 
 const inter = Inter({
@@ -19,6 +20,12 @@ const allura = Allura({
   display: "swap",
   weight: "400",
 });
+
+export const metadata: Metadata = {
+  other: {
+    "p:domain_verify": "5f59ad93a03591fee887eb031e02fbad",
+  },
+};
 
 type RootLayoutProps = {
   children: React.ReactNode;
