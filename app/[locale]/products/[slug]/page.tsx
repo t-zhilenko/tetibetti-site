@@ -5,8 +5,6 @@ import {getAllProductSlugs, getProductBySlug, getProducts} from "@/content/produ
 import {toValidLocale} from "@/i18n/locale";
 import {getHreflang, getLocalizedPath} from "@/i18n/seo";
 
-export const dynamicParams = false;
-
 type PageProps = {
   params: Promise<{
     locale: string;

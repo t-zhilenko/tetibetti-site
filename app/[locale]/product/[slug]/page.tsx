@@ -3,8 +3,6 @@ import {getAllProductSlugs} from "@/content/products";
 import {toValidLocale} from "@/i18n/locale";
 import {routing} from "@/i18n/routing";
 
-export const dynamicParams = false;
-
 type ProductRedirectPageProps = {
   params: Promise<{
     locale: string;
