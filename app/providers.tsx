@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
+import CartProvider from "@/components/cart/CartProvider";
 
 const posthogToken = process.env.NEXT_PUBLIC_POSTHOG_TOKEN;
 const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST;
@@ -34,5 +35,9 @@ export default function Providers({ children }: ProvidersProps) {
     posthog.capture("$pageview");
   }, [pathname, searchParams]);
 
-  return <PostHogProvider client={posthog}>{children}</PostHogProvider>;
+  return (
+    <PostHogProvider client={posthog}>
+      <CartProvider>{children}</CartProvider>
+    </PostHogProvider>
+  );
 }

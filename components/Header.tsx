@@ -3,6 +3,7 @@
 import {Instagram, Pin, Search, ShoppingBag, Youtube, Send} from "lucide-react";
 import {useLocale, useTranslations} from "next-intl";
 import Container from "@/components/Container";
+import {useCart} from "@/components/cart/CartContext";
 import {routing, type Locale} from "@/i18n/routing";
 import {Link, usePathname, useRouter} from "@/i18n/navigation";
 
@@ -44,6 +45,7 @@ export default function Header() {
   const pathname = usePathname();
   const locale = useLocale() as Locale;
   const router = useRouter();
+  const {itemCount, openCart} = useCart();
 
   const isActive = (href: string) => {
     if (href === "/") {
@@ -89,9 +91,16 @@ export default function Header() {
                 type="button"
                 aria-label={common("cart")}
                 className="relative inline-flex hover:text-deep/85"
+                onClick={openCart}
               >
                 <ShoppingBag size={16} strokeWidth={1.5} />
-                <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-deep/55" />
+                {itemCount > 0 ? (
+                  <span className="absolute -top-2 -right-2 inline-flex min-h-4 min-w-4 items-center justify-center rounded-full border border-white/80 bg-deep/72 px-1 text-[9px] font-medium leading-none text-white">
+                    {itemCount}
+                  </span>
+                ) : (
+                  <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-deep/45" />
+                )}
               </button>
             </div>
           </div>

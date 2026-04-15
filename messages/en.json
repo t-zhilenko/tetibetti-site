@@ -283,12 +283,37 @@
     "checkout": {
       "meta": {
         "title": "Checkout",
-        "description": "Checkout details for your selected Teti Betti digital product."
+        "description": "Secure checkout for your selected Teti Betti digital products."
       },
-      "title": "Checkout",
-      "description": "A checkout flow will live here. You selected",
-      "backToShop": "Return to shop",
-      "fallbackProduct": "selected product"
+      "title": "Secure checkout",
+      "description": "One-time purchase for digital products. Your access details will be sent by email.",
+      "expressCheckout": "Express checkout",
+      "contact": "Contact",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "emailHelper": "Your receipt and access instructions will be sent here.",
+      "payment": "Payment",
+      "cardNumber": "Card number",
+      "cardNumberPlaceholder": "1234 1234 1234 1234",
+      "expirationDate": "Expiration date",
+      "expirationDatePlaceholder": "MM / YY",
+      "securityCode": "Security code",
+      "securityCodePlaceholder": "CVC",
+      "nameOnCard": "Name on card",
+      "nameOnCardPlaceholder": "Full name",
+      "continueToSecurePayment": "Continue to secure payment",
+      "secureCheckout": "Secure checkout",
+      "orderSummary": "Order summary",
+      "digitalProduct": "Digital product",
+      "emptyCart": "Your cart is empty. Add a product before completing checkout.",
+      "promoCoupon": "Promo / Coupon",
+      "enterCode": "Enter code",
+      "apply": "Apply",
+      "codeApplied": "Code applied ✓",
+      "subtotal": "Subtotal",
+      "total": "Total",
+      "notAvailable": "—",
+      "oneTimePurchase": "One-time purchase"
     },
     "success": {
       "meta": {

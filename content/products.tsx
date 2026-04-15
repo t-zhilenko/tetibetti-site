@@ -52,6 +52,29 @@ export type ProductPrimaryCta = {
   type: "download" | "waitlist";
   label: string;
   helperText?: string;
+  endpoint?: string;
+};
+
+export type ProductCheckoutType = "free" | "waitlist" | "paid";
+export type ProductCheckoutMode = "modal" | "redirect";
+
+export type ProductPurchaseConfig = {
+  type: ProductCheckoutType;
+  price?: number;
+  currency?: string;
+  checkoutMode?: ProductCheckoutMode;
+  checkoutEnabled?: boolean;
+  note?: string;
+  helperText?: string;
+  trustText?: string;
+  ctaLabel?: string;
+  emailSubmitLabel?: string;
+  emailHelperText?: string;
+  interestEndpoint?: string;
+  promoEnabled?: boolean;
+  modalTitle?: string;
+  modalLines?: string[];
+  modalSuccessLines?: string[];
 };
 
 export type ProductKeyFeature = {
@@ -116,13 +139,17 @@ export type ProductConfig = {
   pairsWithOverrides?: Record<string, ProductPairsWithOverride>;
   showActions?: boolean;
   showLanguageSelector?: boolean;
+  purchase?: ProductPurchaseConfig;
   seo?: {
     title: string;
     description: string;
   };
 };
 
-type ProductSlug = "yearly-goals" | "nutrition-meal-planner";
+type ProductSlug =
+  | "yearly-goals"
+  | "nutrition-meal-planner"
+  | "body-and-nutrition-tracker";
 
 type ProductStaticConfig = Pick<
   ProductConfig,
@@ -140,7 +167,11 @@ type ProductStaticConfig = Pick<
 type ProductLocalizedConfig = Omit<ProductConfig, keyof ProductStaticConfig>;
 
 const fallbackLocale: Locale = "en";
-const productOrder: ProductSlug[] = ["yearly-goals", "nutrition-meal-planner"];
+const productOrder: ProductSlug[] = [
+  "yearly-goals",
+  "nutrition-meal-planner",
+  "body-and-nutrition-tracker",
+];
 
 const nutritionPreviewImages: ProductImage[] = [
   { src: "/images/nutrition-meal-planner/1.jpg", alt: "Nutrition Meal Planner preview 1" },
@@ -149,6 +180,16 @@ const nutritionPreviewImages: ProductImage[] = [
   { src: "/images/nutrition-meal-planner/4.jpg", alt: "Nutrition Meal Planner preview 4" },
   { src: "/images/nutrition-meal-planner/5.jpg", alt: "Nutrition Meal Planner preview 5" },
   { src: "/images/nutrition-meal-planner/6.jpg", alt: "Nutrition Meal Planner preview 6" },
+];
+
+const bodyNutritionPreviewImages: ProductImage[] = [
+  { src: "/images/body-and-nutrition-tracker/1.jpg", alt: "Body & Nutrition Tracker dashboard overview" },
+  { src: "/images/body-and-nutrition-tracker/2.jpg", alt: "Body & Nutrition Tracker personal dashboard" },
+  { src: "/images/body-and-nutrition-tracker/3.jpg", alt: "Body & Nutrition Tracker nutrition targets" },
+  { src: "/images/body-and-nutrition-tracker/4.jpg", alt: "Body & Nutrition Tracker required inputs" },
+  { src: "/images/body-and-nutrition-tracker/5.jpg", alt: "Body & Nutrition Tracker check-in workflow" },
+  { src: "/images/body-and-nutrition-tracker/6.jpg", alt: "Body & Nutrition Tracker weekly summary" },
+  { src: "/images/body-and-nutrition-tracker/7.jpg", alt: "Body & Nutrition Tracker profile setup" },
 ];
 
 const productStaticConfigs: Record<ProductSlug, ProductStaticConfig> = {
@@ -184,6 +225,18 @@ const productStaticConfigs: Record<ProductSlug, ProductStaticConfig> = {
       alt: "Nutrition Meal Planner main preview",
     },
     pairsWith: ["yearly-goals"],
+    showLanguageSelector: true,
+  },
+  "body-and-nutrition-tracker": {
+    slug: "body-and-nutrition-tracker",
+    status: "available",
+    galleryImages: bodyNutritionPreviewImages,
+    thumbnail: "/images/body-and-nutrition-tracker/1.jpg",
+    mainPreviewImage: {
+      src: "/images/body-and-nutrition-tracker/1.jpg",
+      alt: "Body & Nutrition Tracker main preview",
+    },
+    pairsWith: ["nutrition-meal-planner"],
     showLanguageSelector: true,
   },
 };
@@ -376,6 +429,7 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
         type: "waitlist",
         label: "Join waitlist",
         helperText: "No spam. Just one email when it's ready.",
+        endpoint: "/api/brevo/nutrition-waitlist",
       },
       successMessageLines: [
         "You're on the waitlist.",
@@ -472,6 +526,160 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
       seo: {
         title: "Nutrition Meal Planner",
         description: "A calm system for planning meals, groceries, and nutrition without the noise.",
+      },
+    },
+    "body-and-nutrition-tracker": {
+      title: "Body & Nutrition Tracker",
+      tags: ["NUTRITION TRACKING", "MINIMAL SYSTEM", "BODY AWARENESS", "CALM STRUCTURE"],
+      tagline:
+        "A simple Notion tracker for body check-ins and automatic nutrition targets. Track your progress with minimal effort, clear dashboards, and a calm, supportive structure.",
+      statusBadgeText: "",
+      description:
+        "A simple Notion body and nutrition tracker with weekly check-ins, automatic calorie and macro targets, and a calm dashboard designed for everyday use.",
+      shortDescription:
+        "A simple Notion tracker for body check-ins and automatic nutrition targets.",
+      badge: { label: "Paid template", tone: "soft" },
+      bullets: [
+        "Weekly check-ins with weight, measurements, and optional body signals",
+        "Automatic calorie and macro calculation",
+        "Only weight + activity level required",
+        "Personal dashboard created automatically",
+        "Progress tracking over time",
+        "Designed to live on your main page",
+        "Multiple profiles supported",
+        "Only 2 inputs. No overwhelm.",
+      ],
+      cta: "Add to cart",
+      priceLabel: "$9",
+      purchase: {
+        type: "paid",
+        price: 9,
+        currency: "USD",
+        checkoutMode: "modal",
+        checkoutEnabled: true,
+        note: "Simple one-time purchase",
+        helperText: "Instant access after checkout.",
+        trustText: "Checkout continues in your cart.",
+        ctaLabel: "Add to cart",
+        emailSubmitLabel: "Notify me",
+        emailHelperText: "Leave your email to be first to know when checkout opens.",
+        interestEndpoint: "/api/brevo/subscribe",
+        promoEnabled: true,
+        modalTitle: "Checkout is coming soon",
+        modalLines: [
+          "Secure payment will be available here shortly.",
+          "Leave your email and we'll let you know when checkout goes live.",
+        ],
+        modalSuccessLines: [
+          "You're on the checkout early-access list.",
+          "We'll email you when secure checkout is live.",
+        ],
+      },
+      detailsAccordion: [
+        {
+          id: "who-its-for",
+          title: "Who It's For",
+          content: {
+            bullets: [
+              "people who want a simple nutrition tracking system",
+              "people who feel overwhelmed by complex trackers",
+              "users who want to track body changes without pressure",
+              "anyone who wants clear calorie and macro targets with minimal setup",
+            ],
+          },
+        },
+        {
+          id: "whats-inside",
+          title: "What's Inside",
+          content: {
+            bullets: [
+              "profile creation flow",
+              "automatic personal dashboard",
+              "weekly check-in system",
+              "body measurements logging",
+              "optional digestion and energy tracking",
+              "automatic nutrition targets",
+              "multi-profile support",
+              "intention / reflection section",
+            ],
+          },
+        },
+        {
+          id: "how-it-works",
+          title: "How It Works",
+          content: {
+            ordered: [
+              "create your profile",
+              "fill in name, age, height, and gender",
+              "add your first check-in",
+              "weight and activity level are the only required fields",
+              "click \"Update Targets\"",
+              "calories and macros are calculated automatically",
+              "check in weekly to track progress",
+              "recalculate targets after every ~5 kg change",
+            ],
+          },
+        },
+        {
+          id: "release-plan",
+          title: "Release Plan",
+          content: {
+            paragraphs: [
+              "This tracker is part of a larger nutrition system currently in development.",
+              "It will later connect naturally with meal planning, ingredient intelligence, and deeper nutrition insights.",
+            ],
+          },
+        },
+      ],
+      keyFeatures: [
+        {
+          title: "Minimal Input",
+          descriptionShort: "Only weight and activity level are required to get started.",
+        },
+        {
+          title: "Automatic Targets",
+          descriptionShort: "Calories and macros are calculated for you.",
+        },
+        {
+          title: "Weekly Check-Ins",
+          descriptionShort: "Track your body changes over time with simple updates.",
+        },
+        {
+          title: "Personal Dashboard",
+          descriptionShort: "Your key numbers, reminders, and actions in one place.",
+        },
+        {
+          title: "Main Page Friendly",
+          descriptionShort: "A clean dashboard you can place on your main Notion page.",
+        },
+        {
+          title: "Progress Visibility",
+          descriptionShort: "See changes in weight and measurements clearly.",
+        },
+        {
+          title: "Optional Body Signals",
+          descriptionShort: "Track digestion, energy, and other patterns if helpful.",
+        },
+        {
+          title: "Multiple Profiles",
+          descriptionShort: "Use the same system for more than one person.",
+        },
+      ],
+      sections: {
+        keyFeaturesSectionTitle: "Key Features",
+        keyFeaturesSectionSubtitle: "A calm system for tracking progress clearly and simply.",
+      },
+      pairsWithTitle: "Pairs well with",
+      pairsWithOverrides: {
+        "nutrition-meal-planner": {
+          title: "Nutrition Meal Planner",
+          subtitle: "Plan meals, track nutrients, and stay gently guided.",
+        },
+      },
+      seo: {
+        title: "Body & Nutrition Tracker",
+        description:
+          "A simple Notion body and nutrition tracker with weekly check-ins, automatic calorie and macro targets, and a calm dashboard designed for everyday use.",
       },
     },
   },
@@ -657,6 +865,7 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
         type: "waitlist",
         label: "До списку очікування",
         helperText: "Без спаму. Лише один лист, коли продукт буде готовий.",
+        endpoint: "/api/brevo/nutrition-waitlist",
       },
       successMessageLines: [
         "Ви у списку очікування.",
@@ -756,6 +965,160 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
         title: "Nutrition Meal Planner — планер харчування в Notion",
         description:
           "Планер харчування в Notion для тижневого меню, списку покупок і відстеження нутрієнтів у спокійному ритмі.",
+      },
+    },
+    "body-and-nutrition-tracker": {
+      title: "Body & Nutrition Tracker",
+      tags: ["ТРЕКІНГ ХАРЧУВАННЯ", "МІНІМАЛЬНА СИСТЕМА", "УСВІДОМЛЕНІСТЬ ТІЛА", "СПОКІЙНА СТРУКТУРА"],
+      tagline:
+        "Простий Notion-трекер для щотижневих чек-інів і автоматичного розрахунку цілей харчування. Відстежуйте прогрес без перевантаження у спокійній, підтримувальній системі.",
+      statusBadgeText: "",
+      description:
+        "Простий Notion-трекер для тіла й харчування: щотижневі чек-іни, автоматичний розрахунок калорій і макросів та спокійний дашборд для щоденного використання.",
+      shortDescription:
+        "Простий Notion-трекер для чек-інів тіла й автоматичних цілей харчування.",
+      badge: { label: "Платний шаблон", tone: "soft" },
+      bullets: [
+        "Щотижневі чек-іни: вага, виміри та, за бажанням, сигнали тіла",
+        "Автоматичний розрахунок калорій і макросів",
+        "Обов’язкові лише вага та рівень активності",
+        "Персональний дашборд створюється автоматично",
+        "Відстеження прогресу в динаміці",
+        "Дашборд зручно розмістити на головній сторінці",
+        "Підтримка кількох профілів",
+        "Лише 2 поля. Без перевантаження.",
+      ],
+      cta: "Додати в кошик",
+      priceLabel: "$9",
+      purchase: {
+        type: "paid",
+        price: 9,
+        currency: "USD",
+        checkoutMode: "modal",
+        checkoutEnabled: true,
+        note: "Разова покупка",
+        helperText: "Миттєвий доступ після оформлення.",
+        trustText: "Оформлення продовжується у кошику.",
+        ctaLabel: "Додати в кошик",
+        emailSubmitLabel: "Повідомте мене",
+        emailHelperText: "Залиште email, щоб першими дізнатися про запуск checkout.",
+        interestEndpoint: "/api/brevo/subscribe",
+        promoEnabled: true,
+        modalTitle: "Checkout незабаром",
+        modalLines: [
+          "Безпечна оплата буде доступна тут зовсім скоро.",
+          "Залиште email і ми повідомимо, коли checkout запрацює.",
+        ],
+        modalSuccessLines: [
+          "Ви у списку раннього доступу до checkout.",
+          "Ми напишемо вам, коли безпечна оплата стане доступною.",
+        ],
+      },
+      detailsAccordion: [
+        {
+          id: "who-its-for",
+          title: "Кому підійде",
+          content: {
+            bullets: [
+              "тим, хто хоче просту систему трекінгу харчування",
+              "тим, кого перевантажують складні трекери",
+              "тим, хто хоче відстежувати зміни тіла без тиску",
+              "усім, хто хоче чіткі цілі калорій і макросів без складного налаштування",
+            ],
+          },
+        },
+        {
+          id: "whats-inside",
+          title: "Що всередині",
+          content: {
+            bullets: [
+              "створення профілю в кілька кліків",
+              "автоматичний персональний дашборд",
+              "система щотижневих чек-інів",
+              "відстеження вимірів тіла",
+              "опційний трекінг травлення й енергії",
+              "автоматичні цілі харчування",
+              "підтримка кількох профілів",
+              "секція для наміру та рефлексії",
+            ],
+          },
+        },
+        {
+          id: "how-it-works",
+          title: "Як це працює",
+          content: {
+            ordered: [
+              "створіть свій профіль",
+              "заповніть ім’я, вік, зріст і стать",
+              "додайте перший чек-ін",
+              "вага та рівень активності — єдині обов’язкові поля",
+              "натисніть «Update Targets»",
+              "калорії та макроси розрахуються автоматично",
+              "робіть чек-ін раз на тиждень, щоб бачити прогрес",
+              "оновлюйте цілі після кожної зміни приблизно на 5 кг",
+            ],
+          },
+        },
+        {
+          id: "release-plan",
+          title: "План релізу",
+          content: {
+            paragraphs: [
+              "Цей трекер є частиною більшої системи харчування, яка зараз у розробці.",
+              "Згодом він природно поєднається з плануванням меню, бібліотекою інгредієнтів і глибшими інсайтами про харчування.",
+            ],
+          },
+        },
+      ],
+      keyFeatures: [
+        {
+          title: "Мінімум вводу",
+          descriptionShort: "Щоб почати, достатньо лише ваги та рівня активності.",
+        },
+        {
+          title: "Автоматичні цілі",
+          descriptionShort: "Калорії та макроси розраховуються автоматично.",
+        },
+        {
+          title: "Щотижневі чек-іни",
+          descriptionShort: "Відстежуйте зміни тіла простими щотижневими оновленнями.",
+        },
+        {
+          title: "Персональний дашборд",
+          descriptionShort: "Ключові цифри, нагадування й дії в одному місці.",
+        },
+        {
+          title: "Зручно для головної сторінки",
+          descriptionShort: "Охайний дашборд, який легко розмістити на головній сторінці Notion.",
+        },
+        {
+          title: "Видимий прогрес",
+          descriptionShort: "Чітко бачте зміни ваги й вимірів у часі.",
+        },
+        {
+          title: "Опційні сигнали тіла",
+          descriptionShort: "За бажанням відстежуйте травлення, енергію та інші патерни.",
+        },
+        {
+          title: "Кілька профілів",
+          descriptionShort: "Використовуйте систему для кількох людей в одному просторі.",
+        },
+      ],
+      sections: {
+        keyFeaturesSectionTitle: "Ключові можливості",
+        keyFeaturesSectionSubtitle: "Спокійна система для простого й зрозумілого відстеження прогресу.",
+      },
+      pairsWithTitle: "Добре поєднується з",
+      pairsWithOverrides: {
+        "nutrition-meal-planner": {
+          title: "Nutrition Meal Planner",
+          subtitle: "Плануйте меню, відстежуйте нутрієнти й рухайтеся вперед м’яко та без перевантаження.",
+        },
+      },
+      seo: {
+        title: "Body & Nutrition Tracker",
+        description:
+          "Простий Notion-трекер для тіла й харчування: щотижневі чек-іни, автоматичний розрахунок калорій і макросів та спокійний дашборд для щоденного використання.",
       },
     },
   },

@@ -3,6 +3,7 @@ import {getTranslations} from "next-intl/server";
 import {notFound} from "next/navigation";
 import Container from "@/components/Container";
 import ProductCard from "@/components/ProductCard";
+import {toProductCardItem} from "@/components/product-card-data";
 import {getProducts} from "@/content/products";
 import {resolveLocale} from "@/i18n/locale";
 import {buildLocalizedPageMetadata} from "@/i18n/metadata";
@@ -43,7 +44,7 @@ export default async function ShopPage({params}: ShopPageProps) {
         <div className="grid gap-12 md:grid-cols-2 md:gap-10 lg:grid-cols-3 lg:gap-12">
           {products.map((product) => (
             <div key={product.slug} className="mx-auto w-full max-w-[340px]">
-              <ProductCard product={product} />
+              <ProductCard item={toProductCardItem(product)} />
             </div>
           ))}
         </div>

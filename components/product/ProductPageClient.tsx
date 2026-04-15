@@ -6,6 +6,7 @@ import EmailCaptureForm from "@/components/EmailCaptureForm";
 import ProductGalleryEmbla from "@/components/ProductGalleryEmbla";
 import Modal from "@/components/Modal";
 import ProductPageLayout from "@/components/product/ProductPageLayout";
+import ProductPurchaseCard from "@/components/product/ProductPurchaseCard";
 import PairsWithSection from "@/components/product/PairsWithSection";
 import ProductActions from "@/components/product/ProductActions";
 import {trackEvent} from "@/lib/analytics";
@@ -115,16 +116,17 @@ export default function ProductPageClient({product, allProducts}: ProductPageCli
     helperText: isWaitingStatus ? t("waitlistHelperDefault") : product.ctaNote,
   };
 
-  const isWaitlist = primaryCta.type === "waitlist";
-  const isNutritionWaitlist = isWaitlist && product.slug === "nutrition-meal-planner";
-  const waitlistEndpoint = isNutritionWaitlist
-    ? "/api/brevo/nutrition-waitlist"
-    : "/api/brevo/subscribe";
+  const ctaMode =
+    product.purchase?.type ?? (primaryCta.type === "download" ? "free" : "waitlist");
+  const isWaitlist = ctaMode === "waitlist";
+  const isFree = ctaMode === "free";
+  const isPaid = ctaMode === "paid";
+  const waitlistEndpoint = primaryCta.endpoint ?? "/api/brevo/subscribe";
   const statusBadgeText = product.statusBadgeText ?? product.badge.label;
   const waitlistHelperText = primaryCta.helperText ?? t("waitlistHelperDefault");
   const waitlistSuccessLines = product.successMessageLines ?? [t("waitlistSuccessDefault")];
   const ctaNote =
-    primaryCta.type === "download" && primaryCta.helperText ? (
+    isFree && primaryCta.helperText ? (
       <p className="mt-2 text-[12px] text-deep/60">{primaryCta.helperText}</p>
     ) : null;
 
@@ -214,7 +216,18 @@ export default function ProductPageClient({product, allProducts}: ProductPageCli
       badgeLabel={statusBadgeText}
       bullets={product.bullets}
       cta={
-        isWaitlist ? (
+        isPaid && product.purchase ? (
+            <ProductPurchaseCard
+              product={{
+                slug: product.slug,
+                title: product.title,
+                priceLabel: product.priceLabel,
+                shortDescription: product.shortDescription,
+                thumbnail: product.thumbnail ?? product.mainPreviewImage.src,
+              }}
+              purchase={product.purchase}
+            />
+        ) : isWaitlist ? (
           <div className="w-full">
             <EmailCaptureForm
               variant="waitlist"
@@ -256,26 +269,28 @@ export default function ProductPageClient({product, allProducts}: ProductPageCli
       benefits={benefitsSection}
       faq={faqSection}
       afterContent={
-        <Modal open={isModalOpen} title={t("downloadFree")} onClose={closeModal} contentClassName="mt-6 sm:mt-8">
-          <EmailCaptureForm
-            key={isModalOpen ? "open" : "closed"}
-            variant="download"
-            endpoint="/api/brevo/yearly-goals-download"
-            submitLabel={t("sendMeLink")}
-            submittingLabel={t("sending")}
-            introText={t("downloadModalIntro")}
-            successTitle={t("downloadModalSuccessTitle")}
-            successDescription={t("downloadModalSuccessDescription")}
-            successHelpText={t("downloadModalSuccessHelp")}
-            supportEmail="support@tetibetti.com"
-            onContinue={closeModal}
-            analytics={{
-              source: "download_modal",
-              productSlug: product.slug,
-              productName: product.title,
-            }}
-          />
-        </Modal>
+        isFree ? (
+          <Modal open={isModalOpen} title={t("downloadFree")} onClose={closeModal} contentClassName="mt-6 sm:mt-8">
+            <EmailCaptureForm
+              key={isModalOpen ? "open" : "closed"}
+              variant="download"
+              endpoint="/api/brevo/yearly-goals-download"
+              submitLabel={t("sendMeLink")}
+              submittingLabel={t("sending")}
+              introText={t("downloadModalIntro")}
+              successTitle={t("downloadModalSuccessTitle")}
+              successDescription={t("downloadModalSuccessDescription")}
+              successHelpText={t("downloadModalSuccessHelp")}
+              supportEmail="support@tetibetti.com"
+              onContinue={closeModal}
+              analytics={{
+                source: "download_modal",
+                productSlug: product.slug,
+                productName: product.title,
+              }}
+            />
+          </Modal>
+        ) : null
       }
     />
   );

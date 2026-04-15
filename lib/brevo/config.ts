@@ -1,7 +1,8 @@
 export type BrevoActionKey =
   | "subscribe"
   | "yearly_goals_download"
-  | "nutrition_waitlist";
+  | "nutrition_waitlist"
+  | "body_nutrition_waitlist";
 
 export type BrevoActionConfig = {
   listIdsToAdd: number[];
@@ -47,6 +48,18 @@ export const brevoConfig = {
       templateParams: {
         PRODUCT_NAME: "Nutrition Meal Planner",
         RELEASE_DATE: "March 29",
+      },
+    },
+    body_nutrition_waitlist: {
+      listIdsToAdd: [3],
+      tagsToAdd: [
+        "source:website",
+        "product:body-and-nutrition-tracker",
+        "intent:waitlist",
+      ],
+      attributes: {
+        WAITLIST_PRODUCT: "Body & Nutrition Tracker",
+        WAITLIST_SOURCE: "website",
       },
     },
   } satisfies Record<BrevoActionKey, BrevoActionConfig>,

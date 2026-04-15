@@ -283,12 +283,37 @@
     "checkout": {
       "meta": {
         "title": "Оформлення",
-        "description": "Сторінка оформлення для вибраного цифрового продукту Teti Betti."
+        "description": "Безпечне оформлення для вибраних цифрових продуктів Teti Betti."
       },
-      "title": "Оформлення",
-      "description": "Тут буде сторінка оформлення. Ви обрали",
-      "backToShop": "Повернутися до продуктів",
-      "fallbackProduct": "обраний продукт"
+      "title": "Безпечне оформлення",
+      "description": "Одноразова покупка цифрових продуктів. Дані доступу надійдуть на email.",
+      "expressCheckout": "Швидка оплата",
+      "contact": "Контакт",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "emailHelper": "Квитанція та інструкції доступу будуть надіслані сюди.",
+      "payment": "Оплата",
+      "cardNumber": "Номер картки",
+      "cardNumberPlaceholder": "1234 1234 1234 1234",
+      "expirationDate": "Термін дії",
+      "expirationDatePlaceholder": "ММ / РР",
+      "securityCode": "Код безпеки",
+      "securityCodePlaceholder": "CVC",
+      "nameOnCard": "Ім’я на картці",
+      "nameOnCardPlaceholder": "Повне ім’я",
+      "continueToSecurePayment": "Перейти до безпечної оплати",
+      "secureCheckout": "Безпечне оформлення",
+      "orderSummary": "Підсумок замовлення",
+      "digitalProduct": "Цифровий продукт",
+      "emptyCart": "Ваш кошик порожній. Додайте продукт перед оформленням.",
+      "promoCoupon": "Промокод / Купон",
+      "enterCode": "Введіть код",
+      "apply": "Застосувати",
+      "codeApplied": "Код застосовано ✓",
+      "subtotal": "Проміжний підсумок",
+      "total": "Разом",
+      "notAvailable": "—",
+      "oneTimePurchase": "Одноразова покупка"
     },
     "success": {
       "meta": {

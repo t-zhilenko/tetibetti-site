@@ -24,6 +24,7 @@ type EmailCaptureFormProps = {
     productSlug?: string;
     productName?: string;
   };
+  onSuccess?: (email: string) => void;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,6 +43,7 @@ export default function EmailCaptureForm({
   introText,
   onContinue,
   analytics,
+  onSuccess,
 }: EmailCaptureFormProps) {
   const t = useTranslations("Forms.emailCapture");
   const [email, setEmail] = useState("");
@@ -99,6 +101,7 @@ export default function EmailCaptureForm({
       }
 
       setStatus("success");
+      onSuccess?.(trimmedEmail);
       if (variant === "waitlist") {
         trackEvent("waitlist joined", {
           source: analytics?.source,
