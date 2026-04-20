@@ -60,6 +60,8 @@ export default function CartProvider({children}: CartProviderProps) {
   const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
 
   useEffect(() => {
+    // Read localStorage after mount to avoid SSR/client hydration mismatch on cart UI.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(loadStoredCartItems());
     setHasHydratedStorage(true);
   }, []);

@@ -1,0 +1,206 @@
+import { isPaidProduct, isProductPurchasable } from "@/lib/payments/product-helpers";
+import {
+  NOT_PAYABLE_ORDER_STATUSES,
+  NOT_PAYABLE_PAYMENT_ATTEMPT_STATUSES,
+} from "@/lib/payments/status-helpers";
+import { getDb } from "@/lib/server/db";
+import {
+  InvalidBaseUrlEnvError,
+  MissingPaymentEnvError,
+  getRequiredPaymentEnv,
+} from "@/lib/server/env";
+import {
+  FondyProviderError,
+  InvalidFondyConfigError,
+  buildFondyCheckoutPayload,
+  startFondyCheckoutSession,
+} from "@/lib/server/payments/fondy";
+import { findCustomerById } from "@/lib/server/repositories/customers";
+import { findOrderById, markOrderAsProcessing } from "@/lib/server/repositories/orders";
+import {
+  createPaymentAttempt,
+  findLatestPaymentAttemptByOrderId,
+  updatePaymentAttemptCheckout,
+} from "@/lib/server/repositories/paymentAttempts";
+import { getProductById } from "@/lib/server/repositories/products";
+import { isUuid } from "@/lib/server/security";
+
+type StartPaymentPayload = {
+  orderId?: unknown;
+};
+
+type ErrorCode =
+  | "INVALID_JSON"
+  | "MISSING_ORDER_ID"
+  | "INVALID_ORDER_ID"
+  | "ORDER_NOT_FOUND"
+  | "ORDER_NOT_PAYABLE"
+  | "BAD_PRODUCT_TYPE"
+  | "PAYMENT_CONFIG_MISSING"
+  | "PAYMENT_PROVIDER_ERROR"
+  | "START_PAYMENT_FAILED";
+
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    },
+  });
+
+const errorResponse = (code: ErrorCode, message: string, status: number) =>
+  jsonResponse(
+    {
+      ok: false,
+      code,
+      message,
+    },
+    status,
+  );
+
+export async function POST(request: Request) {
+  let payload: StartPaymentPayload;
+
+  try {
+    payload = (await request.json()) as StartPaymentPayload;
+  } catch {
+    return errorResponse("INVALID_JSON", "Invalid JSON", 400);
+  }
+
+  const orderId = typeof payload.orderId === "string" ? payload.orderId.trim() : "";
+  if (!orderId) {
+    return errorResponse("MISSING_ORDER_ID", "Missing orderId", 400);
+  }
+  if (!isUuid(orderId)) {
+    return errorResponse("INVALID_ORDER_ID", "Invalid orderId", 400);
+  }
+
+  try {
+    const db = await getDb();
+    const order = await findOrderById(db, orderId);
+
+    if (!order) {
+      return errorResponse("ORDER_NOT_FOUND", "Order not found", 404);
+    }
+
+    if (NOT_PAYABLE_ORDER_STATUSES.has(order.status)) {
+      return errorResponse("ORDER_NOT_PAYABLE", "Order is not payable", 409);
+    }
+
+    const product = await getProductById(db, order.productId);
+    if (!product) {
+      return errorResponse("START_PAYMENT_FAILED", "Unable to start payment", 500);
+    }
+
+    if (!isPaidProduct(product)) {
+      return errorResponse("BAD_PRODUCT_TYPE", "Order product is not payable", 409);
+    }
+
+    if (!isProductPurchasable(product)) {
+      return errorResponse("ORDER_NOT_PAYABLE", "Order is not payable", 409);
+    }
+
+    const customer = await findCustomerById(db, order.customerId);
+    if (!customer) {
+      return errorResponse("START_PAYMENT_FAILED", "Unable to start payment", 500);
+    }
+
+    let paymentAttempt = await findLatestPaymentAttemptByOrderId(db, order.id);
+    const attemptNeedsReset =
+      !paymentAttempt ||
+      paymentAttempt.provider !== "fondy" ||
+      paymentAttempt.amountMinor !== order.amountMinor ||
+      paymentAttempt.currency.toUpperCase() !== order.currency.toUpperCase();
+
+    if (attemptNeedsReset) {
+      paymentAttempt = await createPaymentAttempt(db, {
+        id: crypto.randomUUID(),
+        orderId: order.id,
+        provider: "fondy",
+        status: "created",
+        amountMinor: order.amountMinor,
+        currency: order.currency,
+      });
+    }
+    if (!paymentAttempt) {
+      return errorResponse("START_PAYMENT_FAILED", "Unable to start payment", 500);
+    }
+
+    if (NOT_PAYABLE_PAYMENT_ATTEMPT_STATUSES.has(paymentAttempt.status)) {
+      return errorResponse("ORDER_NOT_PAYABLE", "Order is not payable", 409);
+    }
+
+    const env = await getRequiredPaymentEnv();
+    const { providerOrderId, payload: fondyPayload } = buildFondyCheckoutPayload({
+      merchantId: env.fondyMerchantId,
+      secretKey: env.fondySecretKey,
+      appBaseUrl: env.appBaseUrl,
+      orderId: order.id,
+      amountMinor: order.amountMinor,
+      currency: order.currency,
+      productName: product.name,
+      customerEmail: customer.email,
+    });
+
+    const checkoutSession = await startFondyCheckoutSession(fondyPayload);
+    const rawStatus =
+      typeof checkoutSession.rawResponse?.response_status === "string"
+        ? checkoutSession.rawResponse.response_status
+        : null;
+
+    await updatePaymentAttemptCheckout(db, {
+      id: paymentAttempt.id,
+      providerOrderId,
+      status: "pending",
+      rawStatus,
+      payloadJson: JSON.stringify({
+        request: fondyPayload,
+        response: checkoutSession.rawResponse ?? null,
+      }),
+    });
+
+    await markOrderAsProcessing(db, order.id);
+
+    console.info("Start-payment checkout initialized:", {
+      orderId: order.id,
+      paymentAttemptId: paymentAttempt.id,
+      providerOrderId,
+      responseStatus: rawStatus,
+    });
+
+    return jsonResponse({
+      ok: true,
+      checkout: {
+        provider: "fondy",
+        method: "redirect",
+        checkoutUrl: checkoutSession.checkoutUrl,
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof MissingPaymentEnvError ||
+      error instanceof InvalidFondyConfigError ||
+      error instanceof InvalidBaseUrlEnvError
+    ) {
+      console.error("Start-payment config error", {
+        message: error.message,
+      });
+      return errorResponse("PAYMENT_CONFIG_MISSING", "Payment configuration is not available", 500);
+    }
+
+    if (error instanceof FondyProviderError) {
+      console.error("Start-payment provider error", {
+        message: error.message,
+        httpStatus:
+          typeof error.details?.httpStatus === "number" ? error.details.httpStatus : undefined,
+      });
+      return errorResponse("PAYMENT_PROVIDER_ERROR", "Unable to initialize payment", 502);
+    }
+
+    console.error("Start-payment failed", {
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+    return errorResponse("START_PAYMENT_FAILED", "Unable to start payment", 500);
+  }
+}

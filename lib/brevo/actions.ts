@@ -42,13 +42,6 @@ export async function handleBrevoAction(
   const templateParams =
     "templateParams" in actionConfig ? actionConfig.templateParams : undefined;
 
-  console.log("BREVO action", {
-    action,
-    listIds: actionConfig.listIdsToAdd,
-    tags: actionConfig.tagsToAdd,
-    templateId: sendTemplateId ?? null,
-  });
-
   let env: ReturnType<typeof getBrevoEnv>;
   try {
     env = getBrevoEnv();
@@ -68,7 +61,10 @@ export async function handleBrevoAction(
       attributes,
     });
   } catch (error) {
-    console.error("Brevo contact error", error);
+    console.error("Brevo contact error", {
+      action,
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
     return jsonResponse({ ok: false, error: "Brevo contact error" }, 502);
   }
 
@@ -83,7 +79,10 @@ export async function handleBrevoAction(
         params: templateParams,
       });
     } catch (error) {
-      console.error("Brevo SMTP error", error);
+      console.error("Brevo SMTP error", {
+        action,
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   }
 

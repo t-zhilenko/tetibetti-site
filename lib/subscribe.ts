@@ -76,12 +76,6 @@ export async function handleSubscribe(
 
   const email = typeof body.email === "string" ? body.email.trim() : "";
   const tag = typeof body.tag === "string" ? body.tag.trim() : "";
-  const product = typeof body.product === "string" ? body.product.trim() : "";
-
-  console.log("SUBSCRIBE endpoint hit", {
-    email,
-    product: product || undefined,
-  });
 
   if (!email || !EMAIL_RE.test(email)) {
     return jsonResponse({ success: false, error: "Invalid email address." }, 400);
@@ -137,11 +131,14 @@ export async function handleSubscribe(
       });
 
       if (!smtpResponse.ok) {
-        const smtpText = await smtpResponse.text();
-        console.error("Brevo SMTP send failed:", smtpResponse.status, smtpText);
+        console.error("Brevo SMTP send failed", {
+          status: smtpResponse.status,
+        });
       }
     } catch (error) {
-      console.error("Brevo SMTP send error:", error);
+      console.error("Brevo SMTP send error", {
+        message: error instanceof Error ? error.message : "Unknown error",
+      });
     }
 
     return jsonResponse({ success: true }, 200);

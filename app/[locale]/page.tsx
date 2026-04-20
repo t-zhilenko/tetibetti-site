@@ -3,9 +3,11 @@ import {notFound} from "next/navigation";
 import Hero from "@/components/Hero";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import EmailSubscription from "@/components/EmailSubscription";
-import {getProducts} from "@/content/products";
 import {resolveLocale} from "@/i18n/locale";
 import {buildLocalizedPageMetadata} from "@/i18n/metadata";
+import {getProductsWithCommerce} from "@/lib/server/product-page-data";
+
+export const dynamic = "force-dynamic";
 
 type HomePageProps = {
   params: Promise<{locale: string}>;
@@ -26,7 +28,7 @@ export default async function HomePage({params}: HomePageProps) {
     notFound();
   }
 
-  const products = getProducts(locale);
+  const products = await getProductsWithCommerce(locale);
 
   return (
     <>

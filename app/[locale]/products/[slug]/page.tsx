@@ -1,9 +1,13 @@
 import type {Metadata} from "next";
 import {notFound} from "next/navigation";
 import ProductPageClient from "@/components/product/ProductPageClient";
-import {getAllProductSlugs, getProductBySlug, getProducts} from "@/content/products";
+import {getAllProductSlugs} from "@/content/products";
 import {toValidLocale} from "@/i18n/locale";
 import {getHreflang, getLocalizedPath} from "@/i18n/seo";
+import { getOptionalAppBaseUrl } from "@/lib/server/env";
+import {getProductPageBySlug, getProductsWithCommerce} from "@/lib/server/product-page-data";
+
+export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{
@@ -24,7 +28,7 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
     return {};
   }
 
-  const product = getProductBySlug(locale, slug);
+  const product = await getProductPageBySlug(locale, slug);
 
   if (!product) {
     return {};
@@ -78,13 +82,14 @@ export default async function ProductPage({params}: PageProps) {
     notFound();
   }
 
-  const product = getProductBySlug(locale, slug);
+  const product = await getProductPageBySlug(locale, slug);
   if (!product) {
     notFound();
   }
 
-  const products = getProducts(locale);
-  const productUrl = `https://tetibetti.com/${locale}/products/${product.slug}`;
+  const products = await getProductsWithCommerce(locale);
+  const appBaseUrl = (await getOptionalAppBaseUrl()) ?? "https://tetibetti.com";
+  const productUrl = new URL(`/${locale}/products/${product.slug}`, appBaseUrl).toString();
   const structuredData = [
     {
       "@context": "https://schema.org",

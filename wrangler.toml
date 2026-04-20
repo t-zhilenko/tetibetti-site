@@ -7,6 +7,9 @@ main = ".open-next/worker.js"
 directory = ".open-next/assets"
 binding = "ASSETS"
 
-[[services]]
-binding = "WORKER_SELF_REFERENCE"
-service = "tetibetti-site"
+[[d1_databases]]
+binding = "DB"
+database_name = "teti-betti-prod"
+database_id = "04ac9f33-5b6c-4055-9a46-d3b8b0577c33"
+preview_database_id = "04ac9f33-5b6c-4055-9a46-d3b8b0577c33"
+migrations_dir = "migrations"

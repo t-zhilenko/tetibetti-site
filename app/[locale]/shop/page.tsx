@@ -4,9 +4,11 @@ import {notFound} from "next/navigation";
 import Container from "@/components/Container";
 import ProductCard from "@/components/ProductCard";
 import {toProductCardItem} from "@/components/product-card-data";
-import {getProducts} from "@/content/products";
 import {resolveLocale} from "@/i18n/locale";
 import {buildLocalizedPageMetadata} from "@/i18n/metadata";
+import {getProductsWithCommerce} from "@/lib/server/product-page-data";
+
+export const dynamic = "force-dynamic";
 
 type ShopPageProps = {
   params: Promise<{locale: string}>;
@@ -28,7 +30,7 @@ export default async function ShopPage({params}: ShopPageProps) {
   }
 
   const t = await getTranslations({locale, namespace: "Pages.shop"});
-  const products = getProducts(locale);
+  const products = await getProductsWithCommerce(locale);
 
   return (
     <section className="bg-[#fbf3f4]">
