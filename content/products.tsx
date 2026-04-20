@@ -434,7 +434,7 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
       successMessageLines: [
         "You're on the waitlist.",
         "We'll email you when Nutrition Meal Planner is ready.",
-        "Planned release: April 2026.",
+        "Coming summer 2026.",
       ],
       endNote: "Early waitlist members may receive something extra at launch.",
       description: "A calm system for planning meals, groceries, and nutrition without the noise.",
@@ -451,7 +451,7 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
         "Gentle daily nudges",
       ],
       cta: "Coming soon",
-      priceLabel: "Estimated delivery: April 2026",
+      priceLabel: "Coming summer 2026",
       detailsAccordion: [],
       keyFeatures: [
         {
@@ -511,7 +511,7 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
           ],
           releasePlan: [
             "We're finishing the first release and will share access in small waves to keep feedback focused and thoughtful.",
-            "Planned release: April 2026.",
+            "Coming summer 2026.",
           ],
         },
       },
@@ -870,7 +870,7 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
       successMessageLines: [
         "Ви у списку очікування.",
         "Ми напишемо вам, коли Nutrition Meal Planner буде готовий.",
-        "Плановий реліз: квітень 2026.",
+        "Очікується влітку 2026.",
       ],
       endNote: "Ранні учасники списку очікування можуть отримати бонуси запуску.",
       description:
@@ -888,7 +888,7 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
         "Делікатні щоденні нагадування",
       ],
       cta: "Скоро",
-      priceLabel: "Запуск у квітні 2026",
+      priceLabel: "Очікується влітку 2026",
       detailsAccordion: [],
       keyFeatures: [
         {
@@ -949,7 +949,7 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
           ],
           releasePlan: [
             "Ми завершуємо перший реліз і відкриватимемо доступ хвилями, щоб зберегти фокусований фідбек.",
-            "Плановий реліз: квітень 2026.",
+            "Очікується влітку 2026.",
           ],
         },
       },

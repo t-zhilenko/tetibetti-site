@@ -5,7 +5,6 @@ import Image from "next/image";
 import {LockKeyhole} from "lucide-react";
 import {useLocale, useTranslations} from "next-intl";
 import Container from "@/components/Container";
-import CheckoutPlaceholderModal from "@/components/cart/CheckoutPlaceholderModal";
 import {useCart} from "@/components/cart/CartContext";
 import {formatCurrency, resolveCartItemsForLocale} from "@/components/cart/utils";
 import {getProducts} from "@/content/products";
@@ -16,23 +15,86 @@ type CheckoutPageClientProps = {
   initialProduct?: string;
 };
 
+type CreateOrderApiResponse =
+  | {
+      ok: true;
+      flow: "free";
+      orderId: string;
+    }
+  | {
+      ok: true;
+      flow: "paid";
+      orderId: string;
+      paymentAttemptId: string;
+    }
+  | {
+      ok: false;
+      code?: string;
+      message?: string;
+    };
+
+type StartPaymentApiResponse =
+  | {
+      ok: true;
+      checkout: {
+        provider: "fondy";
+        method: "redirect" | "form_post";
+        checkoutUrl?: string;
+        action?: string;
+        fields?: Record<string, string>;
+      };
+    }
+  | {
+      ok: false;
+      code?: string;
+      message?: string;
+    };
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const inputClassName =
   "h-11 w-full rounded-2xl border border-[#dfc2c0]/36 bg-white/88 px-4 text-[14px] text-deep/78 outline-none placeholder:text-deep/42 focus:border-[#d7b8b5]";
 
-const cardLabelClassName = "mb-2 text-[11px] uppercase tracking-[0.14em] text-deep/56";
+const cardLabelClassName = "text-[11px] uppercase tracking-[0.14em] text-deep/56";
+
+type CheckoutPhase =
+  | "idle"
+  | "validating"
+  | "creating_order"
+  | "starting_payment"
+  | "redirecting"
+  | "error";
+
+const getCheckoutPhaseMessage = (
+  phase: CheckoutPhase,
+  t: (key: "phaseValidating" | "phaseCreatingOrder" | "phaseStartingPayment" | "phaseRedirecting") => string,
+): string => {
+  switch (phase) {
+    case "validating":
+      return t("phaseValidating");
+    case "creating_order":
+      return t("phaseCreatingOrder");
+    case "starting_payment":
+      return t("phaseStartingPayment");
+    case "redirecting":
+      return t("phaseRedirecting");
+    default:
+      return "";
+  }
+};
 
 export default function CheckoutPageClient({initialProduct}: CheckoutPageClientProps) {
   const locale = useLocale();
   const t = useTranslations("Pages.checkout");
   const {items} = useCart();
   const [email, setEmail] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvc, setCvc] = useState("");
-  const [cardName, setCardName] = useState("");
-  const [promoCode, setPromoCode] = useState("");
-  const [isPromoApplied, setIsPromoApplied] = useState(false);
-  const [isPlaceholderOpen, setIsPlaceholderOpen] = useState(false);
+  const [pendingPaymentOrder, setPendingPaymentOrder] = useState<{
+    orderId: string;
+    email: string;
+    productSlug: string;
+  } | null>(null);
+  const [checkoutPhase, setCheckoutPhase] = useState<CheckoutPhase>("idle");
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   const localizedProducts = useMemo(() => getProducts(locale as Locale), [locale]);
   const localizedItems = useMemo(
@@ -83,80 +145,198 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
     : checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const total = subtotal;
   const itemCount = checkoutItems.reduce((sum, item) => sum + item.quantity, 0);
+  const checkoutItem = checkoutItems[0] ?? null;
+  const checkoutItemProduct = checkoutItem
+    ? localizedProducts.find((product) => product.slug === checkoutItem.slug) ?? null
+    : null;
+  const checkoutItemFlowType =
+    checkoutItemProduct?.purchase?.type ?? (checkoutItem && checkoutItem.price > 0 ? "paid" : "free");
+  const isPaidCheckout = checkoutItemFlowType === "paid";
+  const isWaitlistCheckout = checkoutItemFlowType === "waitlist";
+  const isFreeCheckout = checkoutItemFlowType === "free";
+  const productUrl = checkoutItem ? `/${locale}/products/${checkoutItem.slug}` : `/${locale}/shop`;
+  const isCheckoutBusy = !["idle", "error"].includes(checkoutPhase);
+  const isCheckoutBlocked = !checkoutItem || hasMixedCurrency || !isPaidCheckout;
+  const checkoutProgressMessage = getCheckoutPhaseMessage(checkoutPhase, t);
 
-  const openPlaceholder = (method: "paypal" | "google_pay" | "card") => {
+  const submitFormPostRedirect = (action: string, fields: Record<string, string>) => {
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = action;
+
+    Object.entries(fields).forEach(([key, value]) => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+  };
+
+  const handleSecureCheckout = async () => {
+    if (!checkoutItem) {
+      setCheckoutPhase("error");
+      setCheckoutError(t("errorCartEmptyStart"));
+      return;
+    }
+
+    if (hasMixedCurrency) {
+      setCheckoutPhase("error");
+      setCheckoutError(t("errorSingleCurrencyOnly"));
+      return;
+    }
+
+    if (!isPaidCheckout) {
+      setCheckoutPhase("error");
+      setCheckoutError(
+        isWaitlistCheckout
+          ? t("errorWaitlistNotPurchasable")
+          : t("errorFreeFlowFromProductPage"),
+      );
+      return;
+    }
+
+    setCheckoutPhase("validating");
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!EMAIL_RE.test(normalizedEmail)) {
+      setCheckoutPhase("error");
+      setCheckoutError(t("errorInvalidEmail"));
+      return;
+    }
+
+    setCheckoutError(null);
     trackEvent("checkout_cta_clicked", {
       source: "checkout_page",
-      method,
+      method: "fondy_redirect",
       cart_items: itemCount,
       cart_total: total ?? undefined,
       cart_currency: hasMixedCurrency ? undefined : primaryCurrency,
     });
-    setIsPlaceholderOpen(true);
+
+    try {
+      let orderIdForPayment =
+        pendingPaymentOrder &&
+        pendingPaymentOrder.email === normalizedEmail &&
+        pendingPaymentOrder.productSlug === checkoutItem.slug
+          ? pendingPaymentOrder.orderId
+          : null;
+
+      if (!orderIdForPayment) {
+        setCheckoutPhase("creating_order");
+        const createOrderResponse = await fetch("/api/checkout/create-order", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            email: normalizedEmail,
+            productSlug: checkoutItem.slug,
+          }),
+        });
+
+        const createOrderBody = (await createOrderResponse.json()) as CreateOrderApiResponse;
+        if (!createOrderResponse.ok || !createOrderBody.ok) {
+          const message =
+            "message" in createOrderBody ? createOrderBody.message : undefined;
+          setCheckoutPhase("error");
+          setCheckoutError(message ?? t("errorCreateOrder"));
+          return;
+        }
+
+        if (createOrderBody.flow !== "paid") {
+          setCheckoutPhase("error");
+          setCheckoutError(
+            createOrderBody.flow === "free"
+              ? t("errorFreeFlowFromProductPage")
+              : t("errorProductNotAvailableForPayment"),
+          );
+          setPendingPaymentOrder(null);
+          return;
+        }
+
+        orderIdForPayment = createOrderBody.orderId;
+        setPendingPaymentOrder({
+          orderId: orderIdForPayment,
+          email: normalizedEmail,
+          productSlug: checkoutItem.slug,
+        });
+      }
+
+      setCheckoutPhase("starting_payment");
+      const startPaymentResponse = await fetch("/api/checkout/start-payment", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId: orderIdForPayment,
+        }),
+      });
+
+      const startPaymentBody = (await startPaymentResponse.json()) as StartPaymentApiResponse;
+      if (!startPaymentResponse.ok || !startPaymentBody.ok) {
+        const message =
+          "message" in startPaymentBody ? startPaymentBody.message : undefined;
+        if (startPaymentResponse.status === 404 || startPaymentResponse.status === 409) {
+          setPendingPaymentOrder(null);
+        }
+        setCheckoutPhase("error");
+        setCheckoutError(message ?? t("errorStartPayment"));
+        return;
+      }
+
+      if (
+        startPaymentBody.checkout.method === "redirect" &&
+        startPaymentBody.checkout.checkoutUrl
+      ) {
+        setPendingPaymentOrder(null);
+        setCheckoutPhase("redirecting");
+        window.location.assign(startPaymentBody.checkout.checkoutUrl);
+        return;
+      }
+
+      if (
+        startPaymentBody.checkout.method === "form_post" &&
+        startPaymentBody.checkout.action &&
+        startPaymentBody.checkout.fields
+      ) {
+        setPendingPaymentOrder(null);
+        setCheckoutPhase("redirecting");
+        submitFormPostRedirect(
+          startPaymentBody.checkout.action,
+          startPaymentBody.checkout.fields,
+        );
+        return;
+      }
+
+      setCheckoutPhase("error");
+      setCheckoutError(t("errorInvalidCheckoutResponse"));
+    } catch {
+      setCheckoutPhase("error");
+      setCheckoutError(t("errorStartCheckoutTryAgain"));
+    }
   };
 
   return (
     <>
       <section className="bg-[#fbf3f4]">
-        <Container className="py-14 md:py-16">
-          <div className="mb-8 space-y-2">
-            <h1 className="text-[30px] leading-[1.08] text-deep/90">{t("title")}</h1>
+        <Container className="px-4 pt-12 pb-16 sm:px-6 md:pt-14 md:pb-20 lg:px-8">
+          <div className="mb-8 md:mb-10">
+            <h1 className="mb-2 text-[30px] leading-[1.08] text-deep/90">{t("title")}</h1>
             <p className="text-[14px] text-deep/66">{t("description")}</p>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-            <div className="space-y-6">
-              <section className="rounded-[26px] border border-[#dfc2c0]/28 bg-white/74 p-6 shadow-[0_10px_26px_rgba(43,89,104,0.05)]">
-                <h2 className="text-[12px] uppercase tracking-[0.14em] text-deep/56">
-                  {t("expressCheckout")}
-                </h2>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                  <button
-                    type="button"
-                    onClick={() => openPlaceholder("paypal")}
-                    className="inline-flex h-11 items-center justify-center rounded-2xl border border-[#d5ad3f]/45 bg-[#ffc439] px-5 text-[14px] font-semibold text-[#1f2937] transition-colors hover:bg-[#f5bb2f]"
-                  >
-                    <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-[6px] bg-[#003087] text-[10px] font-bold text-white">
-                      P
-                    </span>
-                    <span>
-                      <span className="font-bold text-[#003087]">Pay</span>
-                      <span className="font-bold text-[#009cde]">Pal</span>
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => openPlaceholder("google_pay")}
-                    className="inline-flex h-11 items-center justify-center rounded-2xl border border-black/40 bg-black px-5 text-[14px] font-semibold text-white transition-colors hover:bg-[#1a1a1a]"
-                  >
-                    <span className="mr-2 inline-flex h-[18px] w-[18px] items-center justify-center" aria-hidden="true">
-                      <svg viewBox="0 0 18 18" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                          fill="#4285F4"
-                          d="M17.64 9.2045c0-.638-.0573-1.2518-.1636-1.8409H9v3.4818h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.715v2.2582h2.9086c1.7023-1.5677 2.6837-3.8741 2.6837-6.6141z"
-                        />
-                        <path
-                          fill="#34A853"
-                          d="M9 18c2.43 0 4.4673-.8068 5.9564-2.1818l-2.9086-2.2582c-.8068.54-1.8409.8591-3.0478.8591-2.3441 0-4.3282-1.5832-5.0364-3.7091H.9573v2.3327C2.4382 15.9832 5.4818 18 9 18z"
-                        />
-                        <path
-                          fill="#FBBC05"
-                          d="M3.9636 10.7091c-.18-.54-.2836-1.1168-.2836-1.7091s.1036-1.1691.2836-1.7091V4.9582H.9573C.3477 6.1732 0 7.5505 0 9s.3477 2.8268.9573 4.0418l3.0063-2.3327z"
-                        />
-                        <path
-                          fill="#EA4335"
-                          d="M9 3.5809c1.3214 0 2.5077.4541 3.4405 1.3459l2.5814-2.5814C13.4632.8918 11.43 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582l3.0063 2.3327C4.6718 5.1641 6.6559 3.5809 9 3.5809z"
-                        />
-                      </svg>
-                    </span>
-                    <span className="font-medium text-white">Pay</span>
-                  </button>
-                </div>
-              </section>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_380px] md:gap-10">
+            <div className="min-w-0">
+              <section className="rounded-[26px] border border-[#dfc2c0]/28 bg-white/74 p-6 shadow-[0_10px_26px_rgba(43,89,104,0.05)] md:p-7">
+                <p className="text-[13px] text-deep/62">
+                  {t("enterEmailToContinue")}
+                </p>
 
-              <section className="rounded-[26px] border border-[#dfc2c0]/28 bg-white/74 p-6 shadow-[0_10px_26px_rgba(43,89,104,0.05)]">
-                <h2 className="text-[12px] uppercase tracking-[0.14em] text-deep/56">{t("contact")}</h2>
-                <div className="mt-4">
+                <div className="mt-5">
                   <label className={cardLabelClassName} htmlFor="checkout-email">
                     {t("email")}
                   </label>
@@ -164,100 +344,67 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
                     id="checkout-email"
                     type="email"
                     value={email}
-                    onChange={(event) => setEmail(event.target.value)}
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                      if (pendingPaymentOrder) {
+                        setPendingPaymentOrder(null);
+                      }
+                    }}
                     placeholder={t("emailPlaceholder")}
-                    className={inputClassName}
+                    className={`mt-2 ${inputClassName}`}
                   />
-                  <p className="mt-2 text-[12px] text-deep/56">{t("emailHelper")}</p>
-                </div>
-              </section>
-
-              <section className="rounded-[26px] border border-[#dfc2c0]/28 bg-white/74 p-6 shadow-[0_10px_26px_rgba(43,89,104,0.05)]">
-                <h2 className="text-[12px] uppercase tracking-[0.14em] text-deep/56">{t("payment")}</h2>
-                <div className="mt-4 space-y-4">
-                  <div>
-                    <label className={cardLabelClassName} htmlFor="checkout-card-number">
-                      {t("cardNumber")}
-                    </label>
-                    <input
-                      id="checkout-card-number"
-                      type="text"
-                      inputMode="numeric"
-                      autoComplete="cc-number"
-                      value={cardNumber}
-                      onChange={(event) => setCardNumber(event.target.value)}
-                      placeholder={t("cardNumberPlaceholder")}
-                      className={inputClassName}
-                    />
-                  </div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <label className={cardLabelClassName} htmlFor="checkout-expiry">
-                        {t("expirationDate")}
-                      </label>
-                      <input
-                        id="checkout-expiry"
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="cc-exp"
-                        value={expiry}
-                        onChange={(event) => setExpiry(event.target.value)}
-                        placeholder={t("expirationDatePlaceholder")}
-                        className={inputClassName}
-                      />
-                    </div>
-                    <div>
-                      <label className={cardLabelClassName} htmlFor="checkout-cvc">
-                        {t("securityCode")}
-                      </label>
-                      <input
-                        id="checkout-cvc"
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="cc-csc"
-                        value={cvc}
-                        onChange={(event) => setCvc(event.target.value)}
-                        placeholder={t("securityCodePlaceholder")}
-                        className={inputClassName}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className={cardLabelClassName} htmlFor="checkout-card-name">
-                      {t("nameOnCard")}
-                    </label>
-                    <input
-                      id="checkout-card-name"
-                      type="text"
-                      autoComplete="cc-name"
-                      value={cardName}
-                      onChange={(event) => setCardName(event.target.value)}
-                      placeholder={t("nameOnCardPlaceholder")}
-                      className={inputClassName}
-                    />
-                  </div>
+                  <p className="mt-2 text-[12px] text-deep/56">{t("emailAccessLinkHelper")}</p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => openPlaceholder("card")}
-                  className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full border border-[#dfc2c0]/55 bg-[#dfc2c0]/78 px-6 text-[15px] font-medium text-deep transition-all duration-200 hover:-translate-y-[1px] hover:bg-[#d7b7b4]/86 hover:shadow-[0_6px_14px_rgba(223,194,192,0.22)]"
-                >
-                  {t("continueToSecurePayment")}
-                </button>
-                <p className="mt-3 inline-flex items-center text-[12px] text-deep/54">
+                {isPaidCheckout ? (
+                  <button
+                    type="button"
+                    onClick={handleSecureCheckout}
+                    disabled={isCheckoutBusy || isCheckoutBlocked}
+                    className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full border border-[#dfc2c0]/55 bg-[#dfc2c0]/78 px-6 text-[15px] font-medium text-deep transition-all duration-200 hover:-translate-y-[1px] hover:bg-[#d7b7b4]/86 hover:shadow-[0_6px_14px_rgba(223,194,192,0.22)] disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+                  >
+                    {isCheckoutBusy ? checkoutProgressMessage : t("continueToSecurePayment")}
+                  </button>
+                ) : (
+                  <a
+                    href={productUrl}
+                    className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full border border-[#dfc2c0]/55 bg-[#dfc2c0]/78 px-6 text-[15px] font-medium text-deep transition-all duration-200 hover:-translate-y-[1px] hover:bg-[#d7b7b4]/86 hover:shadow-[0_6px_14px_rgba(223,194,192,0.22)]"
+                  >
+                    {isWaitlistCheckout
+                      ? t("goToProductWaitlist")
+                      : isFreeCheckout
+                        ? t("goToFreeProductFlow")
+                        : t("choosePayableProduct")}
+                  </a>
+                )}
+
+                <p className="mt-4 inline-flex items-center text-[12px] text-deep/54">
                   <LockKeyhole size={12} className="mr-1.5" />
-                  {t("secureCheckout")}
+                  {t("paymentNoticeFondyEmail")}
                 </p>
+
+                {!isPaidCheckout ? (
+                  <p className="mt-2 text-[12px] text-deep/56">
+                    {t("paidCheckoutOnlyNote")}
+                  </p>
+                ) : null}
+                {hasMixedCurrency ? (
+                  <p className="mt-2 text-[12px] text-[#9f4d4d]">
+                    {t("mixedCurrencyInlineNote")}
+                  </p>
+                ) : null}
+                {checkoutError ? (
+                  <p className="mt-2 text-[12px] text-[#9f4d4d]">{checkoutError}</p>
+                ) : null}
               </section>
             </div>
 
-            <aside className="h-fit rounded-[26px] border border-[#dfc2c0]/28 bg-white/74 p-6 shadow-[0_10px_26px_rgba(43,89,104,0.05)]">
+            <aside className="h-fit rounded-[26px] border border-[#dfc2c0]/28 bg-white/74 p-5 shadow-[0_10px_26px_rgba(43,89,104,0.05)] md:p-6">
               <h2 className="text-[12px] uppercase tracking-[0.14em] text-deep/56">
                 {t("orderSummary")}
               </h2>
 
-              <div className="mt-4 space-y-4">
+              <div className="mt-3 space-y-4">
                 {checkoutItems.length ? (
                   checkoutItems.map((item) => (
                     <div key={item.slug} className="flex items-start gap-3">
@@ -290,46 +437,16 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
                 )}
               </div>
 
-              <div className="mt-5 border-t border-[#dfc2c0]/24 pt-5">
-                <p className="text-[11px] uppercase tracking-[0.14em] text-deep/56">
-                  {t("promoCoupon")}
-                </p>
-                <div className="mt-3 flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={promoCode}
-                    onChange={(event) => {
-                      setPromoCode(event.target.value);
-                      if (isPromoApplied) {
-                        setIsPromoApplied(false);
-                      }
-                    }}
-                    placeholder={t("enterCode")}
-                    className="h-10 flex-1 rounded-full border border-[#dfc2c0]/40 bg-white px-4 text-sm text-deep/72 outline-none placeholder:text-deep/40 focus:border-[#d7b8b5]"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setIsPromoApplied(Boolean(promoCode.trim()))}
-                    className="rounded-full border border-[#dfc2c0]/40 px-4 py-2 text-sm text-deep/70 transition hover:bg-[#f5e9e7]"
-                  >
-                    {t("apply")}
-                  </button>
-                </div>
-                {isPromoApplied ? (
-                  <p className="mt-2 text-[11px] text-deep/52">{t("codeApplied")}</p>
-                ) : null}
-              </div>
-
-              <div className="mt-5 space-y-2 border-t border-[#dfc2c0]/24 pt-5 text-[14px] text-deep/74">
+              <div className="mt-4 space-y-2 border-t border-[#dfc2c0]/24 pt-4 text-[14px] text-deep/74">
                 <div className="flex items-center justify-between">
                   <span>{t("subtotal")}</span>
                   <span>
-                    {subtotal === null ? t("notAvailable") : formatCurrency(subtotal, primaryCurrency, locale)}
+                    {subtotal === null ? "-" : formatCurrency(subtotal, primaryCurrency, locale)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[16px] text-deep/86">
                   <span>{t("total")}</span>
-                  <span>{total === null ? t("notAvailable") : formatCurrency(total, primaryCurrency, locale)}</span>
+                  <span>{total === null ? "-" : formatCurrency(total, primaryCurrency, locale)}</span>
                 </div>
                 <p className="pt-1 text-[12px] text-deep/56">{t("oneTimePurchase")}</p>
               </div>
@@ -337,13 +454,6 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
           </div>
         </Container>
       </section>
-
-      <CheckoutPlaceholderModal
-        open={isPlaceholderOpen}
-        onClose={() => setIsPlaceholderOpen(false)}
-        source="checkout_page_modal"
-        itemCount={itemCount || 1}
-      />
     </>
   );
 }

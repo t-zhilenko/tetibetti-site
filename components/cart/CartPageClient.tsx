@@ -180,7 +180,7 @@ export default function CartPageClient() {
                 </div>
 
                 <div className="mt-5 flex items-center justify-between text-[16px] text-deep/84">
-                  <span>{isUkrainian ? "Орієнтовна сума" : "Estimated total"}</span>
+                  <span>{isUkrainian ? "Разом" : "Total"}</span>
                   <span className="text-[20px] text-deep/88">
                     {total === null ? "—" : formatCurrency(total, primaryCurrency, locale)}
                   </span>
