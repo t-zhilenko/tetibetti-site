@@ -28,8 +28,8 @@ export default async function CheckoutFailedPage({ searchParams }: CheckoutFaile
 
   return (
     <section className="bg-soft min-h-[70vh]">
-      <Container className="py-16">
-        <div className="max-w-2xl space-y-6 rounded-3xl border border-[#dfc2c0]/30 bg-white/75 p-8">
+      <Container className="py-16 md:py-20">
+        <div className="mx-auto max-w-4xl space-y-6 rounded-3xl border border-[#dfc2c0]/30 bg-white/75 p-8 md:p-10">
           <div className="space-y-2">
             <h1 className="text-3xl text-deep/90">Payment not completed</h1>
             <p className="text-sm text-deep/70">Your payment was not confirmed.</p>

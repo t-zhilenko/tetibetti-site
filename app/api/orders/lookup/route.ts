@@ -1,6 +1,6 @@
 import { getDb } from "@/lib/server/db";
 import { consumeRateLimit, getRequestIp } from "@/lib/server/rate-limit";
-import { findPaidOrdersByEmail } from "@/lib/server/repositories/orders";
+import { findRecentOrdersByEmail } from "@/lib/server/repositories/orders";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_EMAIL_LENGTH = 320;
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
 
   try {
     const db = await getDb();
-    const orders = await findPaidOrdersByEmail(db, email, 10);
+    const orders = await findRecentOrdersByEmail(db, email, 10);
 
     return jsonResponse({
       ok: true,
@@ -68,8 +68,10 @@ export async function POST(request: Request) {
         orderId: order.orderId,
         orderRef: maskOrderId(order.orderId),
         productName: order.productName,
+        productSlug: order.productSlug,
+        paymentStatus: order.paymentStatus,
         paidAt: order.paidAt,
-        fulfillmentStatus: order.fulfillmentStatus,
+        fulfillmentStatus: order.paymentStatus === "paid" ? order.fulfillmentStatus : null,
       })),
     });
   } catch (error) {

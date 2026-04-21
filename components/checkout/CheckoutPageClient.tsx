@@ -273,6 +273,7 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
         },
         body: JSON.stringify({
           orderId: orderIdForPayment,
+          locale,
         }),
       });
 

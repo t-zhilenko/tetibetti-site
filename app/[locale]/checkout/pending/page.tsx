@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Container from "@/components/Container";
 import { resolveLocale } from "@/i18n/locale";
 
@@ -20,16 +21,14 @@ export default async function LocalizedCheckoutPendingPage({
   if (!locale) {
     return null;
   }
+  const t = await getTranslations({ locale, namespace: "Pages.checkout.pendingResult" });
 
   return (
     <section className="bg-soft min-h-[70vh]">
-      <Container className="py-16">
-        <div className="max-w-2xl space-y-4 rounded-3xl border border-[#dfc2c0]/30 bg-white/75 p-8">
-          <h1 className="text-3xl text-deep/90">Payment is being verified</h1>
-          <p className="text-sm text-deep/70">
-            We received your return from the payment provider. Confirmation is in progress and your
-            access email will be sent after verification.
-          </p>
+      <Container className="py-16 md:py-20">
+        <div className="mx-auto max-w-4xl space-y-4 rounded-3xl border border-[#dfc2c0]/30 bg-white/75 p-8 md:p-10">
+          <h1 className="text-3xl text-deep/90">{t("title")}</h1>
+          <p className="text-sm text-deep/70">{t("description")}</p>
         </div>
       </Container>
     </section>

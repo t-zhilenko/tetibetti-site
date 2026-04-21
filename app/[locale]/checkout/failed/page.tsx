@@ -39,9 +39,9 @@ export default async function CheckoutFailedPage({
   const productHref = order ? `/${locale}/products/${order.productSlug}` : `/${locale}/shop`;
 
   return (
-    <section className="bg-soft">
-      <Container className="py-16">
-        <div className="max-w-2xl space-y-6 rounded-3xl border border-[#dfc2c0]/30 bg-white/75 p-8">
+    <section className="bg-soft min-h-[70vh]">
+      <Container className="py-16 md:py-20">
+        <div className="mx-auto max-w-4xl space-y-6 rounded-3xl border border-[#dfc2c0]/30 bg-white/75 p-8 md:p-10">
           <h1 className="text-3xl">{t("title")}</h1>
           <p className="text-sm text-deep/70">{t("description")}</p>
           <p className="text-sm text-deep/70">{t("note")}</p>

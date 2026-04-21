@@ -40,6 +40,15 @@ export type PaidOrderLookupItem = {
   productName: string;
 };
 
+export type RecentOrderLookupItem = {
+  orderId: string;
+  productName: string;
+  productSlug: string;
+  paymentStatus: OrderStatus;
+  paidAt: string | null;
+  fulfillmentStatus: FulfillmentStatus;
+};
+
 export type CreateOrderInput = {
   id: string;
   customerId: number;
@@ -226,6 +235,50 @@ export const findPaidOrdersByEmail = async (
     currency: row.currency,
     fulfillmentStatus: row.fulfillment_status,
     productName: row.product_name,
+  }));
+};
+
+export const findRecentOrdersByEmail = async (
+  db: D1Database,
+  email: string,
+  limit = 10,
+): Promise<RecentOrderLookupItem[]> => {
+  const safeLimit = Number.isFinite(limit) && limit > 0 ? Math.min(Math.trunc(limit), 50) : 10;
+  const result = await db
+    .prepare(
+      `
+        SELECT
+          o.id AS order_id,
+          o.status,
+          o.paid_at,
+          o.fulfillment_status,
+          p.name AS product_name,
+          p.slug AS product_slug
+        FROM orders o
+        INNER JOIN customers c ON c.id = o.customer_id
+        INNER JOIN products p ON p.id = o.product_id
+        WHERE c.email = ?
+        ORDER BY o.updated_at DESC, o.created_at DESC
+        LIMIT ?
+      `,
+    )
+    .bind(email, safeLimit)
+    .all<{
+      order_id: string;
+      status: OrderStatus;
+      paid_at: string | null;
+      fulfillment_status: FulfillmentStatus;
+      product_name: string;
+      product_slug: string;
+    }>();
+
+  return (result.results ?? []).map((row) => ({
+    orderId: row.order_id,
+    productName: row.product_name,
+    productSlug: row.product_slug,
+    paymentStatus: row.status,
+    paidAt: row.paid_at,
+    fulfillmentStatus: row.fulfillment_status,
   }));
 };
 

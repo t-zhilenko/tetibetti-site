@@ -27,7 +27,12 @@ import { isUuid } from "@/lib/server/security";
 
 type StartPaymentPayload = {
   orderId?: unknown;
+  locale?: unknown;
 };
+
+type CheckoutLocale = "en" | "uk";
+
+const SUPPORTED_CHECKOUT_LOCALES = new Set<CheckoutLocale>(["en", "uk"]);
 
 type ErrorCode =
   | "INVALID_JSON"
@@ -75,6 +80,10 @@ export async function POST(request: Request) {
   }
 
   const orderId = typeof payload.orderId === "string" ? payload.orderId.trim() : "";
+  const localeRaw = typeof payload.locale === "string" ? payload.locale.trim().toLowerCase() : "";
+  const locale = SUPPORTED_CHECKOUT_LOCALES.has(localeRaw as CheckoutLocale)
+    ? (localeRaw as CheckoutLocale)
+    : undefined;
   if (!orderId) {
     return errorResponse("MISSING_ORDER_ID", "Missing orderId", 400);
   }
@@ -146,6 +155,7 @@ export async function POST(request: Request) {
       merchantId: env.fondyMerchantId,
       secretKey: env.fondySecretKey,
       appBaseUrl: env.appBaseUrl,
+      locale,
       orderId: order.id,
       amountMinor: order.amountMinor,
       currency: order.currency,

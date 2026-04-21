@@ -348,7 +348,7 @@
         "confirmedNoteResend": "За потреби можна надіслати доступ повторно.",
         "orderIdLabel": "ID замовлення",
         "resendAccess": "Надіслати доступ повторно",
-        "contactSupport": "Звернутися в підтримку"
+        "contactSupport": "Зв’язатися з підтримкою"
       },
       "failedResult": {
         "title": "Оплату не завершено",
@@ -357,8 +357,48 @@
         "orderIdLabel": "ID замовлення",
         "tryAgain": "Спробувати ще раз",
         "returnToProduct": "Повернутися до продукту",
-        "contactSupport": "Звернутися в підтримку"
+        "contactSupport": "Зв’язатися з підтримкою"
+      },
+      "pendingResult": {
+        "title": "Платіж отримано",
+        "description": "Ми зараз перевіряємо його. Після підтвердження доступ буде надіслано на email."
       }
+    },
+    "orderLookup": {
+      "title": "Знайти своє замовлення",
+      "description": "Введіть той самий email, який ви використовували під час оплати, щоб знайти оплачені замовлення та повторно надіслати доступ.",
+      "initialOrderIdLabel": "ID замовлення після оплати",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "findOrders": "Знайти замовлення",
+      "searching": "Шукаємо...",
+      "lookupEmpty": "Для цього email ще не знайдено оплачених замовлень.",
+      "lookupErrorGeneric": "Не вдалося знайти замовлення.",
+      "lookupErrorUnavailable": "Зараз не вдалося знайти замовлення. Спробуйте пізніше.",
+      "lookupErrorInvalidEmail": "Введіть коректний email.",
+      "lookupErrorRateLimited": "Забагато запитів. Спробуйте пізніше.",
+      "resendSuccess": "Лист із доступом надіслано повторно. Перевірте Вхідні або Спам.",
+      "resendErrorGeneric": "Не вдалося повторно надіслати доступ.",
+      "resendErrorUnavailable": "Зараз не вдалося повторно надіслати доступ. Спробуйте пізніше.",
+      "resendErrorInvalidEmail": "Введіть коректний email.",
+      "resendErrorRateLimited": "Забагато запитів. Спробуйте пізніше.",
+      "resendErrorOrderNotFound": "Для цього email ще не знайдено оплаченого замовлення.",
+      "resendErrorOrderUnpaid": "Для цього замовлення оплату ще не підтверджено.",
+      "resendErrorDeliveryFailed": "Зараз не вдалося надіслати лист із доступом. Спробуйте пізніше.",
+      "resendErrorCooldown": "Зачекайте трохи перед наступною спробою.",
+      "orderLabel": "Замовлення",
+      "paidAtLabel": "Оплачено",
+      "paymentConfirmed": "Оплату підтверджено",
+      "paymentNotCompleted": "Оплату не завершено",
+      "paymentNotConfirmed": "Платіж не було підтверджено.",
+      "paymentVerifying": "Ми все ще очікуємо підтвердження оплати.",
+      "deliveryFailed": "Не вдалося надіслати лист із доступом.",
+      "deliveryDelivered": "Лист із доступом надіслано. Перевірте Вхідні або Спам.",
+      "deliveryOnTheWay": "Лист із доступом уже в дорозі.",
+      "resending": "Надсилаємо...",
+      "resendAccess": "Надіслати доступ повторно",
+      "completePayment": "Завершити оплату",
+      "needHelp": "Потрібна допомога?"
     },
     "success": {
       "meta": {

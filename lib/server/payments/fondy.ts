@@ -4,7 +4,7 @@ const FONDY_CHECKOUT_URL_ENDPOINT = "https://pay.fondy.eu/api/checkout/url";
 const FONDY_REQUEST_USER_AGENT = "tetibetti-site/1.0 (+https://www.tetibetti.com)";
 const CHECKOUT_SUCCESS_PATH = "/checkout/success";
 const CHECKOUT_FAILED_PATH = "/checkout/failed";
-const INCLUDE_DECLINE_URL_IN_FONDY_PAYLOAD = false;
+const INCLUDE_DECLINE_URL_IN_FONDY_PAYLOAD = true;
 const FONDY_COMPATIBILITY_PRODUCT_ID = "Fondy";
 const FONDY_MINIMAL_COMPAT_PAYLOAD_MODE_DEFAULT = false;
 const ERROR_MESSAGE_MAX_LENGTH = 300;
@@ -55,6 +55,7 @@ export type BuildFondyCheckoutPayloadInput = {
   merchantId: string;
   secretKey: string;
   appBaseUrl: string;
+  locale?: "en" | "uk";
   orderId: string;
   amountMinor: number;
   currency: string;
@@ -178,11 +179,30 @@ const toFondyMerchantId = (merchantId: string): number => {
 
 const buildOrderDescription = (productName: string): string => productName.slice(0, 255);
 
-const buildSuccessUrl = (appBaseUrl: string, orderId: string): string =>
-  new URL(`${CHECKOUT_SUCCESS_PATH}?orderId=${encodeURIComponent(orderId)}`, appBaseUrl).toString();
+const buildCheckoutResultPath = (
+  locale: BuildFondyCheckoutPayloadInput["locale"] | undefined,
+  path: string,
+): string => (locale ? `/${locale}${path}` : path);
 
-const buildFailedUrl = (appBaseUrl: string, orderId: string): string =>
-  new URL(`${CHECKOUT_FAILED_PATH}?orderId=${encodeURIComponent(orderId)}`, appBaseUrl).toString();
+const buildSuccessUrl = (
+  appBaseUrl: string,
+  orderId: string,
+  locale: BuildFondyCheckoutPayloadInput["locale"] | undefined,
+): string =>
+  new URL(
+    `${buildCheckoutResultPath(locale, CHECKOUT_SUCCESS_PATH)}?orderId=${encodeURIComponent(orderId)}`,
+    appBaseUrl,
+  ).toString();
+
+const buildFailedUrl = (
+  appBaseUrl: string,
+  orderId: string,
+  locale: BuildFondyCheckoutPayloadInput["locale"] | undefined,
+): string =>
+  new URL(
+    `${buildCheckoutResultPath(locale, CHECKOUT_FAILED_PATH)}?orderId=${encodeURIComponent(orderId)}`,
+    appBaseUrl,
+  ).toString();
 
 const buildWebhookUrl = (appBaseUrl: string): string =>
   new URL("/api/payments/webhook/fondy", appBaseUrl).toString();
@@ -194,8 +214,8 @@ export const buildFondyCheckoutPayload = (
   payload: FondyCheckoutRequest & { signature: string };
 } => {
   const providerOrderId = buildFondyOrderReference(input.orderId);
-  const successUrl = buildSuccessUrl(input.appBaseUrl, input.orderId);
-  const failedUrl = buildFailedUrl(input.appBaseUrl, input.orderId);
+  const successUrl = buildSuccessUrl(input.appBaseUrl, input.orderId, input.locale);
+  const failedUrl = buildFailedUrl(input.appBaseUrl, input.orderId, input.locale);
   const callbackUrl = buildWebhookUrl(input.appBaseUrl);
   const minimalCompatPayloadMode = isFondyMinimalCompatPayloadModeEnabled();
   const basePayload = {
@@ -207,6 +227,11 @@ export const buildFondyCheckoutPayload = (
     product_id: FONDY_COMPATIBILITY_PRODUCT_ID,
     server_callback_url: callbackUrl,
     response_url: successUrl,
+    ...(INCLUDE_DECLINE_URL_IN_FONDY_PAYLOAD
+      ? {
+          decline_url: failedUrl,
+        }
+      : {}),
     currency: input.currency.toUpperCase(),
   };
 
@@ -214,11 +239,6 @@ export const buildFondyCheckoutPayload = (
     ? compactFondyPayload(basePayload)
     : compactFondyPayload({
         ...basePayload,
-        ...(INCLUDE_DECLINE_URL_IN_FONDY_PAYLOAD
-          ? {
-              decline_url: failedUrl,
-            }
-          : {}),
         merchant_data: JSON.stringify({ orderId: input.orderId }),
       });
 

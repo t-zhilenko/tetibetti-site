@@ -23,7 +23,11 @@ export default async function OrderLookupPage({ searchParams }: OrderLookupPageP
   return (
     <section className="bg-soft min-h-[70vh]">
       <Container className="py-16">
-        <OrderLookupClient supportEmail={getSupportEmail()} initialOrderId={initialOrderId} />
+        <OrderLookupClient
+          supportEmail={getSupportEmail()}
+          initialOrderId={initialOrderId}
+          checkoutBasePath="/checkout"
+        />
       </Container>
     </section>
   );
