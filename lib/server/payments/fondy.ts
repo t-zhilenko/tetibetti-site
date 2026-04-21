@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 const FONDY_CHECKOUT_URL_ENDPOINT = "https://pay.fondy.eu/api/checkout/url";
+const FONDY_REQUEST_USER_AGENT = "tetibetti-site/1.0 (+https://www.tetibetti.com)";
 const CHECKOUT_SUCCESS_PATH = "/checkout/success";
 const CHECKOUT_FAILED_PATH = "/checkout/failed";
 const INCLUDE_DECLINE_URL_IN_FONDY_PAYLOAD = false;
@@ -266,6 +267,8 @@ export const startFondyCheckoutSession = async (
     method: "POST",
     headers: {
       "content-type": "application/json",
+      accept: "application/json",
+      "user-agent": FONDY_REQUEST_USER_AGENT,
     },
     body: JSON.stringify({
       request: payload,
