@@ -44,7 +44,7 @@ export default async function CheckoutSuccessPage({
   }
 
   const isConfirmed = order?.status === "paid";
-  const isDelivered = isConfirmed && order.fulfillmentStatus === "delivered";
+  const isDelivered = isConfirmed && order?.fulfillmentStatus === "delivered";
 
   return (
     <section className="bg-soft min-h-[70vh]">

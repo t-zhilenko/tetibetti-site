@@ -121,7 +121,10 @@ const DEFAULT_COPY: OrderLookupCopy = {
   needHelp: "Need help?",
 };
 
-const getLookupErrorMessage = (body: Extract<LookupResponse, { ok: false }>, copy: OrderLookupCopy): string => {
+const getLookupErrorMessage = (
+  body: { code?: string; message?: string },
+  copy: OrderLookupCopy,
+): string => {
   switch (body.code) {
     case "INVALID_EMAIL":
       return copy.lookupErrorInvalidEmail;
@@ -132,7 +135,10 @@ const getLookupErrorMessage = (body: Extract<LookupResponse, { ok: false }>, cop
   }
 };
 
-const getResendErrorMessage = (body: Extract<ResendResponse, { ok: false }>, copy: OrderLookupCopy): string => {
+const getResendErrorMessage = (
+  body: { code?: string; message?: string },
+  copy: OrderLookupCopy,
+): string => {
   switch (body.code) {
     case "INVALID_EMAIL":
       return copy.resendErrorInvalidEmail;
@@ -181,7 +187,8 @@ export default function OrderLookupClient({
 
       const body = (await response.json()) as LookupResponse;
       if (!response.ok || !body.ok) {
-        setLookupError(getLookupErrorMessage(body, copy));
+        const errorBody = body as { code?: string; message?: string };
+        setLookupError(getLookupErrorMessage(errorBody, copy));
         return;
       }
 
@@ -212,7 +219,8 @@ export default function OrderLookupClient({
 
       const body = (await response.json()) as ResendResponse;
       if (!response.ok || !body.ok) {
-        setLookupError(getResendErrorMessage(body, copy));
+        const errorBody = body as { code?: string; message?: string };
+        setLookupError(getResendErrorMessage(errorBody, copy));
         return;
       }
 

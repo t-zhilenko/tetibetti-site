@@ -72,7 +72,7 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
   }
 
   const isConfirmed = order?.status === "paid";
-  const isDelivered = isConfirmed && order.fulfillmentStatus === "delivered";
+  const isDelivered = isConfirmed && order?.fulfillmentStatus === "delivered";
   const statusCopy = getStatusMessage(isConfirmed, isDelivered);
 
   return (
