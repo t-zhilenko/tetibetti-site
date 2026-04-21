@@ -79,11 +79,27 @@ const compactFondyPayload = (
   );
 
 const SIGNATURE_EXCLUDED_FONDY_KEYS = new Set(["signature"]);
+const SIGNATURE_INCLUDED_FONDY_REQUEST_KEYS = new Set([
+  "merchant_id",
+  "order_id",
+  "order_desc",
+  "amount",
+  "currency",
+  "sender_email",
+  "product_id",
+  "response_url",
+  "server_callback_url",
+  "merchant_data",
+]);
 
 const getSignatureMaterial = (payload: Record<string, unknown>) => {
   const cleanPayload = compactFondyPayload(payload);
   const entries = Object.entries(cleanPayload)
-    .filter(([key]) => !SIGNATURE_EXCLUDED_FONDY_KEYS.has(key))
+    .filter(
+      ([key]) =>
+        !SIGNATURE_EXCLUDED_FONDY_KEYS.has(key) &&
+        SIGNATURE_INCLUDED_FONDY_REQUEST_KEYS.has(key),
+    )
     .sort(([leftKey], [rightKey]) => leftKey.localeCompare(rightKey))
     .map(([key, value]) => [key, String(value)] as const);
 
@@ -95,7 +111,11 @@ const getSignatureMaterial = (payload: Record<string, unknown>) => {
 
 const getPayloadFieldNamesForSignatureCheck = (payload: Record<string, unknown>): string[] =>
   Object.keys(compactFondyPayload(payload))
-    .filter((key) => !SIGNATURE_EXCLUDED_FONDY_KEYS.has(key))
+    .filter(
+      (key) =>
+        !SIGNATURE_EXCLUDED_FONDY_KEYS.has(key) &&
+        SIGNATURE_INCLUDED_FONDY_REQUEST_KEYS.has(key),
+    )
     .sort();
 
 const compareSignatureFieldSetWithPayload = (
