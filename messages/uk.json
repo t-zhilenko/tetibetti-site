@@ -335,7 +335,30 @@
       "subtotal": "Підсумок",
       "total": "Разом",
       "notAvailable": "—",
-      "oneTimePurchase": "Одноразова покупка"
+      "oneTimePurchase": "Одноразова покупка",
+      "successResult": {
+        "pendingTitle": "Платіж отримано",
+        "pendingDescription": "Ми зараз перевіряємо його.",
+        "pendingNoteEmail": "Після підтвердження доступ буде надіслано на email.",
+        "pendingNoteDelay": "Це може тривати кілька хвилин.",
+        "confirmedTitle": "Оплату підтверджено",
+        "confirmedDescriptionDelivered": "Лист із доступом уже надіслано.",
+        "confirmedDescriptionPendingDelivery": "Лист із доступом уже в дорозі.",
+        "confirmedNoteFolders": "Якщо листа немає, перевірте Спам або Промоакції.",
+        "confirmedNoteResend": "За потреби можна надіслати доступ повторно.",
+        "orderIdLabel": "ID замовлення",
+        "resendAccess": "Надіслати доступ повторно",
+        "contactSupport": "Звернутися в підтримку"
+      },
+      "failedResult": {
+        "title": "Оплату не завершено",
+        "description": "Платіж не було підтверджено.",
+        "note": "Спробуйте ще раз або зверніться в підтримку.",
+        "orderIdLabel": "ID замовлення",
+        "tryAgain": "Спробувати ще раз",
+        "returnToProduct": "Повернутися до продукту",
+        "contactSupport": "Звернутися в підтримку"
+      }
     },
     "success": {
       "meta": {

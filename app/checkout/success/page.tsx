@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import Container from "@/components/Container";
 import { getDb } from "@/lib/server/db";
 import { findOrderByIdWithCustomerAndProduct } from "@/lib/server/repositories/orders";
@@ -18,40 +19,37 @@ export const metadata: Metadata = {
 };
 
 const getStatusMessage = (
-  status: string,
-  fulfillmentStatus: string,
-): { title: string; body: string } => {
-  if (status === "paid" && fulfillmentStatus === "delivered") {
+  isConfirmed: boolean,
+  isDelivered: boolean,
+): {
+  title: string;
+  body: string;
+  notePrimary: string;
+  noteSecondary: string;
+} => {
+  if (isConfirmed && isDelivered) {
     return {
       title: "Payment confirmed",
-      body: "Your payment is confirmed and your access email has been sent.",
+      body: "Your access email has been sent.",
+      notePrimary: "If you do not see it yet, check Spam or Promotions.",
+      noteSecondary: "You can resend access anytime.",
     };
   }
 
-  if (status === "paid") {
+  if (isConfirmed) {
     return {
       title: "Payment confirmed",
-      body: "Your payment is confirmed. We are finalizing delivery now.",
-    };
-  }
-
-  if (status === "failed" || status === "expired") {
-    return {
-      title: "Payment was not completed",
-      body: "This order is not paid yet. You can retry checkout or contact support.",
-    };
-  }
-
-  if (status === "manual_review") {
-    return {
-      title: "Payment is being reviewed",
-      body: "We are verifying this payment manually and will email you as soon as it is resolved.",
+      body: "Your access email is on the way.",
+      notePrimary: "If you do not see it yet, check Spam or Promotions.",
+      noteSecondary: "You can resend access anytime.",
     };
   }
 
   return {
-    title: "Payment received, being verified",
-    body: "Your payment callback is being verified. This usually takes a moment.",
+    title: "Payment received",
+    body: "We are verifying it now.",
+    notePrimary: "Your access link will be sent by email after confirmation.",
+    noteSecondary: "This can take a few minutes.",
   };
 };
 
@@ -69,12 +67,13 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
     order = null;
   }
 
-  const statusCopy = order
-    ? getStatusMessage(order.status, order.fulfillmentStatus)
-    : {
-        title: "Payment received, being verified",
-        body: "We will send your secure access email after confirmation.",
-      };
+  if (order && (order.status === "failed" || order.status === "expired")) {
+    redirect(`/checkout/failed?orderId=${encodeURIComponent(order.id)}`);
+  }
+
+  const isConfirmed = order?.status === "paid";
+  const isDelivered = isConfirmed && order.fulfillmentStatus === "delivered";
+  const statusCopy = getStatusMessage(isConfirmed, isDelivered);
 
   return (
     <section className="bg-soft min-h-[70vh]">
@@ -85,20 +84,22 @@ export default async function CheckoutSuccessPage({ searchParams }: CheckoutSucc
             <p className="text-sm text-deep/70">{statusCopy.body}</p>
           </div>
 
-          {orderId ? <p className="text-xs text-deep/60">Order ID: {orderId}</p> : null}
+          {orderId ? <p className="text-xs text-deep/55">Order ID: {orderId}</p> : null}
 
           <div className="space-y-2 text-sm text-deep/70">
-            <p>Please check your inbox and spam folder for the access email.</p>
-            <p>If you don&apos;t receive it soon, use resend access or contact support.</p>
+            <p>{statusCopy.notePrimary}</p>
+            <p>{statusCopy.noteSecondary}</p>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link
-              href={`/order/lookup${orderId ? `?orderId=${encodeURIComponent(orderId)}` : ""}`}
-              className="inline-flex h-11 items-center rounded-full border border-[#dfc2c0]/55 bg-[#dfc2c0]/78 px-5 text-sm text-deep"
-            >
-              Resend access
-            </Link>
+            {isConfirmed ? (
+              <Link
+                href={`/order/lookup${orderId ? `?orderId=${encodeURIComponent(orderId)}` : ""}`}
+                className="inline-flex h-11 items-center rounded-full border border-[#dfc2c0]/55 bg-[#dfc2c0]/78 px-5 text-sm text-deep"
+              >
+                Resend access
+              </Link>
+            ) : null}
             <a
               href={`mailto:${supportEmail}`}
               className="inline-flex h-11 items-center rounded-full border border-[#dfc2c0]/50 px-5 text-sm text-deep/80"

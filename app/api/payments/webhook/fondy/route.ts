@@ -40,6 +40,15 @@ const textResponse = (body: string, status = 200) =>
     },
   });
 
+const jsonResponse = (body: Record<string, unknown>, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    },
+  });
+
 const DUPLICATE_IN_FLIGHT_WINDOW_MS = 2 * 60 * 1000;
 const MAX_WEBHOOK_CONTENT_LENGTH = 100_000;
 
@@ -101,6 +110,13 @@ const getIdempotencyKey = (
   );
   return sha256Hex(`${providerOrderId ?? ""}|${paymentId}|${eventType}|${signature}|${stablePayload}`);
 };
+
+export async function GET() {
+  return jsonResponse({
+    ok: true,
+    message: "Fondy webhook endpoint is alive",
+  });
+}
 
 export async function POST(request: Request) {
   const contentLengthHeader = request.headers.get("content-length");

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 import Container from "@/components/Container";
 import { resolveLocale } from "@/i18n/locale";
 import { getDb } from "@/lib/server/db";
@@ -27,6 +29,7 @@ export default async function CheckoutSuccessPage({
   if (!locale) {
     return null;
   }
+  const t = await getTranslations({ locale, namespace: "Pages.checkout.successResult" });
 
   const query = await searchParams;
   const orderIdRaw = typeof query.orderId === "string" ? query.orderId.trim() : "";
@@ -36,51 +39,50 @@ export default async function CheckoutSuccessPage({
     ? await findOrderByIdWithCustomerAndProduct(await getDb(), orderId)
     : null;
 
-  const statusTitle =
-    order?.status === "paid"
-      ? "Payment confirmed"
-      : order?.status === "manual_review"
-        ? "Payment is being reviewed"
-        : order?.status === "failed" || order?.status === "expired"
-          ? "Payment not completed"
-          : "Payment received / being verified";
+  if (order && (order.status === "failed" || order.status === "expired")) {
+    redirect(`/${locale}/checkout/failed?orderId=${encodeURIComponent(order.id)}`);
+  }
 
-  const statusDescription =
-    order?.status === "paid" && order.fulfillmentStatus === "delivered"
-      ? "Payment confirmed. Your access email has been sent."
-      : order?.status === "paid"
-        ? "Payment confirmed. We are preparing your access email now."
-        : order?.status === "manual_review"
-          ? "Your payment is being checked manually. We will email you after verification."
-          : order?.status === "failed" || order?.status === "expired"
-            ? "This order is not paid yet. You can retry checkout from the product page."
-            : "Thank you. Final confirmation is processed after the provider callback.";
+  const isConfirmed = order?.status === "paid";
+  const isDelivered = isConfirmed && order.fulfillmentStatus === "delivered";
 
   return (
     <section className="bg-soft">
       <Container className="py-16">
         <div className="max-w-2xl space-y-6 rounded-3xl border border-[#dfc2c0]/30 bg-white/75 p-8">
-          <h1 className="text-3xl">{statusTitle}</h1>
-          <p className="text-sm text-deep/70">{statusDescription}</p>
+          <h1 className="text-3xl">
+            {isConfirmed ? t("confirmedTitle") : t("pendingTitle")}
+          </h1>
+          <p className="text-sm text-deep/70">
+            {isConfirmed
+              ? isDelivered
+                ? t("confirmedDescriptionDelivered")
+                : t("confirmedDescriptionPendingDelivery")
+              : t("pendingDescription")}
+          </p>
           {orderId ? (
-            <p className="text-xs text-deep/60">Order ID: {orderId}</p>
+            <p className="text-xs text-deep/55">
+              {t("orderIdLabel")}: {orderId}
+            </p>
           ) : null}
           <div className="space-y-2 text-sm text-deep/70">
-            <p>Please check your inbox and spam folder for your access email.</p>
-            <p>If you need help, use resend access or contact support.</p>
+            <p>{isConfirmed ? t("confirmedNoteFolders") : t("pendingNoteEmail")}</p>
+            <p>{isConfirmed ? t("confirmedNoteResend") : t("pendingNoteDelay")}</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link
-              href={`/${locale}/order/lookup${orderId ? `?orderId=${encodeURIComponent(orderId)}` : ""}`}
-              className="inline-flex h-11 items-center rounded-full border border-[#dfc2c0]/55 bg-[#dfc2c0]/78 px-5 text-sm text-deep"
-            >
-              Resend access
-            </Link>
+            {isConfirmed ? (
+              <Link
+                href={`/${locale}/order/lookup${orderId ? `?orderId=${encodeURIComponent(orderId)}` : ""}`}
+                className="inline-flex h-11 items-center rounded-full border border-[#dfc2c0]/55 bg-[#dfc2c0]/78 px-5 text-sm text-deep"
+              >
+                {t("resendAccess")}
+              </Link>
+            ) : null}
             <a
               href={`mailto:${supportEmail}`}
               className="inline-flex h-11 items-center rounded-full border border-[#dfc2c0]/50 px-5 text-sm text-deep/80"
             >
-              Contact support
+              {t("contactSupport")}
             </a>
           </div>
         </div>

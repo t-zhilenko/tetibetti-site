@@ -335,7 +335,30 @@
       "subtotal": "Subtotal",
       "total": "Total",
       "notAvailable": "—",
-      "oneTimePurchase": "One-time purchase"
+      "oneTimePurchase": "One-time purchase",
+      "successResult": {
+        "pendingTitle": "Payment received",
+        "pendingDescription": "We're verifying it now.",
+        "pendingNoteEmail": "Your access link will be sent by email after confirmation.",
+        "pendingNoteDelay": "This can take a few minutes.",
+        "confirmedTitle": "Payment confirmed",
+        "confirmedDescriptionDelivered": "Your access email has been sent.",
+        "confirmedDescriptionPendingDelivery": "Your access email is on the way.",
+        "confirmedNoteFolders": "If you don't see it, check Spam or Promotions.",
+        "confirmedNoteResend": "You can resend access anytime.",
+        "orderIdLabel": "Order ID",
+        "resendAccess": "Resend access",
+        "contactSupport": "Contact support"
+      },
+      "failedResult": {
+        "title": "Payment not completed",
+        "description": "Your payment wasn't confirmed.",
+        "note": "You can try again or contact support.",
+        "orderIdLabel": "Order ID",
+        "tryAgain": "Try again",
+        "returnToProduct": "Return to product",
+        "contactSupport": "Contact support"
+      }
     },
     "success": {
       "meta": {
