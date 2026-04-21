@@ -7,6 +7,7 @@ const INCLUDE_DECLINE_URL_IN_FONDY_PAYLOAD = false;
 const FONDY_COMPATIBILITY_PRODUCT_ID = "Fondy";
 const FONDY_MINIMAL_COMPAT_PAYLOAD_MODE_DEFAULT = false;
 const ERROR_MESSAGE_MAX_LENGTH = 300;
+const RAW_BODY_PREVIEW_MAX_LENGTH = 500;
 
 type FondyCheckoutRequest = {
   merchant_id: number;
@@ -144,18 +145,25 @@ const createFondySignature = (payload: Record<string, unknown>, secretKey: strin
 const toProviderResponseSummary = (
   responsePayload: FondyCheckoutApiResponse["response"],
   fallbackRawText?: string,
-): Record<string, unknown> => ({
-  responseStatus:
-    typeof responsePayload?.response_status === "string"
-      ? responsePayload.response_status
-      : null,
-  errorCode:
-    typeof responsePayload?.error_code === "string" ? responsePayload.error_code : null,
-  errorMessage:
-    typeof responsePayload?.error_message === "string"
-      ? responsePayload.error_message.slice(0, ERROR_MESSAGE_MAX_LENGTH)
-      : fallbackRawText?.slice(0, ERROR_MESSAGE_MAX_LENGTH) ?? null,
-});
+): Record<string, unknown> => {
+  const rawBodyPreview = fallbackRawText
+    ? fallbackRawText.replace(/\s+/g, " ").trim().slice(0, RAW_BODY_PREVIEW_MAX_LENGTH)
+    : null;
+
+  return {
+    responseStatus:
+      typeof responsePayload?.response_status === "string"
+        ? responsePayload.response_status
+        : null,
+    errorCode:
+      typeof responsePayload?.error_code === "string" ? responsePayload.error_code : null,
+    errorMessage:
+      typeof responsePayload?.error_message === "string"
+        ? responsePayload.error_message.slice(0, ERROR_MESSAGE_MAX_LENGTH)
+        : null,
+    rawBodyPreview,
+  };
+};
 
 export const buildFondyOrderReference = (orderId: string): string => `tb_${orderId}`;
 
@@ -275,6 +283,7 @@ export const startFondyCheckoutSession = async (
   if (!response.ok) {
     throw new FondyProviderError(`Fondy checkout request failed with HTTP ${response.status}`, {
       httpStatus: response.status,
+      endpoint: FONDY_CHECKOUT_URL_ENDPOINT,
       ...toProviderResponseSummary(parsedBody?.response, rawText),
     });
   }
@@ -285,6 +294,7 @@ export const startFondyCheckoutSession = async (
   if (responseStatus !== "success" || !checkoutUrl) {
     throw new FondyProviderError("Fondy checkout session was not created", {
       httpStatus: response.status,
+      endpoint: FONDY_CHECKOUT_URL_ENDPOINT,
       signedFieldNames,
       ...toProviderResponseSummary(responsePayload, rawText),
     });

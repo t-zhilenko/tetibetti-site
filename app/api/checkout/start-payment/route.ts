@@ -61,6 +61,12 @@ const errorResponse = (code: ErrorCode, message: string, status: number) =>
 
 export async function POST(request: Request) {
   let payload: StartPaymentPayload;
+  const cfRay = request.headers.get("cf-ray");
+  let logOrderId: string | null = null;
+  let logPaymentAttemptId: string | null = null;
+  let logProviderOrderId: string | null = null;
+  let logAmountMinor: number | null = null;
+  let logCurrency: string | null = null;
 
   try {
     payload = (await request.json()) as StartPaymentPayload;
@@ -79,10 +85,13 @@ export async function POST(request: Request) {
   try {
     const db = await getDb();
     const order = await findOrderById(db, orderId);
+    logOrderId = orderId;
 
     if (!order) {
       return errorResponse("ORDER_NOT_FOUND", "Order not found", 404);
     }
+    logAmountMinor = order.amountMinor;
+    logCurrency = order.currency;
 
     if (NOT_PAYABLE_ORDER_STATUSES.has(order.status)) {
       return errorResponse("ORDER_NOT_PAYABLE", "Order is not payable", 409);
@@ -126,6 +135,7 @@ export async function POST(request: Request) {
     if (!paymentAttempt) {
       return errorResponse("START_PAYMENT_FAILED", "Unable to start payment", 500);
     }
+    logPaymentAttemptId = paymentAttempt.id;
 
     if (NOT_PAYABLE_PAYMENT_ATTEMPT_STATUSES.has(paymentAttempt.status)) {
       return errorResponse("ORDER_NOT_PAYABLE", "Order is not payable", 409);
@@ -142,6 +152,7 @@ export async function POST(request: Request) {
       productName: product.name,
       customerEmail: customer.email,
     });
+    logProviderOrderId = providerOrderId;
 
     const checkoutSession = await startFondyCheckoutSession(fondyPayload);
     const rawStatus =
@@ -185,6 +196,9 @@ export async function POST(request: Request) {
     ) {
       console.error("Start-payment config error", {
         message: error.message,
+        orderId: logOrderId,
+        paymentAttemptId: logPaymentAttemptId,
+        cfRay,
       });
       return errorResponse("PAYMENT_CONFIG_MISSING", "Payment configuration is not available", 500);
     }
@@ -192,14 +206,40 @@ export async function POST(request: Request) {
     if (error instanceof FondyProviderError) {
       console.error("Start-payment provider error", {
         message: error.message,
+        orderId: logOrderId,
+        paymentAttemptId: logPaymentAttemptId,
+        providerOrderId: logProviderOrderId,
+        amountMinor: logAmountMinor,
+        currency: logCurrency,
         httpStatus:
           typeof error.details?.httpStatus === "number" ? error.details.httpStatus : undefined,
+        responseStatus:
+          typeof error.details?.responseStatus === "string"
+            ? error.details.responseStatus
+            : undefined,
+        errorCode:
+          typeof error.details?.errorCode === "string" ? error.details.errorCode : undefined,
+        errorMessage:
+          typeof error.details?.errorMessage === "string"
+            ? error.details.errorMessage
+            : undefined,
+        endpoint:
+          typeof error.details?.endpoint === "string" ? error.details.endpoint : undefined,
+        rawBodyPreview:
+          typeof error.details?.rawBodyPreview === "string"
+            ? error.details.rawBodyPreview
+            : undefined,
+        cfRay,
       });
       return errorResponse("PAYMENT_PROVIDER_ERROR", "Unable to initialize payment", 502);
     }
 
     console.error("Start-payment failed", {
       message: error instanceof Error ? error.message : "Unknown error",
+      orderId: logOrderId,
+      paymentAttemptId: logPaymentAttemptId,
+      providerOrderId: logProviderOrderId,
+      cfRay,
     });
     return errorResponse("START_PAYMENT_FAILED", "Unable to start payment", 500);
   }
