@@ -36,8 +36,10 @@ type CreateOrderApiResponse =
 type StartPaymentApiResponse =
   | {
       ok: true;
+      orderId?: string;
+      paymentUrl?: string;
       checkout: {
-        provider: "fondy";
+        provider: "fondy" | "mono";
         method: "redirect" | "form_post";
         checkoutUrl?: string;
         action?: string;
@@ -210,7 +212,7 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
     setCheckoutError(null);
     trackEvent("checkout_cta_clicked", {
       source: "checkout_page",
-      method: "fondy_redirect",
+      method: "payment_redirect",
       cart_items: itemCount,
       cart_total: total ?? undefined,
       cart_currency: hasMixedCurrency ? undefined : primaryCurrency,
@@ -289,13 +291,17 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
         return;
       }
 
-      if (
-        startPaymentBody.checkout.method === "redirect" &&
-        startPaymentBody.checkout.checkoutUrl
-      ) {
+      const redirectUrl =
+        "paymentUrl" in startPaymentBody && typeof startPaymentBody.paymentUrl === "string"
+          ? startPaymentBody.paymentUrl
+          : startPaymentBody.checkout.method === "redirect"
+            ? startPaymentBody.checkout.checkoutUrl
+            : undefined;
+
+      if (redirectUrl) {
         setPendingPaymentOrder(null);
         setCheckoutPhase("redirecting");
-        window.location.assign(startPaymentBody.checkout.checkoutUrl);
+        window.location.assign(redirectUrl);
         return;
       }
 
@@ -381,7 +387,9 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
 
                 <p className="mt-4 inline-flex items-center text-[12px] text-deep/54">
                   <LockKeyhole size={12} className="mr-1.5" />
-                  {t("paymentNoticeFondyEmail")}
+                  {locale === "uk"
+                    ? "Оплата відбудеться на захищеній сторінці MonoPay. Доступ надійде на email."
+                    : "You'll complete payment on a secure MonoPay page. Access is delivered by email."}
                 </p>
 
                 {!isPaidCheckout ? (

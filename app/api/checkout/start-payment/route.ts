@@ -7,7 +7,8 @@ import { getDb } from "@/lib/server/db";
 import {
   InvalidBaseUrlEnvError,
   MissingPaymentEnvError,
-  getRequiredPaymentEnv,
+  getPaymentProvider,
+  getRequiredFondyEnv,
 } from "@/lib/server/env";
 import {
   FondyProviderError,
@@ -15,6 +16,13 @@ import {
   buildFondyCheckoutPayload,
   startFondyCheckoutSession,
 } from "@/lib/server/payments/fondy";
+import {
+  MonoProviderError,
+} from "@/lib/server/payments/providers/mono";
+import {
+  getPaymentProviderClient,
+  UnsupportedPaymentProviderError,
+} from "@/lib/server/payments/payment-provider";
 import { findCustomerById } from "@/lib/server/repositories/customers";
 import { findOrderById, markOrderAsProcessing } from "@/lib/server/repositories/orders";
 import {
@@ -70,6 +78,7 @@ export async function POST(request: Request) {
   let logOrderId: string | null = null;
   let logPaymentAttemptId: string | null = null;
   let logProviderOrderId: string | null = null;
+  let logProvider: string | null = null;
   let logAmountMinor: number | null = null;
   let logCurrency: string | null = null;
 
@@ -124,10 +133,13 @@ export async function POST(request: Request) {
       return errorResponse("START_PAYMENT_FAILED", "Unable to start payment", 500);
     }
 
+    const paymentProvider = await getPaymentProvider();
+    logProvider = paymentProvider;
+
     let paymentAttempt = await findLatestPaymentAttemptByOrderId(db, order.id);
     const attemptNeedsReset =
       !paymentAttempt ||
-      paymentAttempt.provider !== "fondy" ||
+      paymentAttempt.provider !== paymentProvider ||
       paymentAttempt.amountMinor !== order.amountMinor ||
       paymentAttempt.currency.toUpperCase() !== order.currency.toUpperCase();
 
@@ -135,7 +147,7 @@ export async function POST(request: Request) {
       paymentAttempt = await createPaymentAttempt(db, {
         id: crypto.randomUUID(),
         orderId: order.id,
-        provider: "fondy",
+        provider: paymentProvider,
         status: "created",
         amountMinor: order.amountMinor,
         currency: order.currency,
@@ -150,7 +162,61 @@ export async function POST(request: Request) {
       return errorResponse("ORDER_NOT_PAYABLE", "Order is not payable", 409);
     }
 
-    const env = await getRequiredPaymentEnv();
+    if (paymentProvider === "mono") {
+      const monoProvider = await getPaymentProviderClient();
+      const checkoutSession = await monoProvider.createPayment({
+        orderId: order.id,
+        productSlug: product.slug,
+        productName: product.name,
+        amount: order.amountMinor / 100,
+        email: customer.email,
+        locale: locale ?? "en",
+      });
+      logProviderOrderId = checkoutSession.providerInvoiceId;
+
+      await updatePaymentAttemptCheckout(db, {
+        id: paymentAttempt.id,
+        providerOrderId: checkoutSession.providerInvoiceId,
+        status: "pending",
+        rawStatus: "created",
+        payloadJson: JSON.stringify({
+          request: {
+            provider: "mono",
+            orderId: order.id,
+            productSlug: product.slug,
+            amountMinor: order.amountMinor,
+            currency: order.currency,
+            locale: locale ?? "en",
+          },
+          response: {
+            invoiceId: checkoutSession.providerInvoiceId,
+            pageUrl: checkoutSession.paymentUrl,
+          },
+        }),
+      });
+
+      await markOrderAsProcessing(db, order.id);
+
+      console.info("Start-payment checkout initialized", {
+        provider: "mono",
+        orderId: order.id,
+        paymentAttemptId: paymentAttempt.id,
+        providerInvoiceId: checkoutSession.providerInvoiceId,
+      });
+
+      return jsonResponse({
+        ok: true,
+        orderId: order.id,
+        paymentUrl: checkoutSession.paymentUrl,
+        checkout: {
+          provider: "mono",
+          method: "redirect",
+          checkoutUrl: checkoutSession.paymentUrl,
+        },
+      });
+    }
+
+    const env = await getRequiredFondyEnv();
     const { providerOrderId, payload: fondyPayload } = buildFondyCheckoutPayload({
       merchantId: env.fondyMerchantId,
       secretKey: env.fondySecretKey,
@@ -183,7 +249,8 @@ export async function POST(request: Request) {
 
     await markOrderAsProcessing(db, order.id);
 
-    console.info("Start-payment checkout initialized:", {
+    console.info("Start-payment checkout initialized", {
+      provider: "fondy",
       orderId: order.id,
       paymentAttemptId: paymentAttempt.id,
       providerOrderId,
@@ -202,10 +269,12 @@ export async function POST(request: Request) {
     if (
       error instanceof MissingPaymentEnvError ||
       error instanceof InvalidFondyConfigError ||
-      error instanceof InvalidBaseUrlEnvError
+      error instanceof InvalidBaseUrlEnvError ||
+      error instanceof UnsupportedPaymentProviderError
     ) {
       console.error("Start-payment config error", {
         message: error.message,
+        provider: logProvider,
         orderId: logOrderId,
         paymentAttemptId: logPaymentAttemptId,
         cfRay,
@@ -213,9 +282,10 @@ export async function POST(request: Request) {
       return errorResponse("PAYMENT_CONFIG_MISSING", "Payment configuration is not available", 500);
     }
 
-    if (error instanceof FondyProviderError) {
+    if (error instanceof FondyProviderError || error instanceof MonoProviderError) {
       console.error("Start-payment provider error", {
         message: error.message,
+        provider: logProvider,
         orderId: logOrderId,
         paymentAttemptId: logPaymentAttemptId,
         providerOrderId: logProviderOrderId,
@@ -223,15 +293,17 @@ export async function POST(request: Request) {
         currency: logCurrency,
         httpStatus:
           typeof error.details?.httpStatus === "number" ? error.details.httpStatus : undefined,
-        responseStatus:
-          typeof error.details?.responseStatus === "string"
-            ? error.details.responseStatus
-            : undefined,
         errorCode:
-          typeof error.details?.errorCode === "string" ? error.details.errorCode : undefined,
+          typeof error.details?.errorCode === "string"
+            ? error.details.errorCode
+            : typeof error.details?.errCode === "string"
+              ? error.details.errCode
+              : undefined,
         errorMessage:
           typeof error.details?.errorMessage === "string"
             ? error.details.errorMessage
+            : typeof error.details?.errText === "string"
+              ? error.details.errText
             : undefined,
         endpoint:
           typeof error.details?.endpoint === "string" ? error.details.endpoint : undefined,
@@ -246,6 +318,7 @@ export async function POST(request: Request) {
 
     console.error("Start-payment failed", {
       message: error instanceof Error ? error.message : "Unknown error",
+      provider: logProvider,
       orderId: logOrderId,
       paymentAttemptId: logPaymentAttemptId,
       providerOrderId: logProviderOrderId,

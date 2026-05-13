@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { MissingPaymentEnvError, getRequiredPaymentEnv } from "@/lib/server/env";
+import { MissingPaymentEnvError, getRequiredFondyEnv } from "@/lib/server/env";
 import { getDb } from "@/lib/server/db";
 import {
   extractFondyOrderIds,
@@ -143,9 +143,9 @@ export async function POST(request: Request) {
     return textResponse("Bad Request", 400);
   }
 
-  let env: Awaited<ReturnType<typeof getRequiredPaymentEnv>>;
+  let env: Awaited<ReturnType<typeof getRequiredFondyEnv>>;
   try {
-    env = await getRequiredPaymentEnv();
+    env = await getRequiredFondyEnv();
   } catch (error) {
     if (error instanceof MissingPaymentEnvError) {
       console.error("Fondy webhook: missing payment env", {

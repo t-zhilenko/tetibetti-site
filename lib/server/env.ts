@@ -4,6 +4,10 @@ declare global {
   interface CloudflareEnv {
     FONDY_MERCHANT_ID?: string;
     FONDY_SECRET_KEY?: string;
+    MONO_TOKEN?: string;
+    MONO_API_BASE_URL?: string;
+    MONO_WEBHOOK_URL?: string;
+    PAYMENT_PROVIDER?: string;
     APP_BASE_URL?: string;
     BREVO_API_KEY?: string;
     BREVO_SENDER_EMAIL?: string;
@@ -11,9 +15,18 @@ declare global {
   }
 }
 
-type RequiredPaymentEnv = {
+export type PaymentProvider = "fondy" | "mono";
+
+type RequiredFondyEnv = {
   fondyMerchantId: string;
   fondySecretKey: string;
+  appBaseUrl: string;
+};
+
+type RequiredMonoEnv = {
+  monoToken: string;
+  monoApiBaseUrl: string;
+  monoWebhookUrl: string;
   appBaseUrl: string;
 };
 
@@ -81,7 +94,20 @@ const getCloudflareEnv = async (): Promise<CloudflareEnv> => {
   return env;
 };
 
-export const getRequiredPaymentEnv = async (): Promise<RequiredPaymentEnv> => {
+const getPaymentProviderRaw = async (): Promise<string> => {
+  const env = await getCloudflareEnv();
+  return (env.PAYMENT_PROVIDER ?? process.env.PAYMENT_PROVIDER ?? "").trim().toLowerCase();
+};
+
+export const getPaymentProvider = async (): Promise<PaymentProvider> => {
+  const provider = await getPaymentProviderRaw();
+  if (provider === "mono") {
+    return "mono";
+  }
+  return "fondy";
+};
+
+export const getRequiredFondyEnv = async (): Promise<RequiredFondyEnv> => {
   const env = await getCloudflareEnv();
 
   const fondyMerchantId =
@@ -104,6 +130,43 @@ export const getRequiredPaymentEnv = async (): Promise<RequiredPaymentEnv> => {
     fondySecretKey,
     appBaseUrl: toNormalizedAbsoluteUrl(appBaseUrlRaw),
   };
+};
+
+export const getRequiredMonoEnv = async (): Promise<RequiredMonoEnv> => {
+  const env = await getCloudflareEnv();
+
+  const monoToken = env.MONO_TOKEN ?? process.env.MONO_TOKEN ?? "";
+  const monoApiBaseUrlRaw =
+    env.MONO_API_BASE_URL ?? process.env.MONO_API_BASE_URL ?? "";
+  const monoWebhookUrlRaw =
+    env.MONO_WEBHOOK_URL ?? process.env.MONO_WEBHOOK_URL ?? "";
+  const appBaseUrlRaw = env.APP_BASE_URL ?? process.env.APP_BASE_URL ?? "";
+
+  const missingKeys = [
+    !monoToken ? "MONO_TOKEN" : "",
+    !monoApiBaseUrlRaw ? "MONO_API_BASE_URL" : "",
+    !monoWebhookUrlRaw ? "MONO_WEBHOOK_URL" : "",
+    !appBaseUrlRaw ? "APP_BASE_URL" : "",
+  ].filter((key): key is string => Boolean(key));
+
+  if (missingKeys.length > 0) {
+    throw new MissingPaymentEnvError(missingKeys);
+  }
+
+  return {
+    monoToken,
+    monoApiBaseUrl: toNormalizedAbsoluteUrl(monoApiBaseUrlRaw),
+    monoWebhookUrl: toNormalizedAbsoluteUrl(monoWebhookUrlRaw),
+    appBaseUrl: toNormalizedAbsoluteUrl(appBaseUrlRaw),
+  };
+};
+
+export const getRequiredPaymentEnv = async (): Promise<RequiredFondyEnv | RequiredMonoEnv> => {
+  const provider = await getPaymentProvider();
+  if (provider === "mono") {
+    return getRequiredMonoEnv();
+  }
+  return getRequiredFondyEnv();
 };
 
 export const getRequiredAppBaseUrl = async (): Promise<string> => {

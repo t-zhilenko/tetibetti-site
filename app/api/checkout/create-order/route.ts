@@ -4,6 +4,7 @@ import {
   isProductPurchasable,
 } from "@/lib/payments/product-helpers";
 import { getDb } from "@/lib/server/db";
+import { getPaymentProvider } from "@/lib/server/env";
 import { getOrCreateCustomerByEmail } from "@/lib/server/repositories/customers";
 import { createOrder } from "@/lib/server/repositories/orders";
 import { createPaymentAttempt } from "@/lib/server/repositories/paymentAttempts";
@@ -83,6 +84,7 @@ export async function POST(request: Request) {
       return errorResponse("PRODUCT_NOT_PURCHASABLE", "Product is not available for purchase", 409);
     }
 
+    const paymentProvider = await getPaymentProvider();
     const customer = await getOrCreateCustomerByEmail(db, email);
 
     const orderId = crypto.randomUUID();
@@ -95,7 +97,7 @@ export async function POST(request: Request) {
       currency: product.currency,
       status: "initiated",
       fulfillmentStatus: "pending",
-      provider: isPaidProduct(product) ? "fondy" : "internal",
+      provider: isPaidProduct(product) ? paymentProvider : "internal",
     });
 
     if (isFreeProduct(product)) {
@@ -124,7 +126,7 @@ export async function POST(request: Request) {
       await createPaymentAttempt(db, {
         id: paymentAttemptId,
         orderId: order.id,
-        provider: "fondy",
+        provider: paymentProvider,
         status: "created",
         amountMinor: product.priceMinor,
         currency: product.currency,
@@ -133,6 +135,7 @@ export async function POST(request: Request) {
       console.info("Create-order completed", {
         orderId: order.id,
         flow: "paid",
+        provider: paymentProvider,
         paymentAttemptId,
         productSlug: product.slug,
       });
