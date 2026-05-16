@@ -15,6 +15,7 @@ import {
   getCartRecommendedProducts,
   resolveCartItemsForLocale,
 } from "@/components/cart/utils";
+import {useCommerceProducts} from "@/components/cart/useCommerceProducts";
 import {Link, useRouter} from "@/i18n/navigation";
 import type {Locale} from "@/i18n/routing";
 import {trackEvent} from "@/lib/analytics";
@@ -26,11 +27,12 @@ export default function CartPageClient() {
   const [promoCode, setPromoCode] = useState("");
   const [isPromoApplied, setIsPromoApplied] = useState(false);
   const isUkrainian = locale === "uk";
+  const commerceProductsBySlug = useCommerceProducts(items.map((item) => item.slug));
 
   const localizedProducts = useMemo(() => getProducts(locale as Locale), [locale]);
   const localizedItems = useMemo(
-    () => resolveCartItemsForLocale(items, localizedProducts),
-    [items, localizedProducts]
+    () => resolveCartItemsForLocale(items, localizedProducts, commerceProductsBySlug),
+    [items, localizedProducts, commerceProductsBySlug]
   );
   const recommendedProducts = useMemo(
     () => getCartRecommendedProducts(localizedItems, localizedProducts, 4),

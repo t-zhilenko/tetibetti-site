@@ -7,6 +7,7 @@ import {useLocale, useTranslations} from "next-intl";
 import Container from "@/components/Container";
 import {useCart} from "@/components/cart/CartContext";
 import {formatCurrency, resolveCartItemsForLocale} from "@/components/cart/utils";
+import {useCommerceProducts} from "@/components/cart/useCommerceProducts";
 import {getProducts} from "@/content/products";
 import type {Locale} from "@/i18n/routing";
 import {trackEvent} from "@/lib/analytics";
@@ -85,6 +86,14 @@ const getCheckoutPhaseMessage = (
   }
 };
 
+const safeNormalizeInitialProduct = (value: string): string => {
+  try {
+    return decodeURIComponent(value).trim().toLowerCase();
+  } catch {
+    return value.trim().toLowerCase();
+  }
+};
+
 export default function CheckoutPageClient({initialProduct}: CheckoutPageClientProps) {
   const locale = useLocale();
   const t = useTranslations("Pages.checkout");
@@ -97,11 +106,19 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
   } | null>(null);
   const [checkoutPhase, setCheckoutPhase] = useState<CheckoutPhase>("idle");
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const commerceLookupSlugs = useMemo(() => {
+    const unique = new Set(items.map((item) => item.slug));
+    if (initialProduct) {
+      unique.add(safeNormalizeInitialProduct(initialProduct));
+    }
+    return Array.from(unique);
+  }, [initialProduct, items]);
+  const commerceProductsBySlug = useCommerceProducts(commerceLookupSlugs);
 
   const localizedProducts = useMemo(() => getProducts(locale as Locale), [locale]);
   const localizedItems = useMemo(
-    () => resolveCartItemsForLocale(items, localizedProducts),
-    [items, localizedProducts]
+    () => resolveCartItemsForLocale(items, localizedProducts, commerceProductsBySlug),
+    [items, localizedProducts, commerceProductsBySlug]
   );
 
   const fallbackItem = useMemo(() => {
@@ -109,7 +126,7 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
       return null;
     }
 
-    const normalized = decodeURIComponent(initialProduct).trim().toLowerCase();
+    const normalized = safeNormalizeInitialProduct(initialProduct);
     const matched = localizedProducts.find(
       (product) => product.slug === normalized || product.title.toLowerCase() === normalized
     );
@@ -118,10 +135,15 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
     }
 
     const price =
-      matched.purchase?.type === "paid" && typeof matched.purchase.price === "number"
-        ? matched.purchase.price
+      commerceProductsBySlug.get(matched.slug)?.priceMinor !== undefined
+        ? (commerceProductsBySlug.get(matched.slug)?.priceMinor ?? 0) / 100
+        : matched.purchase?.type === "paid" && typeof matched.purchase.price === "number"
+          ? matched.purchase.price
         : 0;
-    const currency = matched.purchase?.currency ?? "USD";
+    const currency =
+      commerceProductsBySlug.get(matched.slug)?.currency ??
+      matched.purchase?.currency ??
+      "USD";
 
     return {
       slug: matched.slug,
@@ -132,7 +154,7 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
       currency,
       quantity: 1,
     };
-  }, [initialProduct, localizedItems.length, localizedProducts]);
+  }, [commerceProductsBySlug, initialProduct, localizedItems.length, localizedProducts]);
 
   const checkoutItems = localizedItems.length
     ? localizedItems

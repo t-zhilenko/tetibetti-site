@@ -4,6 +4,14 @@ import type {CartItem} from "@/components/cart/CartContext";
 import type {ProductConfig} from "@/content/products";
 
 export type RecommendationKind = "free" | "paid" | "waitlist";
+export type CommerceCartProduct = {
+  slug: string;
+  name: string;
+  priceMinor: number;
+  currency: string;
+  status: "active" | "coming_soon" | "archived";
+  isActive: boolean;
+};
 
 export type CartRecommendation = {
   slug: string;
@@ -105,30 +113,41 @@ export const getCartRecommendedProducts = (
 
 export const resolveCartItemsForLocale = (
   items: CartItem[],
-  products: ProductConfig[]
+  products: ProductConfig[],
+  commerceProductsBySlug?: Map<string, CommerceCartProduct>,
 ): CartItem[] => {
   const bySlug = new Map(products.map((product) => [product.slug, product]));
 
   return items.map((item) => {
     const product = bySlug.get(item.slug);
-    if (!product) {
+    const commerceProduct = commerceProductsBySlug?.get(item.slug);
+
+    if (!product && !commerceProduct) {
       return item;
     }
 
+    const priceFromCommerce =
+      commerceProduct && Number.isFinite(commerceProduct.priceMinor)
+        ? commerceProduct.priceMinor / 100
+        : null;
+    const currencyFromCommerce = commerceProduct?.currency ?? null;
+
     const paidPrice =
-      product.purchase?.type === "paid" && typeof product.purchase.price === "number"
+      priceFromCommerce ??
+      (product?.purchase?.type === "paid" && typeof product.purchase.price === "number"
         ? product.purchase.price
-        : item.price;
+        : item.price);
     const paidCurrency =
-      product.purchase?.type === "paid"
+      currencyFromCommerce ??
+      (product?.purchase?.type === "paid"
         ? product.purchase.currency ?? item.currency
-        : item.currency;
+        : item.currency);
 
     return {
       ...item,
-      title: product.title,
-      subtitle: product.shortDescription,
-      imageSrc: product.thumbnail ?? product.mainPreviewImage?.src ?? item.imageSrc,
+      title: commerceProduct?.name ?? product?.title ?? item.title,
+      subtitle: product?.shortDescription ?? item.subtitle,
+      imageSrc: product?.thumbnail ?? product?.mainPreviewImage?.src ?? item.imageSrc,
       price: paidPrice,
       currency: paidCurrency,
       quantity: 1,
