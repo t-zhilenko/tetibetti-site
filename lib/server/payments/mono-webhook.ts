@@ -9,6 +9,15 @@ export type MonoWebhookPayload = Record<string, unknown> & {
 };
 
 export type MonoWebhookOutcome = "paid" | "failed" | "expired" | "processing";
+export type MonoInvoiceStatus =
+  | "created"
+  | "processing"
+  | "hold"
+  | "success"
+  | "failure"
+  | "reversed"
+  | "expired"
+  | "unknown";
 
 type MonoPubKeyResponse = {
   key?: unknown;
@@ -87,6 +96,32 @@ export const mapMonoWebhookOutcome = (statusRaw: unknown): MonoWebhookOutcome =>
   return "processing";
 };
 
+export const normalizeMonoInvoiceStatus = (statusRaw: unknown): MonoInvoiceStatus => {
+  const status = normalizeStatus(statusRaw);
+  if (status === "created") {
+    return "created";
+  }
+  if (status === "processing") {
+    return "processing";
+  }
+  if (status === "hold") {
+    return "hold";
+  }
+  if (status === "success") {
+    return "success";
+  }
+  if (status === "failure") {
+    return "failure";
+  }
+  if (status === "reversed") {
+    return "reversed";
+  }
+  if (status === "expired") {
+    return "expired";
+  }
+  return "unknown";
+};
+
 export const getMonoEventType = (payload: MonoWebhookPayload): string => {
   const normalized = normalizeStatus(payload.status);
   return normalized || "unknown";
@@ -95,6 +130,17 @@ export const getMonoEventType = (payload: MonoWebhookPayload): string => {
 export const extractMonoOrderReference = (payload: MonoWebhookPayload): string | null => {
   if (typeof payload.reference === "string" && payload.reference.trim()) {
     return payload.reference.trim();
+  }
+
+  if (typeof payload.merchantPaymInfo === "string" && payload.merchantPaymInfo.trim()) {
+    try {
+      const parsed = JSON.parse(payload.merchantPaymInfo) as { reference?: unknown };
+      if (typeof parsed.reference === "string" && parsed.reference.trim()) {
+        return parsed.reference.trim();
+      }
+    } catch {
+      // ignore malformed merchantPaymInfo string and continue with other variants
+    }
   }
 
   if (
@@ -139,7 +185,14 @@ export const extractMonoCurrencyCode = (payload: MonoWebhookPayload): number | n
   }
 
   if (typeof payload.ccy === "string" && payload.ccy.trim()) {
-    const parsed = Number.parseInt(payload.ccy, 10);
+    const normalized = payload.ccy.trim().toUpperCase();
+    if (normalized === "UAH") {
+      return 980;
+    }
+    if (normalized === "USD") {
+      return 840;
+    }
+    const parsed = Number.parseInt(normalized, 10);
     return Number.isFinite(parsed) ? parsed : null;
   }
 

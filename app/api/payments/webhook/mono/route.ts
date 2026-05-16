@@ -183,6 +183,12 @@ export async function POST(request: Request) {
   const reference = extractMonoOrderReference(payload);
   const orderId = reference && isUuid(reference) ? reference : null;
   const modifiedDateMs = extractMonoModifiedDateMs(payload);
+  console.info("Mono webhook received event", {
+    eventType,
+    providerInvoiceId,
+    reference,
+    orderId,
+  });
   const idempotencyKey = await sha256HexWeb(
     `${providerInvoiceId ?? ""}|${eventType}|${String(payload.modifiedDate ?? "")}|${xSign}|${rawBody}`,
   );
@@ -304,6 +310,7 @@ export async function POST(request: Request) {
 
   if (outcome === "paid") {
     const alreadyPaid = order.status === "paid";
+    const shouldAttemptDeliveryRecovery = alreadyPaid && order.fulfillmentStatus !== "delivered";
     if (!alreadyPaid) {
       await markOrderAsPaid(db, order.id);
     }
@@ -319,7 +326,7 @@ export async function POST(request: Request) {
       });
     }
 
-    if (alreadyPaid) {
+    if (alreadyPaid && !shouldAttemptDeliveryRecovery) {
       console.info("Mono webhook delivery skipped for already paid order", {
         paymentEventId: event.id,
         orderId: order.id,
@@ -332,10 +339,11 @@ export async function POST(request: Request) {
         forceNewToken: false,
       });
 
-      console.info("Mono webhook delivery triggered", {
+      console.info("Mono webhook delivery processed", {
         paymentEventId: event.id,
         orderId: order.id,
         providerInvoiceId,
+        mode: alreadyPaid ? "recovery" : "initial",
         deliveryStatus: fulfillmentResult.status,
       });
     }
@@ -354,6 +362,17 @@ export async function POST(request: Request) {
   }
 
   if (outcome === "failed") {
+    if (order.status === "paid") {
+      console.info("Mono webhook ignored failed transition for paid order", {
+        paymentEventId: event.id,
+        orderId: order.id,
+        providerInvoiceId,
+        eventType,
+      });
+      await markPaymentEventProcessed(db, event.id);
+      return textResponse("OK");
+    }
+
     await markOrderAsFailed(db, order.id);
 
     if (paymentAttempt) {
@@ -381,6 +400,17 @@ export async function POST(request: Request) {
   }
 
   if (outcome === "expired") {
+    if (order.status === "paid") {
+      console.info("Mono webhook ignored expired transition for paid order", {
+        paymentEventId: event.id,
+        orderId: order.id,
+        providerInvoiceId,
+        eventType,
+      });
+      await markPaymentEventProcessed(db, event.id);
+      return textResponse("OK");
+    }
+
     await markOrderAsExpired(db, order.id);
 
     if (paymentAttempt) {
@@ -407,11 +437,13 @@ export async function POST(request: Request) {
     return textResponse("OK");
   }
 
-  await markOrderAsProcessing(db, order.id);
+  if (order.status !== "paid") {
+    await markOrderAsProcessing(db, order.id);
+  }
   if (paymentAttempt) {
     await updatePaymentAttemptStatus(db, {
       id: paymentAttempt.id,
-      status: "pending",
+      status: order.status === "paid" ? "paid" : "pending",
       providerOrderId: providerInvoiceId ?? paymentAttempt.providerOrderId,
       providerPaymentId: providerInvoiceId ?? paymentAttempt.providerPaymentId,
       rawStatus: eventType,
@@ -419,14 +451,23 @@ export async function POST(request: Request) {
     });
   }
 
-  console.info("Mono webhook order status transition", {
-    paymentEventId: event.id,
-    orderId: order.id,
-    providerInvoiceId,
-    from: order.status,
-    to: "processing",
-    eventType,
-  });
+  if (order.status !== "paid") {
+    console.info("Mono webhook order status transition", {
+      paymentEventId: event.id,
+      orderId: order.id,
+      providerInvoiceId,
+      from: order.status,
+      to: "processing",
+      eventType,
+    });
+  } else {
+    console.info("Mono webhook ignored non-final transition for paid order", {
+      paymentEventId: event.id,
+      orderId: order.id,
+      providerInvoiceId,
+      eventType,
+    });
+  }
 
   await markPaymentEventProcessed(db, event.id);
   return textResponse("OK");

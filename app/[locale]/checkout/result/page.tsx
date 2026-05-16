@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Container from "@/components/Container";
 import CheckoutResultClient from "@/components/checkout/CheckoutResultClient";
 import { resolveLocale } from "@/i18n/locale";
 import { isUuid } from "@/lib/server/security";
+import { getSupportEmail } from "@/lib/server/support";
 
 type CheckoutResultPageProps = {
   params: Promise<{ locale: string }>;
@@ -21,6 +23,7 @@ export default async function CheckoutResultPage({ params, searchParams }: Check
   if (!locale) {
     return null;
   }
+  const t = await getTranslations({ locale, namespace: "Pages.checkout.resultPage" });
 
   const query = await searchParams;
   const orderIdRaw = typeof query.orderId === "string" ? query.orderId.trim() : "";
@@ -30,7 +33,41 @@ export default async function CheckoutResultPage({ params, searchParams }: Check
     <section className="bg-soft min-h-[70vh]">
       <Container className="py-16 md:py-20">
         <div className="mx-auto max-w-4xl rounded-3xl border border-[#dfc2c0]/30 bg-white/75 p-8 md:p-10">
-          <CheckoutResultClient locale={locale} orderId={orderId} />
+          <CheckoutResultClient
+            locale={locale}
+            orderId={orderId}
+            supportEmail={getSupportEmail()}
+            copy={{
+              invalidOrder: t("invalidOrder"),
+              loading: t("loading"),
+              loadFailed: t("loadFailed"),
+              paidTitle: t("paidTitle"),
+              paidMessage: t("paidMessage"),
+              paidSecondary: t("paidSecondary"),
+              pendingTitle: t("pendingTitle"),
+              pendingMessage: t("pendingMessage"),
+              pendingSecondary: t("pendingSecondary"),
+              failedTitle: t("failedTitle"),
+              failedMessage: t("failedMessage"),
+              orderIdLabel: t("orderIdLabel"),
+              resendAccess: t("resendAccess"),
+              resendingAccess: t("resendingAccess"),
+              resendSuccess: t("resendSuccess"),
+              resendErrorGeneric: t("resendErrorGeneric"),
+              resendErrorUnavailable: t("resendErrorUnavailable"),
+              resendErrorRateLimited: t("resendErrorRateLimited"),
+              resendErrorOrderUnpaid: t("resendErrorOrderUnpaid"),
+              resendErrorDeliveryFailed: t("resendErrorDeliveryFailed"),
+              resendErrorCooldown: t("resendErrorCooldown"),
+              refreshStatus: t("refreshStatus"),
+              refreshingStatus: t("refreshingStatus"),
+              contactSupport: t("contactSupport"),
+              returnToProduct: t("returnToProduct"),
+              returnToShop: t("returnToShop"),
+              supportSubjectTemplate: t("supportSubjectTemplate"),
+              supportBodyTemplate: t("supportBodyTemplate"),
+            }}
+          />
         </div>
       </Container>
     </section>

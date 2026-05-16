@@ -362,6 +362,36 @@
       "pendingResult": {
         "title": "Payment received",
         "description": "We're verifying it now. Your access email will be sent after confirmation."
+      },
+      "resultPage": {
+        "invalidOrder": "Order ID is missing or invalid.",
+        "loading": "Checking payment status...",
+        "loadFailed": "Unable to load payment status right now.",
+        "paidTitle": "Payment successful",
+        "paidMessage": "We sent your template access link to your email.",
+        "paidSecondary": "Didn't receive the email? Try resending it or contact us.",
+        "pendingTitle": "Payment is being confirmed",
+        "pendingMessage": "This usually takes a few moments.",
+        "pendingSecondary": "If the email does not arrive, you can resend it after the payment is confirmed.",
+        "failedTitle": "Payment was not completed",
+        "failedMessage": "Try again or contact support.",
+        "orderIdLabel": "Order ID",
+        "resendAccess": "Resend access email",
+        "resendingAccess": "Resending...",
+        "resendSuccess": "Access email has been re-sent. Please check your inbox or spam folder.",
+        "resendErrorGeneric": "Unable to resend access right now.",
+        "resendErrorUnavailable": "Unable to resend access right now.",
+        "resendErrorRateLimited": "Too many requests. Please try again later.",
+        "resendErrorOrderUnpaid": "Payment was not confirmed for this order yet.",
+        "resendErrorDeliveryFailed": "Unable to send access email right now. Please try again later.",
+        "resendErrorCooldown": "Please wait before requesting another access email.",
+        "refreshStatus": "Refresh status",
+        "refreshingStatus": "Checking payment status...",
+        "contactSupport": "Contact support",
+        "returnToProduct": "Return to product",
+        "returnToShop": "Return to shop",
+        "supportSubjectTemplate": "Teti Betti order support — {orderId}",
+        "supportBodyTemplate": "Hello Teti Betti,\n\nI need help with my order.\n\nOrder ID: {orderId}\nIssue: I did not receive the template access email.\n\nThank you."
       }
     },
     "orderLookup": {
