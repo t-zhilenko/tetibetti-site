@@ -18,6 +18,28 @@ type SendTransactionalEmailInput = {
   params?: Record<string, string>;
 };
 
+type SendTransactionalEmailResult = {
+  providerMessageId: string | null;
+};
+
+const extractProviderMessageId = (responseText: string): string | null => {
+  try {
+    const parsed = JSON.parse(responseText) as { messageId?: unknown; messageIds?: unknown };
+
+    if (typeof parsed.messageId === "string" && parsed.messageId.trim()) {
+      return parsed.messageId.trim();
+    }
+
+    if (Array.isArray(parsed.messageIds) && typeof parsed.messageIds[0] === "string") {
+      return parsed.messageIds[0].trim();
+    }
+  } catch {
+    // Ignore parsing errors for best-effort provider message id extraction.
+  }
+
+  return null;
+};
+
 export const getBrevoEnv = () => {
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL;
@@ -71,7 +93,7 @@ export async function sendTransactionalEmail({
   senderEmail,
   senderName,
   params,
-}: SendTransactionalEmailInput) {
+}: SendTransactionalEmailInput): Promise<SendTransactionalEmailResult> {
   const body: Record<string, unknown> = {
     to: [{ email: toEmail }],
     templateId,
@@ -94,10 +116,16 @@ export async function sendTransactionalEmail({
     body: JSON.stringify(body),
   });
 
+  const responseText = await response.text().catch(() => "");
+  const providerMessageId = extractProviderMessageId(responseText);
+
   if (!response.ok) {
-    const errorText = await response.text().catch(() => "");
     throw new Error(
-      `Brevo SMTP error: ${response.status} ${errorText || ""}`.trim()
+      `Brevo SMTP error: ${response.status} ${responseText || ""}`.trim()
     );
   }
+
+  return {
+    providerMessageId,
+  };
 }

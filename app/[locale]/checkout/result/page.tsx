@@ -4,7 +4,6 @@ import Container from "@/components/Container";
 import CheckoutResultClient from "@/components/checkout/CheckoutResultClient";
 import { resolveLocale } from "@/i18n/locale";
 import { isUuid } from "@/lib/server/security";
-import { getSupportEmail } from "@/lib/server/support";
 
 type CheckoutResultPageProps = {
   params: Promise<{ locale: string }>;
@@ -36,7 +35,6 @@ export default async function CheckoutResultPage({ params, searchParams }: Check
           <CheckoutResultClient
             locale={locale}
             orderId={orderId}
-            supportEmail={getSupportEmail()}
             copy={{
               invalidOrder: t("invalidOrder"),
               loading: t("loading"),
@@ -50,8 +48,8 @@ export default async function CheckoutResultPage({ params, searchParams }: Check
               failedTitle: t("failedTitle"),
               failedMessage: t("failedMessage"),
               orderIdLabel: t("orderIdLabel"),
-              resendAccess: t("resendAccess"),
-              resendingAccess: t("resendingAccess"),
+              resendEmail: t("resendEmail"),
+              resendingEmail: t("resendingEmail"),
               resendSuccess: t("resendSuccess"),
               resendErrorGeneric: t("resendErrorGeneric"),
               resendErrorUnavailable: t("resendErrorUnavailable"),
@@ -62,6 +60,8 @@ export default async function CheckoutResultPage({ params, searchParams }: Check
               refreshStatus: t("refreshStatus"),
               refreshingStatus: t("refreshingStatus"),
               contactSupport: t("contactSupport"),
+              supportModalTitle: t("supportModalTitle"),
+              supportClose: t("supportClose"),
               returnToProduct: t("returnToProduct"),
               returnToShop: t("returnToShop"),
               supportSubjectTemplate: t("supportSubjectTemplate"),

@@ -6,6 +6,7 @@ import { mapMonoWebhookOutcome } from "@/lib/server/payments/mono-webhook";
 import { isFinalOrderStatus } from "@/lib/payments/status-helpers";
 import { findOrderByIdWithCustomerAndProduct } from "@/lib/server/repositories/orders";
 import { findLatestPaymentAttemptByOrderId } from "@/lib/server/repositories/paymentAttempts";
+import { findLatestEmailDeliveryByOrderId } from "@/lib/server/repositories/emailDeliveries";
 import { isUuid } from "@/lib/server/security";
 import {
   markOrderAsExpired,
@@ -15,6 +16,9 @@ import {
 } from "@/lib/server/repositories/orders";
 import { updatePaymentAttemptStatus } from "@/lib/server/repositories/paymentAttempts";
 
+const DELIVERY_TEMPLATE_TYPE = "paid_product_delivery";
+const RESEND_EMAIL_COOLDOWN_MS = 90 * 1000;
+
 const jsonResponse = (body: Record<string, unknown>, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
@@ -23,6 +27,17 @@ const jsonResponse = (body: Record<string, unknown>, status = 200) =>
       "cache-control": "no-store",
     },
   });
+
+const maskEmail = (value: string): string => {
+  const normalized = value.trim().toLowerCase();
+  const [localPart, domainPart] = normalized.split("@");
+  if (!localPart || !domainPart) {
+    return "***";
+  }
+
+  const visiblePrefix = localPart.length <= 2 ? localPart.slice(0, 1) : localPart.slice(0, 2);
+  return `${visiblePrefix}***@${domainPart}`;
+};
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -213,14 +228,46 @@ export async function GET(request: Request) {
       }
     }
 
+    const latestDelivery = await findLatestEmailDeliveryByOrderId(
+      db,
+      order.id,
+      DELIVERY_TEMPLATE_TYPE,
+    );
+    const latestDeliveryAgeMs = latestDelivery
+      ? Date.now() - Date.parse(latestDelivery.createdAt)
+      : Number.POSITIVE_INFINITY;
+    const withinCooldown =
+      Number.isFinite(latestDeliveryAgeMs) &&
+      latestDeliveryAgeMs >= 0 &&
+      latestDeliveryAgeMs < RESEND_EMAIL_COOLDOWN_MS;
+    const isDeliveryFailure =
+      order.fulfillmentStatus === "delivery_failed" || latestDelivery?.status === "failed";
+    const deliveryStatus =
+      order.status !== "paid"
+        ? null
+        : isDeliveryFailure
+          ? "delivery_failed"
+          : order.fulfillmentStatus === "delivered" || latestDelivery?.status === "sent"
+            ? "sent"
+            : "pending";
+    const canResendAccess =
+      order.status === "paid" &&
+      (!latestDelivery ||
+        isDeliveryFailure ||
+        latestDelivery.status !== "sent" ||
+        !withinCooldown);
+
     return jsonResponse({
       ok: true,
       orderId: order.id,
       status: order.status,
+      deliveryStatus,
+      emailMasked: maskEmail(order.customerEmail),
+      supportPrefillEmail: order.customerEmail,
+      productName: order.productName,
       productSlug: order.productSlug,
       paymentProvider: paymentAttempt?.provider ?? order.provider,
-      providerInvoiceId: paymentAttempt?.providerOrderId ?? null,
-      canResendAccess: order.status === "paid",
+      canResendAccess,
     });
   } catch (error) {
     console.error("Order status lookup failed", {

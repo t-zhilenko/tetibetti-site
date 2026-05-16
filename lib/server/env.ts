@@ -12,6 +12,7 @@ declare global {
     BREVO_API_KEY?: string;
     BREVO_SENDER_EMAIL?: string;
     BREVO_SENDER_NAME?: string;
+    BREVO_PAID_DELIVERY_TEMPLATE_ID?: string;
   }
 }
 
@@ -34,6 +35,7 @@ type RequiredBrevoEnv = {
   brevoApiKey: string;
   brevoSenderEmail: string;
   brevoSenderName: string;
+  paidDeliveryTemplateId: number | null;
 };
 
 export class MissingPaymentEnvError extends Error {
@@ -186,6 +188,8 @@ export const getRequiredBrevoEnv = async (): Promise<RequiredBrevoEnv> => {
   const brevoApiKey = env.BREVO_API_KEY ?? process.env.BREVO_API_KEY ?? "";
   const brevoSenderEmail = env.BREVO_SENDER_EMAIL ?? process.env.BREVO_SENDER_EMAIL ?? "";
   const brevoSenderName = env.BREVO_SENDER_NAME ?? process.env.BREVO_SENDER_NAME ?? "";
+  const paidTemplateIdRaw =
+    env.BREVO_PAID_DELIVERY_TEMPLATE_ID ?? process.env.BREVO_PAID_DELIVERY_TEMPLATE_ID ?? "";
 
   const missingKeys = [
     !brevoApiKey ? "BREVO_API_KEY" : "",
@@ -201,6 +205,13 @@ export const getRequiredBrevoEnv = async (): Promise<RequiredBrevoEnv> => {
     brevoApiKey,
     brevoSenderEmail,
     brevoSenderName,
+    paidDeliveryTemplateId: (() => {
+      if (!paidTemplateIdRaw.trim()) {
+        return null;
+      }
+      const parsed = Number.parseInt(paidTemplateIdRaw.trim(), 10);
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+    })(),
   };
 };
 

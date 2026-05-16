@@ -1,6 +1,6 @@
 "use client";
 
-import {useState, type FormEvent} from "react";
+import {useEffect, useState, type FormEvent} from "react";
 import {useTranslations} from "next-intl";
 import {trackEvent} from "@/lib/analytics";
 
@@ -8,6 +8,12 @@ type SupportFormVariant = "modal" | "inline";
 
 type SupportFormProps = {
   productSlug: string;
+  contextType?: "product_question" | "order_support";
+  orderId?: string;
+  subjectOverride?: string;
+  initialEmail?: string;
+  initialMessage?: string;
+  resetKey?: string;
   variant?: SupportFormVariant;
   className?: string;
   rows?: number;
@@ -26,6 +32,12 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SupportForm({
   productSlug,
+  contextType = "product_question",
+  orderId,
+  subjectOverride,
+  initialEmail = "",
+  initialMessage = "",
+  resetKey,
   variant = "modal",
   className,
   rows,
@@ -35,8 +47,8 @@ export default function SupportForm({
   analyticsEvent,
 }: SupportFormProps) {
   const t = useTranslations("Forms.support");
-  const [supportEmail, setSupportEmail] = useState("");
-  const [supportMessage, setSupportMessage] = useState("");
+  const [supportEmail, setSupportEmail] = useState(initialEmail);
+  const [supportMessage, setSupportMessage] = useState(initialMessage);
   const [supportTouched, setSupportTouched] = useState({
     email: false,
     message: false,
@@ -46,9 +58,17 @@ export default function SupportForm({
 
   const isInline = variant === "inline";
 
+  useEffect(() => {
+    setSupportEmail(initialEmail);
+    setSupportMessage(initialMessage);
+    setSupportTouched({email: false, message: false});
+    setSupportError("");
+    setSupportStatus("idle");
+  }, [initialEmail, initialMessage, resetKey]);
+
   const resetSupportForm = () => {
-    setSupportEmail("");
-    setSupportMessage("");
+    setSupportEmail(initialEmail);
+    setSupportMessage(initialMessage);
     setSupportTouched({email: false, message: false});
     setSupportError("");
     setSupportStatus("idle");
@@ -85,6 +105,9 @@ export default function SupportForm({
 
     const payload = {
       productSlug,
+      contextType,
+      orderId,
+      subject: subjectOverride,
       email: supportEmail.trim() || undefined,
       message: supportMessage.trim(),
       pageUrl: typeof window === "undefined" ? "" : window.location.href,

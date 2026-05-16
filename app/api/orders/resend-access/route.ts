@@ -96,6 +96,13 @@ export async function POST(request: Request) {
       );
     }
 
+    console.info("Resend-access order resolved", {
+      orderId: order.id,
+      status: order.status,
+      fulfillmentStatus: order.fulfillmentStatus,
+      hasCustomerEmail: Boolean(order.customerEmail),
+    });
+
     if (email && order.customerEmail.toLowerCase() !== email) {
       return jsonResponse(
         { ok: false, code: "ORDER_NOT_FOUND", message: "No paid order found" },
@@ -105,7 +112,7 @@ export async function POST(request: Request) {
 
     if (order.status !== "paid") {
       return jsonResponse(
-        { ok: false, code: "ORDER_UNPAID", message: "Order is not paid" },
+        { ok: false, code: "ORDER_UNPAID", message: "Payment is not confirmed yet." },
         409,
       );
     }
@@ -115,12 +122,19 @@ export async function POST(request: Request) {
       order.id,
       DELIVERY_TEMPLATE_TYPE,
     );
-    if (latestDelivery) {
+    const isDeliveryFailure =
+      order.fulfillmentStatus === "delivery_failed" || latestDelivery?.status === "failed";
+    if (latestDelivery && latestDelivery.status === "sent" && !isDeliveryFailure) {
       const createdAtMs = Date.parse(latestDelivery.createdAt);
       const deliveryAgeMs = Number.isFinite(createdAtMs)
         ? Date.now() - createdAtMs
         : Number.POSITIVE_INFINITY;
       if (deliveryAgeMs >= 0 && deliveryAgeMs < RESEND_EMAIL_COOLDOWN_MS) {
+        console.info("Resend-access blocked by cooldown", {
+          orderId: order.id,
+          latestDeliveryStatus: latestDelivery.status,
+          latestDeliveryCreatedAt: latestDelivery.createdAt,
+        });
         return jsonResponse(
           {
             ok: false,
@@ -139,21 +153,30 @@ export async function POST(request: Request) {
     });
 
     if (fulfillmentResult.status === "delivery_failed") {
+      console.error("Resend-access delivery failed", {
+        orderId: order.id,
+        fulfillmentStatus: order.fulfillmentStatus,
+      });
       return jsonResponse(
         {
           ok: false,
           code: "DELIVERY_FAILED",
-          message: "Unable to send access email right now. Please try again later.",
+          message: "We couldn’t resend the email. Please contact support and include your order ID.",
         },
         502,
       );
     }
 
+    console.info("Resend-access delivered", {
+      orderId: order.id,
+      resultStatus: fulfillmentResult.status,
+    });
+
     return jsonResponse({
       ok: true,
       orderId: order.id,
       status: fulfillmentResult.status,
-      message: "Access email sent if order is eligible.",
+      message: "We sent the email again. Please check your inbox and spam folder.",
     });
   } catch (error) {
     console.error("Resend-access failed", {

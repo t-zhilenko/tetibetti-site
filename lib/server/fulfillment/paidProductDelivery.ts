@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { getRequiredAppBaseUrl } from "@/lib/server/env";
 import {
-  PAID_PRODUCT_DELIVERY_TEMPLATE_ID,
+  DEFAULT_PAID_PRODUCT_DELIVERY_TEMPLATE_ID,
   sendPaidProductDeliveryEmail,
 } from "@/lib/server/delivery/brevo";
 import {
@@ -59,6 +59,27 @@ const shortenError = (value: unknown): string => {
   return text.slice(0, 500);
 };
 
+const classifyDeliveryFailureReason = (value: unknown): string => {
+  const message = shortenError(value).toLowerCase();
+
+  if (message.includes("missing brevo paid-delivery configuration")) {
+    return "missing_brevo_config";
+  }
+  if (message.includes("app_base_url")) {
+    return "missing_or_invalid_app_base_url";
+  }
+  if (message.includes("smtp error: 4")) {
+    return "brevo_api_rejected_payload";
+  }
+  if (message.includes("smtp error: 5")) {
+    return "brevo_provider_error";
+  }
+  if (message.includes("network") || message.includes("fetch")) {
+    return "brevo_network_error";
+  }
+  return "delivery_failed_unknown_reason";
+};
+
 const maskEmail = (value: string): string => {
   const normalized = value.trim().toLowerCase();
   const [localPart, domainPart] = normalized.split("@");
@@ -74,17 +95,42 @@ export const fulfillPaidProductDelivery = async (
   db: D1Database,
   input: FulfillPaidProductDeliveryInput,
 ): Promise<FulfillPaidProductDeliveryResult> => {
+  console.info("Paid delivery: start", {
+    orderId: input.orderId,
+    allowResendEmail: Boolean(input.allowResendEmail),
+    forceNewToken: Boolean(input.forceNewToken),
+  });
+
   const order = await findOrderByIdWithCustomerAndProduct(db, input.orderId);
   if (!order) {
+    console.error("Paid delivery: order not found", {
+      orderId: input.orderId,
+    });
     throw new Error(`Order not found for fulfillment: ${input.orderId}`);
   }
 
+  console.info("Paid delivery: order loaded", {
+    orderId: order.id,
+    status: order.status,
+    fulfillmentStatusBefore: order.fulfillmentStatus,
+    hasCustomerEmail: Boolean(order.customerEmail),
+    hasProductTargetUrl: Boolean(order.productTargetUrl),
+  });
+
   if (order.status !== "paid") {
+    console.info("Paid delivery: skipped unpaid order", {
+      orderId: order.id,
+      status: order.status,
+    });
     return { status: "skipped_unpaid" };
   }
 
   const existingToken = await findLatestActiveDeliveryTokenByOrderId(db, order.id);
   if (!input.allowResendEmail && order.fulfillmentStatus === "delivered" && existingToken) {
+    console.info("Paid delivery: skipped already delivered", {
+      orderId: order.id,
+      tokenId: existingToken.id,
+    });
     return {
       status: "skipped_already_delivered",
       tokenId: existingToken.id,
@@ -100,6 +146,15 @@ export const fulfillPaidProductDelivery = async (
       orderId: order.id,
       tokenHash: sha256Hex(tokenId),
     });
+    console.info("Paid delivery: access token created", {
+      orderId: order.id,
+      tokenIdPrefix: tokenId.slice(0, 8),
+    });
+  } else {
+    console.info("Paid delivery: access token reused", {
+      orderId: order.id,
+      tokenIdPrefix: tokenId.slice(0, 8),
+    });
   }
 
   const emailDelivery = await createEmailDelivery(db, {
@@ -112,20 +167,66 @@ export const fulfillPaidProductDelivery = async (
   });
 
   const supportEmail = getSupportEmail();
-  const maskedCustomerEmail = maskEmail(order.customerEmail);
+  const customerEmail = order.customerEmail.trim().toLowerCase();
+  const maskedCustomerEmail = maskEmail(customerEmail);
   let accessUrl = "";
+  let failureReason = "";
+
+  if (!customerEmail) {
+    failureReason = "missing_order_email";
+  } else if (!order.productName.trim()) {
+    failureReason = "missing_product_name";
+  } else if (!order.productTargetUrl) {
+    failureReason = "missing_product_template_link";
+  }
+
+  if (failureReason) {
+    await updateEmailDeliveryStatus(db, {
+      id: emailDelivery.id,
+      status: "failed",
+      providerMessageId: null,
+      lastError: failureReason,
+      attemptsCountIncrement: 1,
+      markSentNow: false,
+      markDeliveredNow: false,
+    });
+
+    await markOrderFulfillmentDeliveryFailed(db, order.id);
+
+    console.error("Paid delivery: precondition failed", {
+      orderId: order.id,
+      customerEmail: maskedCustomerEmail,
+      emailDeliveryId: emailDelivery.id,
+      reason: failureReason,
+      fulfillmentStatusAfter: "delivery_failed",
+    });
+
+    return {
+      status: "delivery_failed",
+      tokenId,
+      emailDeliveryId: emailDelivery.id,
+      reusedToken: shouldReuseToken,
+    };
+  }
 
   try {
     const appBaseUrl = await getRequiredAppBaseUrl();
     accessUrl = buildAccessUrl(appBaseUrl, tokenId);
+    console.info("Paid delivery: access URL built", {
+      orderId: order.id,
+      emailDeliveryId: emailDelivery.id,
+      hasAccessUrl: Boolean(accessUrl),
+      accessRoute: "/access/[token]",
+    });
   } catch (error) {
     const reason = shortenError(error);
+    const reasonCode = classifyDeliveryFailureReason(reason);
 
     await updateEmailDeliveryStatus(db, {
       id: emailDelivery.id,
       status: "failed",
       providerMessageId: null,
-      lastError: reason,
+      lastError: `${reasonCode}: ${reason}`,
       attemptsCountIncrement: 1,
       markSentNow: false,
       markDeliveredNow: false,
@@ -137,7 +238,9 @@ export const fulfillPaidProductDelivery = async (
       orderId: order.id,
       customerEmail: maskedCustomerEmail,
       emailDeliveryId: emailDelivery.id,
+      reasonCode,
       reason,
+      fulfillmentStatusAfter: "delivery_failed",
     });
 
     return {
@@ -151,15 +254,17 @@ export const fulfillPaidProductDelivery = async (
   console.info("Paid delivery: sending access email", {
     orderId: order.id,
     customerEmail: maskedCustomerEmail,
-    templateId: PAID_PRODUCT_DELIVERY_TEMPLATE_ID,
+    templateIdFallback: DEFAULT_PAID_PRODUCT_DELIVERY_TEMPLATE_ID,
+    deliveryTemplateType: DELIVERY_TEMPLATE_TYPE,
+    provider: DELIVERY_PROVIDER,
+    emailDeliveryId: emailDelivery.id,
     hasAccessUrl: Boolean(accessUrl),
-    accessRoute: "/access/[token]",
     reusedToken: shouldReuseToken,
   });
 
   const sendResult = await sendPaidProductDeliveryEmail({
     orderId: order.id,
-    customerEmail: order.customerEmail,
+    customerEmail,
     accessUrl,
     productName: order.productName,
     supportEmail,
@@ -184,6 +289,7 @@ export const fulfillPaidProductDelivery = async (
       templateId: sendResult.templateId,
       providerMessageId: sendResult.providerMessageId,
       emailDeliveryId: emailDelivery.id,
+      fulfillmentStatusAfter: "delivered",
     });
 
     return {
@@ -198,7 +304,7 @@ export const fulfillPaidProductDelivery = async (
     id: emailDelivery.id,
     status: "failed",
     providerMessageId: sendResult.providerMessageId,
-    lastError: sendResult.error,
+    lastError: `${classifyDeliveryFailureReason(sendResult.error)}: ${sendResult.error}`,
     attemptsCountIncrement: 1,
     markSentNow: false,
     markDeliveredNow: false,
@@ -212,7 +318,9 @@ export const fulfillPaidProductDelivery = async (
     templateId: sendResult.templateId,
     providerMessageId: sendResult.providerMessageId,
     emailDeliveryId: emailDelivery.id,
+    reasonCode: classifyDeliveryFailureReason(sendResult.error),
     reason: shortenError(sendResult.error),
+    fulfillmentStatusAfter: "delivery_failed",
   });
 
   return {

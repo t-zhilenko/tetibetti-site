@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/components/cart/CartContext";
+import Modal from "@/components/Modal";
+import SupportForm from "@/components/SupportForm";
 
 type CheckoutResultClientProps = {
   locale: "en" | "uk";
   orderId: string | null;
-  supportEmail: string;
   copy: CheckoutResultCopy;
 };
 
@@ -15,9 +16,12 @@ type OrderStatusSuccessResponse = {
   ok: true;
   orderId: string;
   status: "initiated" | "processing" | "paid" | "failed" | "expired" | "manual_review";
+  deliveryStatus: "pending" | "sent" | "delivery_failed" | null;
+  emailMasked: string;
+  supportPrefillEmail: string;
+  productName: string;
   productSlug: string;
   paymentProvider: string | null;
-  providerInvoiceId: string | null;
   canResendAccess?: boolean;
 };
 
@@ -58,8 +62,8 @@ export type CheckoutResultCopy = {
   failedTitle: string;
   failedMessage: string;
   orderIdLabel: string;
-  resendAccess: string;
-  resendingAccess: string;
+  resendEmail: string;
+  resendingEmail: string;
   resendSuccess: string;
   resendErrorGeneric: string;
   resendErrorUnavailable: string;
@@ -70,6 +74,8 @@ export type CheckoutResultCopy = {
   refreshStatus: string;
   refreshingStatus: string;
   contactSupport: string;
+  supportModalTitle: string;
+  supportClose: string;
   returnToProduct: string;
   returnToShop: string;
   supportSubjectTemplate: string;
@@ -117,7 +123,6 @@ const applyOrderIdTemplate = (template: string, orderId: string): string =>
 export default function CheckoutResultClient({
   locale,
   orderId,
-  supportEmail,
   copy,
 }: CheckoutResultClientProps) {
   const { clearCart } = useCart();
@@ -128,6 +133,8 @@ export default function CheckoutResultClient({
   const [resendMessage, setResendMessage] = useState<string | null>(null);
   const [resendError, setResendError] = useState<string | null>(null);
   const [isResending, setIsResending] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [supportResetKey, setSupportResetKey] = useState(0);
   const [autoRefreshAttempts, setAutoRefreshAttempts] = useState(0);
   const hasClearedCartRef = useRef(false);
 
@@ -190,9 +197,8 @@ export default function CheckoutResultClient({
   const supportOrderId = orderId ?? "unknown";
   const supportSubject = applyOrderIdTemplate(copy.supportSubjectTemplate, supportOrderId);
   const supportBody = applyOrderIdTemplate(copy.supportBodyTemplate, supportOrderId);
-  const supportHref = `mailto:${supportEmail}?subject=${encodeURIComponent(supportSubject)}&body=${encodeURIComponent(supportBody)}`;
 
-  const canResendAccess = uiState === "paid" && isSuccessResponse(data) && data.canResendAccess !== false;
+  const canResendAccess = uiState === "paid" && isSuccessResponse(data);
 
   useEffect(() => {
     if (uiState !== "pending") {
@@ -258,6 +264,11 @@ export default function CheckoutResultClient({
     }
   }, [canResendAccess, copy, orderId]);
 
+  const handleSupportOpen = useCallback(() => {
+    setSupportResetKey((value) => value + 1);
+    setIsSupportOpen(true);
+  }, []);
+
   if (!orderId) {
     return <p className="text-sm text-[#9f4d4d]">{copy.invalidOrder}</p>;
   }
@@ -303,7 +314,7 @@ export default function CheckoutResultClient({
             onClick={() => void handleResendAccess()}
             className="inline-flex h-11 items-center rounded-full border border-[#dfc2c0]/55 bg-[#dfc2c0]/78 px-5 text-sm text-deep transition-colors hover:bg-[#dfc2c0]/88 disabled:opacity-70"
           >
-            {isResending ? copy.resendingAccess : copy.resendAccess}
+            {isResending ? copy.resendingEmail : copy.resendEmail}
           </button>
         ) : null}
 
@@ -326,17 +337,34 @@ export default function CheckoutResultClient({
           </Link>
         ) : null}
 
-        <a
-          href={supportHref}
+        <button
+          type="button"
+          onClick={handleSupportOpen}
           className="inline-flex h-11 items-center rounded-full border border-[#dfc2c0]/45 px-5 text-sm text-deep/82 transition-colors hover:bg-white/60"
         >
           {copy.contactSupport}
-        </a>
+        </button>
       </div>
 
       {uiState === "pending" && (isRefreshing || autoRefreshAttempts < AUTO_REFRESH_MAX_ATTEMPTS) ? (
         <p className="text-xs text-deep/55">{copy.refreshingStatus}</p>
       ) : null}
+
+      <Modal open={isSupportOpen} title={copy.supportModalTitle} onClose={() => setIsSupportOpen(false)}>
+        <SupportForm
+          resetKey={`${supportResetKey}`}
+          productSlug={isSuccessResponse(data) ? data.productSlug : "order-support"}
+          contextType="order_support"
+          orderId={orderId ?? undefined}
+          subjectOverride={supportSubject}
+          initialEmail={isSuccessResponse(data) ? data.supportPrefillEmail : ""}
+          initialMessage={supportBody}
+          variant="modal"
+          showSuccessAction
+          successActionLabel={copy.supportClose}
+          onSuccessAction={() => setIsSupportOpen(false)}
+        />
+      </Modal>
     </div>
   );
 }

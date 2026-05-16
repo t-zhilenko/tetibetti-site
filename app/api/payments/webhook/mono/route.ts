@@ -248,6 +248,16 @@ export async function POST(request: Request) {
     return textResponse("OK");
   }
 
+  console.info("Mono webhook order resolved", {
+    paymentEventId: event.id,
+    orderId: order.id,
+    status: order.status,
+    fulfillmentStatus: order.fulfillmentStatus,
+    hasCustomerEmail: Boolean(order.customerEmail),
+    hasProductName: Boolean(order.productName),
+    hasProductTargetUrl: Boolean(order.productTargetUrl),
+  });
+
   if (modifiedDateMs !== null && paymentAttempt) {
     const storedModifiedDateMs = extractStoredModifiedDateMs(paymentAttempt.payloadJson);
     if (storedModifiedDateMs !== null && modifiedDateMs < storedModifiedDateMs) {
@@ -333,19 +343,29 @@ export async function POST(request: Request) {
         providerInvoiceId,
       });
     } else {
-      const fulfillmentResult = await fulfillPaidProductDelivery(db, {
-        orderId: order.id,
-        allowResendEmail: false,
-        forceNewToken: false,
-      });
+      try {
+        const fulfillmentResult = await fulfillPaidProductDelivery(db, {
+          orderId: order.id,
+          allowResendEmail: false,
+          forceNewToken: false,
+        });
 
-      console.info("Mono webhook delivery processed", {
-        paymentEventId: event.id,
-        orderId: order.id,
-        providerInvoiceId,
-        mode: alreadyPaid ? "recovery" : "initial",
-        deliveryStatus: fulfillmentResult.status,
-      });
+        console.info("Mono webhook delivery processed", {
+          paymentEventId: event.id,
+          orderId: order.id,
+          providerInvoiceId,
+          mode: alreadyPaid ? "recovery" : "initial",
+          deliveryStatus: fulfillmentResult.status,
+        });
+      } catch (error) {
+        console.error("Mono webhook delivery execution failed", {
+          paymentEventId: event.id,
+          orderId: order.id,
+          providerInvoiceId,
+          mode: alreadyPaid ? "recovery" : "initial",
+          message: error instanceof Error ? error.message : "Unknown delivery execution error",
+        });
+      }
     }
 
     console.info("Mono webhook order status transition", {
