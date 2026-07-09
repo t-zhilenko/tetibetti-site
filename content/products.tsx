@@ -252,6 +252,7 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
         type: "download",
         label: "Download",
         helperText: "Works with the free version of Notion.",
+        endpoint: "/api/brevo/yearly-goals-download",
       },
       description:
         "A calm, structured Notion system for planning your year with clarity and intention. Break bigger goals into focused quarters, connected projects, and meaningful daily steps.",
@@ -533,12 +534,18 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
       tags: ["NUTRITION TRACKING", "MINIMAL SYSTEM", "BODY AWARENESS", "CALM STRUCTURE"],
       tagline:
         "A simple Notion tracker for body check-ins and automatic nutrition targets. Track your progress with minimal effort, clear dashboards, and a calm, supportive structure.",
-      statusBadgeText: "",
       description:
         "A simple Notion body and nutrition tracker with weekly check-ins, automatic calorie and macro targets, and a calm dashboard designed for everyday use.",
       shortDescription:
         "A simple Notion tracker for body check-ins and automatic nutrition targets.",
-      badge: { label: "Paid template", tone: "soft" },
+      statusBadgeText: "FREE DOWNLOAD",
+      primaryCta: {
+        type: "download",
+        label: "Download",
+        helperText: "Works with the free version of Notion.",
+        endpoint: "/api/brevo/body-nutrition-download",
+      },
+      badge: { label: "Free download", tone: "soft" },
       bullets: [
         "Weekly check-ins with weight, measurements, and optional body signals",
         "Automatic calorie and macro calculation",
@@ -549,32 +556,10 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
         "Multiple profiles supported",
         "Only 2 inputs. No overwhelm.",
       ],
-      cta: "Add to cart",
-      priceLabel: "$9",
-      purchase: {
-        type: "paid",
-        price: 9,
-        currency: "USD",
-        checkoutMode: "modal",
-        checkoutEnabled: true,
-        note: "Simple one-time purchase",
-        helperText: "Instant access after checkout.",
-        trustText: "Checkout continues in your cart.",
-        ctaLabel: "Add to cart",
-        emailSubmitLabel: "Notify me",
-        emailHelperText: "Leave your email to be first to know when checkout opens.",
-        interestEndpoint: "/api/brevo/subscribe",
-        promoEnabled: true,
-        modalTitle: "Checkout is coming soon",
-        modalLines: [
-          "Secure payment will be available here shortly.",
-          "Leave your email and we'll let you know when checkout goes live.",
-        ],
-        modalSuccessLines: [
-          "You're on the checkout early-access list.",
-          "We'll email you when secure checkout is live.",
-        ],
-      },
+      cta: "Download",
+      ctaLabel: "Download",
+      ctaNote: "Works with the free version of Notion.",
+      priceLabel: "Free download",
       detailsAccordion: [
         {
           id: "who-its-for",
@@ -972,12 +957,18 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
       tags: ["ТРЕКІНГ ХАРЧУВАННЯ", "МІНІМАЛЬНА СИСТЕМА", "УСВІДОМЛЕНІСТЬ ТІЛА", "СПОКІЙНА СТРУКТУРА"],
       tagline:
         "Простий Notion-трекер для щотижневих чек-інів і автоматичного розрахунку цілей харчування. Відстежуйте прогрес без перевантаження у спокійній, підтримувальній системі.",
-      statusBadgeText: "",
       description:
         "Простий Notion-трекер для тіла й харчування: щотижневі чек-іни, автоматичний розрахунок калорій і макросів та спокійний дашборд для щоденного використання.",
       shortDescription:
         "Простий Notion-трекер для чек-інів тіла й автоматичних цілей харчування.",
-      badge: { label: "Платний шаблон", tone: "soft" },
+      statusBadgeText: "БЕЗКОШТОВНО",
+      primaryCta: {
+        type: "download",
+        label: "Завантажити",
+        helperText: "Працює у безкоштовній версії Notion.",
+        endpoint: "/api/brevo/body-nutrition-download",
+      },
+      badge: { label: "Безкоштовно", tone: "soft" },
       bullets: [
         "Щотижневі чек-іни: вага, виміри та, за бажанням, сигнали тіла",
         "Автоматичний розрахунок калорій і макросів",
@@ -988,32 +979,10 @@ const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocaliz
         "Підтримка кількох профілів",
         "Лише 2 поля. Без перевантаження.",
       ],
-      cta: "Додати в кошик",
-      priceLabel: "$9",
-      purchase: {
-        type: "paid",
-        price: 9,
-        currency: "USD",
-        checkoutMode: "modal",
-        checkoutEnabled: true,
-        note: "Разова покупка",
-        helperText: "Миттєвий доступ після оформлення.",
-        trustText: "Оформлення продовжується у кошику.",
-        ctaLabel: "Додати в кошик",
-        emailSubmitLabel: "Повідомте мене",
-        emailHelperText: "Залиште email, щоб першими дізнатися про запуск checkout.",
-        interestEndpoint: "/api/brevo/subscribe",
-        promoEnabled: true,
-        modalTitle: "Checkout незабаром",
-        modalLines: [
-          "Безпечна оплата буде доступна тут зовсім скоро.",
-          "Залиште email і ми повідомимо, коли checkout запрацює.",
-        ],
-        modalSuccessLines: [
-          "Ви у списку раннього доступу до checkout.",
-          "Ми напишемо вам, коли безпечна оплата стане доступною.",
-        ],
-      },
+      cta: "Завантажити",
+      ctaLabel: "Завантажити",
+      ctaNote: "Працює у безкоштовній версії Notion.",
+      priceLabel: "Безкоштовно",
       detailsAccordion: [
         {
           id: "who-its-for",

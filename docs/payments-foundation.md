@@ -1,5 +1,12 @@
 # Payments Foundation
 
+> **Status: disabled.** All products are free downloads (Brevo email-capture flow, see
+> `content/products.tsx` `primaryCta.endpoint` + `lib/brevo/config.ts`). The Fondy/Monobank
+> code below is kept in the repo for history/reference but its entry points
+> (`/api/checkout/start-payment`, `/api/checkout/start-fondy`,
+> `/api/payments/webhook/fondy`, `/api/payments/webhook/mono`) are stubbed to return
+> `410` and no longer execute. Do not rely on this document for current checkout behavior.
+
 ## What Was Added
 
 - Cloudflare D1 binding configuration in `wrangler.toml`.

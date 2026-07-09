@@ -1,6 +1,7 @@
 export type BrevoActionKey =
   | "subscribe"
   | "yearly_goals_download"
+  | "body_nutrition_download"
   | "nutrition_waitlist"
   | "body_nutrition_waitlist";
 
@@ -19,7 +20,7 @@ export const brevoConfig = {
     nutritionWaitlist: 7,
   },
   templates: {
-    yearlyGoalsDownload: 2,
+    productDownload: 6,
     nutritionWaitlist: 5,
   },
   actions: {
@@ -30,7 +31,22 @@ export const brevoConfig = {
     yearly_goals_download: {
       listIdsToAdd: [3, 6],
       tagsToAdd: ["source:website", "product:yearly-goals", "intent:download"],
-      sendTemplateId: 2,
+      sendTemplateId: 6,
+      templateParams: {
+        product_name: "Yearly Goals",
+        access_url:
+          "https://teti-studio.notion.site/Yearly-Goals-b1ff0b2ed5c2825a9c3c01fdba76beb9?source=copy_link",
+      },
+    },
+    body_nutrition_download: {
+      listIdsToAdd: [3],
+      tagsToAdd: ["source:website", "product:body-and-nutrition-tracker", "intent:download"],
+      sendTemplateId: 6,
+      templateParams: {
+        product_name: "Body & Nutrition Tracker",
+        access_url:
+          "https://teti-studio.notion.site/Body-Nutrition-Tracker-33af0b2ed5c280cdb792d9a6efd823b0?source=copy_link",
+      },
     },
     nutrition_waitlist: {
       listIdsToAdd: [3, 7],

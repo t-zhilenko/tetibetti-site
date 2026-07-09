@@ -38,7 +38,7 @@ export const PRODUCTS: ReadonlyArray<ProductConfig> = [
   {
     slug: "body-and-nutrition-tracker",
     name: "Body & Nutrition Tracker",
-    priceMinor: 900,
+    priceMinor: 0,
     currency: "USD",
     deliveryType: "token_link",
     targetUrl: null,

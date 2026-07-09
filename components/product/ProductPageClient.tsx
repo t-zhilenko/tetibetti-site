@@ -274,7 +274,7 @@ export default function ProductPageClient({product, allProducts}: ProductPageCli
             <EmailCaptureForm
               key={isModalOpen ? "open" : "closed"}
               variant="download"
-              endpoint="/api/brevo/yearly-goals-download"
+              endpoint={primaryCta.endpoint ?? "/api/brevo/yearly-goals-download"}
               submitLabel={t("sendMeLink")}
               submittingLabel={t("sending")}
               introText={t("downloadModalIntro")}

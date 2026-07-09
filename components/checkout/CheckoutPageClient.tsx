@@ -407,12 +407,14 @@ export default function CheckoutPageClient({initialProduct}: CheckoutPageClientP
                   </a>
                 )}
 
-                <p className="mt-4 inline-flex items-center text-[12px] text-deep/54">
-                  <LockKeyhole size={12} className="mr-1.5" />
-                  {locale === "uk"
-                    ? "Оплата відбудеться на захищеній сторінці MonoPay. Доступ надійде на email."
-                    : "You'll complete payment on a secure MonoPay page. Access is delivered by email."}
-                </p>
+                {isPaidCheckout ? (
+                  <p className="mt-4 inline-flex items-center text-[12px] text-deep/54">
+                    <LockKeyhole size={12} className="mr-1.5" />
+                    {locale === "uk"
+                      ? "Оплата відбудеться на захищеній сторінці MonoPay. Доступ надійде на email."
+                      : "You'll complete payment on a secure MonoPay page. Access is delivered by email."}
+                  </p>
+                ) : null}
 
                 {!isPaidCheckout ? (
                   <p className="mt-2 text-[12px] text-deep/56">
