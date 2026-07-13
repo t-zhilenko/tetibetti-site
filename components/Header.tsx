@@ -1,11 +1,16 @@
 "use client";
 
+import {useRef} from "react";
 import {Instagram, Pin, Search, ShoppingBag, Youtube, Send} from "lucide-react";
 import {useLocale, useTranslations} from "next-intl";
 import Container from "@/components/Container";
 import {useCart} from "@/components/cart/CartContext";
 import {routing, type Locale} from "@/i18n/routing";
 import {Link, usePathname, useRouter} from "@/i18n/navigation";
+
+const HIDDEN_ENTRY_URL = "https://studio.tetibetti.com";
+const HIDDEN_ENTRY_CLICK_THRESHOLD = 5;
+const HIDDEN_ENTRY_CLICK_WINDOW_MS = 2000;
 
 const socialLinks = [
   {
@@ -46,6 +51,25 @@ export default function Header() {
   const locale = useLocale() as Locale;
   const router = useRouter();
   const {itemCount, openCart} = useCart();
+  const logoClickCountRef = useRef(0);
+  const logoClickTimerRef = useRef<number | null>(null);
+
+  const handleLogoClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    logoClickCountRef.current += 1;
+
+    if (logoClickTimerRef.current) {
+      window.clearTimeout(logoClickTimerRef.current);
+    }
+    logoClickTimerRef.current = window.setTimeout(() => {
+      logoClickCountRef.current = 0;
+    }, HIDDEN_ENTRY_CLICK_WINDOW_MS);
+
+    if (logoClickCountRef.current >= HIDDEN_ENTRY_CLICK_THRESHOLD) {
+      event.preventDefault();
+      logoClickCountRef.current = 0;
+      window.open(HIDDEN_ENTRY_URL, "_blank", "noopener,noreferrer");
+    }
+  };
 
   const isActive = (href: string) => {
     if (href === "/") {
@@ -70,6 +94,7 @@ export default function Header() {
             </div>
             <Link
               href="/"
+              onClick={handleLogoClick}
               className="text-center text-[32px] sm:text-[34px] font-script text-deep/75"
             >
               Teti Betti
