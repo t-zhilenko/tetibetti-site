@@ -6,6 +6,11 @@ import {SALE_CHANNEL_URL, saleItemPhoto, saleItems} from "@/content/sale";
 import {resolveLocale} from "@/i18n/locale";
 import {buildLocalizedPageMetadata} from "@/i18n/metadata";
 
+// Rendered on demand like the home and shop pages: on Cloudflare the prerendered
+// variant ships an empty shell and fills the content client-side, which hides the
+// catalogue from crawlers that do not run JavaScript.
+export const dynamic = "force-dynamic";
+
 type SalePageProps = {
   params: Promise<{locale: string}>;
 };
