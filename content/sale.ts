@@ -20,6 +20,10 @@ export type SaleItem = {
 // Куди ведуть кнопки «Написати в Telegram». Має бути особистий акаунт, не канал.
 export const SALE_TELEGRAM_USERNAME = "tzhilenko";
 
+// Канал «Теті продає»: анонси нових речей і дропів.
+export const SALE_CHANNEL_HANDLE = "tetiprodae";
+export const SALE_CHANNEL_URL = `https://t.me/${SALE_CHANNEL_HANDLE}`;
+
 export const SALE_CATEGORIES: {key: SaleCategory; label: string}[] = [
   {key: "clothes", label: "Одяг"},
   {key: "sport", label: "Спорт і зима"},

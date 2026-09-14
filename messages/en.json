@@ -48,7 +48,7 @@
       "eyebrow": "Mindful consumption and calm systems",
       "title": "A second life for things.",
       "titleAccent": "Clarity for plans.",
-      "description": "I believe in mindful consumption, so the things I no longer need are on sale right here on my site: branded clothes, lingerie, winter sports gear. I'd love for them to find a second life and be useful to someone.",
+      "description": "I believe in mindful consumption, so the things I no longer need are on sale right here on my site: branded clothes in natural fabrics, lingerie, winter sports gear, and later second-hand finds and home items. I'd love for them to find a second life and be useful to someone.",
       "saleNote": "And for those who like order in their plans, my minimal Notion templates and notes on purpose, growth and alignment live here too.",
       "saleCta": "Wardrobe sale",
       "primaryCta": "Notion templates",
@@ -63,9 +63,10 @@
     "sale": {
       "label": "Wardrobe sale",
       "title": "A lighter wardrobe.",
-      "description": "{count} pieces from my wardrobe: branded clothes, lingerie, winter sports gear. Sizes XS–S, honest condition, open to offers. Listings are in Ukrainian.",
+      "description": "{count} pieces from my wardrobe: branded clothes in natural fabrics, lingerie, winter sports gear. Second-hand finds and home items coming later. Sizes XS–S, honest condition, open to offers. Listings are in Ukrainian.",
       "open": "View",
-      "viewAll": "See the whole sale"
+      "viewAll": "See the whole sale",
+      "channel": "«Teti sells» channel on Telegram"
     },
     "subscription": {
       "label": "STAY IN FLOW",

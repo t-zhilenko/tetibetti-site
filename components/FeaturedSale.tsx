@@ -2,7 +2,7 @@ import {useTranslations} from "next-intl";
 import Container from "@/components/Container";
 import SaleCarousel from "@/components/sale/SaleCarousel";
 import {VIEW_ALL_BUTTON_CLASS} from "@/components/view-all-button-class";
-import {saleItems} from "@/content/sale";
+import {SALE_CHANNEL_URL, saleItems} from "@/content/sale";
 import {Link} from "@/i18n/navigation";
 
 export default function FeaturedSale() {
@@ -24,10 +24,18 @@ export default function FeaturedSale() {
         <div className="mt-6">
           <SaleCarousel items={items} ctaLabel={t("open")} />
         </div>
-        <div className="mt-10 flex justify-center">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link href="/rozprodazh" className={VIEW_ALL_BUTTON_CLASS}>
             {t("viewAll")}
           </Link>
+          <a
+            href={SALE_CHANNEL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={VIEW_ALL_BUTTON_CLASS}
+          >
+            {t("channel")}
+          </a>
         </div>
       </Container>
     </section>

@@ -1,7 +1,8 @@
 import type {Metadata} from "next";
 import Container from "@/components/Container";
 import SaleCatalog from "@/components/sale/SaleCatalog";
-import {saleItemPhoto, saleItems} from "@/content/sale";
+import {Send} from "lucide-react";
+import {SALE_CHANNEL_URL, saleItemPhoto, saleItems} from "@/content/sale";
 import {resolveLocale} from "@/i18n/locale";
 import {buildLocalizedPageMetadata} from "@/i18n/metadata";
 
@@ -20,6 +21,10 @@ const keywords = [
   "речі з шафи",
   "жіночий одяг б/у",
   "брендовий одяг вживаний",
+  "натуральні тканини шовк льон вовна",
+  "знахідки із секонду",
+  "речі для дому б/у",
+  "Теті продає",
   "Victoria's Secret б/у",
   "Guess б/у",
   "Levi's б/у",
@@ -56,8 +61,9 @@ export async function generateMetadata({params}: SalePageProps): Promise<Metadat
 }
 
 const terms = [
-  "Речі з моєї шафи, які більше не ношу: брендовий одяг, білизна, зимовий спорт у стані б/у від «як новий» до «гарний». Більшість розмірів XS–S, решта вказана в картці.",
+  "Речі з моєї шафи, які більше не ношу: брендовий одяг, білизна, зимовий спорт у стані б/у від «як новий» до «гарний». Більшість розмірів XS–S, решта вказана в картці. Віддаю перевагу приємним і натуральним тканинам: шовк, льон, вовна.",
   "Це мій особистий секонд-хенд, а не магазин: кожну річ носила сама, стан описаний чесно, дефекти зняті окремо. Ціни орієнтовні, торг доречний, особливо за кілька речей разом.",
+  "З часом тут з'являться і мої знахідки із секондів, які відбираю сама, а також побутові речі не з одягу, якими ми користувались і вирішили продати.",
   "Відправляю Новою поштою по Україні за тарифами пошти. Самовивіз за домовленістю.",
   "Щоб купити, натисніть «Написати в Telegram» під річчю: повідомлення з номером уже буде заповнене.",
 ];
@@ -119,6 +125,15 @@ export default async function SalePage({params}: SalePageProps) {
               <p key={line}>{line}</p>
             ))}
           </div>
+          <a
+            href={SALE_CHANNEL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full border border-deep/10 bg-blush/60 px-5 py-2.5 text-[13px] font-medium text-deep/80 transition-colors hover:bg-blush/70"
+          >
+            <Send size={15} />
+            Канал «Теті продає»: нові речі й дропи
+          </a>
         </div>
 
         <div className="mt-8 md:mt-10">
