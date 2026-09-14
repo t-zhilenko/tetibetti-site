@@ -8,6 +8,9 @@ import {useCart} from "@/components/cart/CartContext";
 import {routing, type Locale} from "@/i18n/routing";
 import {Link, usePathname, useRouter} from "@/i18n/navigation";
 
+// The cart is hidden while every product is a free download and the wardrobe
+// sale is sold through Telegram; flip this back on with the next paid product.
+const CART_ENABLED = false;
 const HIDDEN_ENTRY_URL = "https://studio.tetibetti.com";
 const HIDDEN_ENTRY_CLICK_THRESHOLD = 5;
 const HIDDEN_ENTRY_CLICK_WINDOW_MS = 2000;
@@ -113,21 +116,23 @@ export default function Header() {
                   <item.Icon size={16} strokeWidth={1.5} />
                 </Link>
               ))}
-              <button
-                type="button"
-                aria-label={common("cart")}
-                className="relative inline-flex hover:text-deep/85"
-                onClick={openCart}
-              >
-                <ShoppingBag size={16} strokeWidth={1.5} />
-                {itemCount > 0 ? (
-                  <span className="absolute -top-2 -right-2 inline-flex min-h-4 min-w-4 items-center justify-center rounded-full border border-white/80 bg-deep/72 px-1 text-[9px] font-medium leading-none text-white">
-                    {itemCount}
-                  </span>
-                ) : (
-                  <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-deep/45" />
-                )}
-              </button>
+              {CART_ENABLED ? (
+                <button
+                  type="button"
+                  aria-label={common("cart")}
+                  className="relative inline-flex hover:text-deep/85"
+                  onClick={openCart}
+                >
+                  <ShoppingBag size={16} strokeWidth={1.5} />
+                  {itemCount > 0 ? (
+                    <span className="absolute -top-2 -right-2 inline-flex min-h-4 min-w-4 items-center justify-center rounded-full border border-white/80 bg-deep/72 px-1 text-[9px] font-medium leading-none text-white">
+                      {itemCount}
+                    </span>
+                  ) : (
+                    <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-deep/45" />
+                  )}
+                </button>
+              ) : null}
             </div>
           </div>
         </Container>
