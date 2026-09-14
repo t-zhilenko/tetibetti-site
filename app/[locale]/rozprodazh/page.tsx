@@ -60,12 +60,14 @@ export async function generateMetadata({params}: SalePageProps): Promise<Metadat
   };
 }
 
-const terms = [
-  "Речі з моєї шафи, які більше не ношу: брендовий одяг, білизна, зимовий спорт у стані б/у від «як новий» до «гарний». Більшість розмірів XS–S, решта вказана в картці. Віддаю перевагу приємним і натуральним тканинам: шовк, льон, вовна.",
-  "Це мій особистий секонд-хенд, а не магазин: кожну річ носила сама, стан описаний чесно, дефекти зняті окремо. Ціни орієнтовні, торг доречний, особливо за кілька речей разом.",
+const lead =
+  "Брендовий одяг із натуральних тканин, білизна і зимовий спорт із моєї шафи, стан б/у від «як новий» до «гарний». Розміри переважно XS–S, торг доречний, Нова пошта по Україні. Щоб купити, тисніть «Написати в Telegram» під річчю.";
+
+const details = [
+  "Це мій особистий секонд-хенд, а не магазин: кожну річ носила сама, стан описаний чесно, дефекти зняті окремо. Ціни орієнтовні, особливо за кілька речей разом можна домовитись.",
+  "Віддаю перевагу приємним і натуральним тканинам: шовк, льон, вовна. Розмір, якого немає в картці, уточню в чаті.",
   "З часом тут з'являться і мої знахідки із секондів, які відбираю сама, а також побутові речі не з одягу, якими ми користувались і вирішили продати.",
-  "Відправляю Новою поштою по Україні за тарифами пошти. Самовивіз за домовленістю.",
-  "Щоб купити, натисніть «Написати в Telegram» під річчю: повідомлення з номером уже буде заповнене.",
+  "Відправляю Новою поштою по Україні за тарифами пошти. Самовивіз за домовленістю. Повідомлення з номером речі заповнюється саме.",
 ];
 
 const buildStructuredData = (locale: string) => {
@@ -120,11 +122,18 @@ export default async function SalePage({params}: SalePageProps) {
           <h1 className="text-3xl md:text-4xl leading-[1.1] tracking-[-0.02em] text-deep/90">
             Розпродаж брендових речей б/у: {available} речей шукають нових господарів
           </h1>
-          <div className="space-y-2 text-[13px] md:text-[15px] leading-relaxed text-deep/75">
-            {terms.map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
+          <p className="text-[13px] md:text-[15px] leading-relaxed text-deep/75">{lead}</p>
+          <details className="group text-[13px] md:text-[15px] leading-relaxed text-deep/75">
+            <summary className="cursor-pointer list-none text-[13px] text-deep/55 underline decoration-deep/25 underline-offset-4 hover:text-deep [&::-webkit-details-marker]:hidden">
+              <span className="group-open:hidden">Докладніше про стан, доставку і що буде далі</span>
+              <span className="hidden group-open:inline">Згорнути</span>
+            </summary>
+            <div className="mt-3 space-y-2">
+              {details.map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+            </div>
+          </details>
           <a
             href={SALE_CHANNEL_URL}
             target="_blank"
