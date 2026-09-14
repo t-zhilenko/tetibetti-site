@@ -9,6 +9,11 @@ import Providers from "@/app/providers";
 import {toValidLocale} from "@/i18n/locale";
 import { routing } from "@/i18n/routing";
 
+// Every localized page renders on demand. On Cloudflare the prerendered pages
+// (about, blog, faq, legal pages…) shipped an empty shell and filled the content
+// client-side, so crawlers and link previews saw no text at all.
+export const dynamic = "force-dynamic";
+
 const siteUrl = "https://tetibetti.com";
 const ogImage = {
   url: "/og-image.png",
