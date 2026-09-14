@@ -36,7 +36,7 @@ export default async function ThankYouYearlyGoalsPage({params}: ThankYouPageProp
 
   return (
     <section className="bg-[#fdf9f9]">
-      <Container className="py-14 md:py-20">
+      <Container className="pt-8 pb-14 md:pt-10 md:pb-20">
         <div className="mx-auto max-w-2xl text-center">
           <div className="py-4 md:py-6 space-y-4">
             <p className="text-[11px] uppercase tracking-[0.38em] text-deep/50">{t("label")}</p>

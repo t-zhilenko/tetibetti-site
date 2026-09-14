@@ -7,7 +7,7 @@ export default function LocaleNotFoundPage() {
 
   return (
     <section className="bg-soft">
-      <Container className="py-20">
+      <Container className="pt-10 pb-20">
         <div className="max-w-xl space-y-4 text-center mx-auto">
           <h1 className="text-3xl md:text-4xl text-deep/90">{t("title")}</h1>
           <p className="text-sm text-deep/70">{t("description")}</p>

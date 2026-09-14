@@ -34,7 +34,7 @@ export default async function ShopPage({params}: ShopPageProps) {
 
   return (
     <section className="bg-[#fbf3f4]">
-      <Container className="py-24 md:py-20">
+      <Container className="pt-8 pb-24 md:pt-10 md:pb-20">
         <div className="max-w-3xl mx-auto text-center space-y-3 mb-10 md:mb-12">
           <h1 className="text-3xl md:text-4xl leading-[1.1] tracking-[-0.02em] text-deep/90">
             {t("title")}

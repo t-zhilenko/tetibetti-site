@@ -14,8 +14,8 @@ export default function FeaturedSale() {
   }
 
   return (
-    <section className="bg-soft">
-      <Container className="py-20 md:py-18">
+    <section className="border-t border-deep/10 bg-[#fbf3f4]">
+      <Container className="py-14 md:py-16">
         <div className="space-y-3 text-center">
           <p className="text-xs uppercase tracking-[0.3em] text-deep/50">{t("label")}</p>
           <h2 className="text-2xl md:text-3xl">{t("title")}</h2>

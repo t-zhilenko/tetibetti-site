@@ -116,7 +116,7 @@ export default async function SalePage({params}: SalePageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{__html: JSON.stringify(buildStructuredData(locale))}}
       />
-      <Container className="py-12 md:py-16">
+      <Container className="pt-8 pb-12 md:pt-10 md:pb-16">
         <div className="max-w-[720px] space-y-4">
           <p className="text-xs uppercase tracking-[0.3em] text-deep/50">Секонд-хенд з моєї шафи</p>
           <h1 className="text-3xl md:text-4xl leading-[1.1] tracking-[-0.02em] text-deep/90">

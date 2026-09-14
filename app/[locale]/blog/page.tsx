@@ -29,7 +29,7 @@ export default async function BlogPage({params}: BlogPageProps) {
 
   return (
     <section className="relative overflow-hidden bg-soft bg-[radial-gradient(900px_420px_at_80%_85%,rgba(223,194,192,0.08),transparent_70%)]">
-      <Container className="py-16 md:py-15">
+      <Container className="pt-8 pb-16 md:pt-10 md:pb-15">
         <div className="min-h-[70vh] grid gap-4 lg:grid-cols-[380px_1fr] items-center lg:gap-12">
           <div className="flex justify-center lg:justify-start order-1">
             <div className="w-full max-w-[260px] sm:max-w-[320px] lg:max-w-[380px]">

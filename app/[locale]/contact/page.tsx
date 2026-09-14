@@ -28,7 +28,7 @@ export default async function ContactPage({params}: ContactPageProps) {
 
   return (
     <section className="bg-[#fdf9f9]">
-      <Container className="py-16 md:py-20">
+      <Container className="pt-8 pb-16 md:pt-10 md:pb-20">
         <div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] items-start">
           <div className="space-y-4 max-w-[520px]">
             <p className="text-[11px] uppercase tracking-[0.35em] text-deep/50">{t("label")}</p>

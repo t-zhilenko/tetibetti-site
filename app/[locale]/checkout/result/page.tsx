@@ -30,7 +30,7 @@ export default async function CheckoutResultPage({ params, searchParams }: Check
 
   return (
     <section className="bg-soft min-h-[70vh]">
-      <Container className="py-16 md:py-20">
+      <Container className="pt-8 pb-16 md:pt-10 md:pb-20">
         <div className="mx-auto max-w-4xl rounded-3xl border border-[#dfc2c0]/30 bg-white/75 p-8 md:p-10">
           <CheckoutResultClient
             locale={locale}

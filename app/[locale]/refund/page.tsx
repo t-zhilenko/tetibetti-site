@@ -26,7 +26,7 @@ export default async function RefundPage({params}: RefundPageProps) {
 
   return (
     <section className="bg-soft">
-      <Container className="py-16">
+      <Container className="pt-8 pb-16 md:pt-10">
         <div className="max-w-xl space-y-4">
           <h1 className="text-3xl">{t("title")}</h1>
           <p className="text-sm text-deep/70">{t("description")}</p>

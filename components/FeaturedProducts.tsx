@@ -15,8 +15,8 @@ export default function FeaturedProducts({products}: FeaturedProductsProps) {
   const items = products.map((product) => toProductCardItem(product));
 
   return (
-    <section className="bg-[#fbf3f4]">
-      <Container className="py-24 md:py-18">
+    <section className="border-t border-deep/10 bg-soft">
+      <Container className="py-14 md:py-16">
         <div className="space-y-3 text-center">
           <p className="text-xs uppercase tracking-[0.3em] text-deep/50">{t("label")}</p>
           <h2 className="text-2xl md:text-3xl">{t("title")}</h2>

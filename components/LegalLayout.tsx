@@ -18,7 +18,7 @@ export default function LegalLayout({
 }: LegalLayoutProps) {
   return (
     <section className="bg-[#fdf9f9]">
-      <Container className="py-16 md:py-20">
+      <Container className="pt-8 pb-16 md:pt-10 md:pb-20">
         <div className="mx-auto max-w-[760px] space-y-10">
           <div className="space-y-4">
             <p className="text-[11px] uppercase tracking-[0.35em] text-deep/50">

@@ -34,7 +34,7 @@ export default async function LocalizedOrderLookupPage({
 
   return (
     <section className="bg-soft min-h-[70vh]">
-      <Container className="py-16">
+      <Container className="pt-8 pb-16 md:pt-10">
         <OrderLookupClient
           supportEmail={getSupportEmail()}
           initialOrderId={initialOrderId}
