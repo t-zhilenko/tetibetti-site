@@ -6,6 +6,7 @@ import {Link} from "@/i18n/navigation";
 const navLinks = [
   {href: "/", key: "home"},
   {href: "/shop", key: "shop"},
+  {href: "/rozprodazh", key: "sale"},
   {href: "/blog", key: "blog"},
   {href: "/about", key: "about"},
   {href: "/faq", key: "faq"},

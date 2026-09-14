@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import {notFound} from "next/navigation";
 import Hero from "@/components/Hero";
 import FeaturedProducts from "@/components/FeaturedProducts";
+import FeaturedSale from "@/components/FeaturedSale";
 import EmailSubscription from "@/components/EmailSubscription";
 import {resolveLocale} from "@/i18n/locale";
 import {buildLocalizedPageMetadata} from "@/i18n/metadata";
@@ -33,6 +34,7 @@ export default async function HomePage({params}: HomePageProps) {
   return (
     <>
       <Hero />
+      <FeaturedSale />
       <FeaturedProducts products={products} />
       <EmailSubscription />
     </>

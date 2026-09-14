@@ -169,7 +169,6 @@ type ProductLocalizedConfig = Omit<ProductConfig, keyof ProductStaticConfig>;
 const fallbackLocale: Locale = "en";
 const productOrder: ProductSlug[] = [
   "yearly-goals",
-  "nutrition-meal-planner",
   "body-and-nutrition-tracker",
 ];
 
@@ -211,7 +210,7 @@ const productStaticConfigs: Record<ProductSlug, ProductStaticConfig> = {
       alt: "Yearly Goals preview",
     },
     downloadTag: "yearly-goals",
-    pairsWith: ["nutrition-meal-planner"],
+    pairsWith: ["body-and-nutrition-tracker"],
     showActions: true,
     showLanguageSelector: true,
   },
@@ -236,7 +235,7 @@ const productStaticConfigs: Record<ProductSlug, ProductStaticConfig> = {
       src: "/images/body-and-nutrition-tracker/1.jpg",
       alt: "Body & Nutrition Tracker main preview",
     },
-    pairsWith: ["nutrition-meal-planner"],
+    pairsWith: ["yearly-goals"],
     showLanguageSelector: true,
   },
 };

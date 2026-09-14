@@ -42,17 +42,17 @@ export default function Hero() {
             <p className="max-w-md text-[13px] md:text-[15px] leading-relaxed text-deep/75">
               {t("description")}
             </p>
+            <p className="max-w-md text-[13px] md:text-[15px] leading-relaxed text-deep/75">
+              {t("saleNote")}
+            </p>
             <div className="flex flex-wrap gap-4">
-              <Link
-                href="/shop"
-                className="inline-flex items-center justify-center rounded-full bg-blush/80 px-5 py-2.5 text-sm font-medium text-deep border border-deep/10 shadow-sm"
-              >
+              <Link href="/rozprodazh" className="inline-flex items-center justify-center rounded-full bg-blush/80 px-5 py-2.5 text-sm font-medium text-deep border border-deep/10 shadow-sm">
+                {t("saleCta")}
+              </Link>
+              <Link href="/shop" className="inline-flex items-center justify-center rounded-full border border-deep/40 px-5 py-2.5 text-sm font-medium text-deep/75 hover:text-deep">
                 {t("primaryCta")}
               </Link>
-              <Link
-                href="/blog"
-                className="inline-flex items-center justify-center rounded-full border border-deep/40 px-5 py-2.5 text-sm font-medium text-deep/75 hover:text-deep"
-              >
+              <Link href="/blog" className="inline-flex items-center justify-center rounded-full border border-deep/40 px-5 py-2.5 text-sm font-medium text-deep/75 hover:text-deep">
                 {t("secondaryCta")}
               </Link>
             </div>

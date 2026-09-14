@@ -25,11 +25,6 @@ const curatedItems: EmptyCartItem[] = [
     title: "Yearly Goals System",
     imageSrc: "/images/yearly-goals/main-preview.jpg",
   },
-  {
-    slug: "nutrition-meal-planner",
-    title: "Nutrition Meal Planner",
-    imageSrc: "/images/nutrition-meal-planner/main-preview.jpg",
-  },
 ];
 
 export default function EmptyCartCarousel({onNavigate}: EmptyCartCarouselProps) {

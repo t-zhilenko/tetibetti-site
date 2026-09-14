@@ -14,7 +14,8 @@
   },
   "Navigation": {
     "home": "Home",
-    "shop": "Shop",
+    "shop": "Notion templates",
+    "sale": "Sale",
     "blog": "Blog",
     "about": "About",
     "faq": "FAQ",
@@ -44,18 +45,27 @@
     "hero": {
       "portraitAlt": "Tetiana, founder of Teti Betti",
       "caption": "Tetiana • Teti Betti",
-      "eyebrow": "Digital systems and reflections",
-      "title": "Structure for clarity.",
-      "titleAccent": "Space for becoming.",
-      "description": "I build thoughtful systems and write about purpose, growth and alignment, creating minimal tools to support the process.",
-      "primaryCta": "View products",
+      "eyebrow": "Mindful consumption and calm systems",
+      "title": "A second life for things.",
+      "titleAccent": "Clarity for plans.",
+      "description": "I believe in mindful consumption, so the things I no longer need are on sale right here on my site: branded clothes, lingerie, winter sports gear. I'd love for them to find a second life and be useful to someone.",
+      "saleNote": "And for those who like order in their plans, my minimal Notion templates and notes on purpose, growth and alignment live here too.",
+      "saleCta": "Wardrobe sale",
+      "primaryCta": "Notion templates",
       "secondaryCta": "Read blog"
     },
     "featured": {
       "label": "Featured Products",
       "title": "Simple tools for steady progress.",
       "description": "A minimal collection of systems built for clarity and calm.",
-      "viewAll": "View all"
+      "viewAll": "View all templates"
+    },
+    "sale": {
+      "label": "Wardrobe sale",
+      "title": "A lighter wardrobe.",
+      "description": "{count} pieces from my wardrobe: branded clothes, lingerie, winter sports gear. Sizes XS–S, honest condition, open to offers. Listings are in Ukrainian.",
+      "open": "View",
+      "viewAll": "See the whole sale"
     },
     "subscription": {
       "label": "STAY IN FLOW",
@@ -618,6 +628,12 @@
           ]
         }
       ]
+    },
+    "rozprodazh": {
+      "meta": {
+        "title": "Wardrobe sale: pre-owned branded clothes",
+        "description": "Second-hand from my own wardrobe: pre-owned branded clothes, lingerie and winter sports gear in good condition. Victoria's Secret, Guess, Levi's, DC, Rossignol. Photos, prices, sizes XS–S, shipping across Ukraine."
+      }
     },
     "notFound": {
       "title": "Page not found",

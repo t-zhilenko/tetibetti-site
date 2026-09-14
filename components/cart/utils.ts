@@ -25,7 +25,6 @@ export type CartRecommendation = {
 
 const recommendationPriority = [
   "yearly-goals",
-  "nutrition-meal-planner",
   "body-and-nutrition-tracker",
 ];
 
