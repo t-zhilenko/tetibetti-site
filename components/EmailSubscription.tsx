@@ -6,8 +6,8 @@ export default function EmailSubscription() {
   const t = useTranslations("Home.subscription");
 
   return (
-    <section className="bg-soft">
-      <Container className="py-16 md:py-24">
+    <section className="border-t border-deep/10 bg-[#fbf3f4]">
+      <Container className="py-14 md:py-20">
         <div className="mx-auto max-w-[900px] text-center space-y-5">
           <p className="text-xs uppercase tracking-[0.36em] text-deep/40">
             {t("label")}
