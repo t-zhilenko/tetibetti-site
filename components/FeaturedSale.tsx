@@ -2,12 +2,12 @@ import {useTranslations} from "next-intl";
 import Container from "@/components/Container";
 import SaleCarousel from "@/components/sale/SaleCarousel";
 import {VIEW_ALL_BUTTON_CLASS} from "@/components/view-all-button-class";
-import {SALE_CHANNEL_URL, saleItems} from "@/content/sale";
+import {SALE_CHANNEL_URL, isAvailable, saleItems} from "@/content/sale";
 import {Link} from "@/i18n/navigation";
 
 export default function FeaturedSale() {
   const t = useTranslations("Home.sale");
-  const items = saleItems.filter((item) => !item.sold);
+  const items = saleItems.filter(isAvailable);
 
   if (!items.length) {
     return null;

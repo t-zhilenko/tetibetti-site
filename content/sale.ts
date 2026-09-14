@@ -1,9 +1,13 @@
 // Розпродаж речей: дані для сторінки /rozprodazh.
 // Фото лежать у public/images/rozprodazh/<id>/<k>.jpg (1280px) і <k>-t.jpg (560px),
 // k = 1..photos; перше фото = обкладинка. Джерело описів: нотатки проєкту
-// «Розпродаж речей» у Teti Studio. Щоб позначити продане: sold: true.
+// «Розпродаж речей» у Teti Studio.
+// Статус речі: без поля = в наявності; "reserved" = заброньовано (картка лишається,
+// кнопки нема); "shipped" = відправлено (картка переїжджає вниз у «Продано»).
 
 export type SaleCategory = "clothes" | "sport" | "lingerie" | "accessories";
+
+export type SaleStatus = "available" | "reserved" | "shipped";
 
 export type SaleItem = {
   id: string;
@@ -14,8 +18,17 @@ export type SaleItem = {
   description: string;
   photos: number;
   category: SaleCategory;
-  sold?: boolean;
+  status?: SaleStatus;
 };
+
+export const SALE_STATUS_LABEL: Record<SaleStatus, string> = {
+  available: "В наявності",
+  reserved: "Заброньовано",
+  shipped: "Відправлено",
+};
+
+export const saleStatus = (item: SaleItem): SaleStatus => item.status ?? "available";
+export const isAvailable = (item: SaleItem) => saleStatus(item) === "available";
 
 // Куди ведуть кнопки «Написати в Telegram». Має бути особистий акаунт, не канал.
 export const SALE_TELEGRAM_USERNAME = "tzhilenko";
@@ -47,8 +60,8 @@ export const saleItems: SaleItem[] = [
     id: "02",
     title: "Снуд Maltina з ангорою, новий з біркою",
     size: "one size",
-    price: 550,
-    priceRange: "450–600",
+    price: 600,
+    priceRange: "600",
     description:
       "Новий, з біркою. Теплий в'язаний снуд Maltina Accessories сірого кольору, застібається на магнітні кнопки. Склад: ангора, нейлон, віскоза, вовна. Дуже м'який, не колеться.",
     photos: 4,
@@ -102,8 +115,8 @@ export const saleItems: SaleItem[] = [
     id: "07",
     title: "Мереживний бралет For Love & Lemons",
     size: "XS",
-    price: 1100,
-    priceRange: "900–1300",
+    price: 1300,
+    priceRange: "1300",
     description:
       "Рожевий мереживний бралет-корсет For Love & Lemons з вишитими квітами і шнурівкою спереду, на бретелях. Designed in Los Angeles. Одягався кілька разів, стан як новий.",
     photos: 5,
@@ -113,8 +126,8 @@ export const saleItems: SaleItem[] = [
     id: "08",
     title: "Пояс для панчіх Shur Shur x Zhilyova",
     size: "S",
-    price: 1000,
-    priceRange: "800–1200",
+    price: 1200,
+    priceRange: "1200",
     description:
       "Дизайнерський пояс для панчіх Shur Shur x Zhilyova з регульованими підв'язками, білий з червоним оксамитом, застібка на гачки. 95% поліамід, 5% еластан. У фірмовій коробці. Стан як новий. Трусики в комплект не входять.",
     photos: 9,
@@ -190,8 +203,8 @@ export const saleItems: SaleItem[] = [
     id: "15",
     title: "Шкіряна сумка через плече, чорна",
     size: "вміщує планшет",
-    price: 750,
-    priceRange: "600–900",
+    price: 600,
+    priceRange: "600",
     description:
       "Чорна сумка з натуральної шкіри через плече: клапан, блискавка, регульований ремінь, картата підкладка, задня кишеня на блискавці. По кутах шкіра трохи потерта, на фото видно; решта в гарному стані.",
     photos: 5,
@@ -201,8 +214,8 @@ export const saleItems: SaleItem[] = [
     id: "16",
     title: "Панчохи в'язані Shur Shur, чорні з червоним",
     size: "one size",
-    price: 400,
-    priceRange: "300–450",
+    price: 500,
+    priceRange: "500",
     description:
       "В'язані панчохи вище коліна від українського бренду Shur Shur: чорні в рубчик з червоним верхом і фірмовою вишивкою. Стан гарний.",
     photos: 4,
@@ -212,8 +225,8 @@ export const saleItems: SaleItem[] = [
     id: "17",
     title: "Панчохи в'язані Shur Shur, сірі з синім",
     size: "one size",
-    price: 400,
-    priceRange: "300–450",
+    price: 500,
+    priceRange: "500",
     description:
       "В'язані панчохи вище коліна Shur Shur: сірі в рубчик з синім верхом. Стан гарний.",
     photos: 4,
@@ -223,8 +236,8 @@ export const saleItems: SaleItem[] = [
     id: "18",
     title: "Панчохи в'язані Shur Shur, рожеві",
     size: "one size",
-    price: 400,
-    priceRange: "300–450",
+    price: 500,
+    priceRange: "500",
     description:
       "В'язані панчохи вище коліна Shur Shur, ніжно-рожеві в рубчик. Стан гарний.",
     photos: 4,

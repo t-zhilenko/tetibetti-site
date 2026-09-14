@@ -5,7 +5,9 @@ import Image from "next/image";
 import {ChevronLeft, ChevronRight, Send, X} from "lucide-react";
 import {
   SALE_CATEGORIES,
+  SALE_STATUS_LABEL,
   saleItemPhoto,
+  saleStatus,
   saleTelegramLink,
   type SaleCategory,
   type SaleItem,
@@ -50,8 +52,9 @@ export default function SaleCatalog({items}: SaleCatalogProps) {
 
   const [filter, setFilter] = useState<SaleCategory | "all">("all");
 
-  const available = items.filter((item) => !item.sold);
-  const sold = items.filter((item) => item.sold);
+  // «В наявності» і «заброньовано» лишаються в сітці, «відправлено» їде вниз.
+  const available = items.filter((item) => saleStatus(item) !== "shipped");
+  const sold = items.filter((item) => saleStatus(item) === "shipped");
   const visibleCategories = SALE_CATEGORIES.filter((category) =>
     available.some((item) => item.category === category.key)
   );
@@ -94,7 +97,7 @@ export default function SaleCatalog({items}: SaleCatalogProps) {
 
         {sold.length > 0 && filter === "all" && (
           <section className="space-y-5">
-            <h2 className="text-xl md:text-2xl leading-tight text-deep/60">Уже продано</h2>
+            <h2 className="text-xl md:text-2xl leading-tight text-deep/60">Уже відправлено</h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {sold.map((item) => (
                 <SaleCard key={item.id} item={item} onOpen={(index) => setViewer({item, index})} />
@@ -205,11 +208,11 @@ type SaleCardProps = {
 };
 
 function SaleCard({item, onOpen}: SaleCardProps) {
+  const status = saleStatus(item);
+  const dimmed = status === "shipped" ? "opacity-60" : status === "reserved" ? "opacity-85" : "";
   return (
     <article
-      className={`flex h-full flex-col rounded-[22px] border border-[#dfc2c0]/28 bg-[#fdfcfa] p-4 shadow-[0_12px_28px_rgba(223,194,192,0.2)] ${
-        item.sold ? "opacity-60" : ""
-      }`}
+      className={`flex h-full flex-col rounded-[22px] border border-[#dfc2c0]/28 bg-[#fdfcfa] p-4 shadow-[0_12px_28px_rgba(223,194,192,0.2)] ${dimmed}`}
     >
       <button
         type="button"
@@ -229,9 +232,13 @@ function SaleCard({item, onOpen}: SaleCardProps) {
         <span className="absolute bottom-2 right-2 rounded-full bg-[#1c2a30]/70 px-2.5 py-1 text-[11px] font-medium text-white">
           {item.photos} фото
         </span>
-        {item.sold && (
-          <span className="absolute left-2 top-2 rounded-full bg-[#1c2a30]/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white">
-            Продано
+        {status !== "available" && (
+          <span
+            className={`absolute left-2 top-2 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-white ${
+              status === "reserved" ? "bg-[#b0763f]/85" : "bg-[#1c2a30]/80"
+            }`}
+          >
+            {SALE_STATUS_LABEL[status]}
           </span>
         )}
       </button>
@@ -255,7 +262,12 @@ function SaleCard({item, onOpen}: SaleCardProps) {
             усі фото
           </button>
         </div>
-        {!item.sold && (
+        {status === "reserved" && (
+          <p className="mt-2 text-[12px] text-deep/55">
+            Річ заброньована. Якщо покупець передумає, повернеться в наявність.
+          </p>
+        )}
+        {status === "available" && (
           <a
             href={saleTelegramLink(item)}
             target="_blank"

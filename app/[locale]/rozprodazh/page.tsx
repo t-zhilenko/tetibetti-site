@@ -2,7 +2,7 @@ import type {Metadata} from "next";
 import Container from "@/components/Container";
 import SaleCatalog from "@/components/sale/SaleCatalog";
 import {Send} from "lucide-react";
-import {SALE_CHANNEL_URL, saleItemPhoto, saleItems} from "@/content/sale";
+import {SALE_CHANNEL_URL, isAvailable, saleItemPhoto, saleItems, saleStatus} from "@/content/sale";
 import {resolveLocale} from "@/i18n/locale";
 import {buildLocalizedPageMetadata} from "@/i18n/metadata";
 
@@ -49,7 +49,7 @@ export async function generateMetadata({params}: SalePageProps): Promise<Metadat
     twitterCard: "summary_large_image",
     robots: {index: true, follow: true},
   });
-  const cover = saleItems.find((item) => !item.sold) ?? saleItems[0];
+  const cover = saleItems.find(isAvailable) ?? saleItems[0];
   const image = {
     url: saleItemPhoto(cover, 1),
     width: 960,
@@ -76,14 +76,14 @@ const details = [
 ];
 
 const buildStructuredData = (locale: string) => {
-  const available = saleItems.filter((item) => !item.sold);
+  const listed = saleItems.filter((item) => saleStatus(item) !== "shipped");
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Розпродаж брендових речей б/у з моєї шафи",
     url: `${siteUrl}/${locale}/rozprodazh`,
-    numberOfItems: available.length,
-    itemListElement: available.map((item, index) => ({
+    numberOfItems: listed.length,
+    itemListElement: listed.map((item, index) => ({
       "@type": "ListItem",
       position: index + 1,
       item: {
@@ -96,7 +96,7 @@ const buildStructuredData = (locale: string) => {
           "@type": "Offer",
           price: item.price,
           priceCurrency: "UAH",
-          availability: "https://schema.org/InStock",
+          availability: isAvailable(item) ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
           itemCondition: "https://schema.org/UsedCondition",
           url: `${siteUrl}/${locale}/rozprodazh`,
           seller: {"@type": "Person", name: "Тетяна, Teti Betti"},
@@ -113,7 +113,7 @@ export default async function SalePage({params}: SalePageProps) {
     return null;
   }
 
-  const available = saleItems.filter((item) => !item.sold).length;
+  const available = saleItems.filter(isAvailable).length;
 
   return (
     <section className="relative overflow-hidden bg-soft bg-[radial-gradient(900px_420px_at_80%_10%,rgba(223,194,192,0.12),transparent_70%)]">
