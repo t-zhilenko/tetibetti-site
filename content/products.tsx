@@ -166,7 +166,10 @@ type ProductStaticConfig = Pick<
 
 type ProductLocalizedConfig = Omit<ProductConfig, keyof ProductStaticConfig>;
 
-const fallbackLocale: Locale = "en";
+// Product copy exists in both languages even while the site runs Ukrainian only; the
+// fallback stays English so a locale without its own copy still renders something.
+type ProductLocale = "en" | "uk";
+const fallbackLocale: ProductLocale = "en";
 const productOrder: ProductSlug[] = [
   "yearly-goals",
   "body-and-nutrition-tracker",
@@ -240,7 +243,7 @@ const productStaticConfigs: Record<ProductSlug, ProductStaticConfig> = {
   },
 };
 
-const localizedProductConfigs: Record<Locale, Record<ProductSlug, ProductLocalizedConfig>> = {
+const localizedProductConfigs: Record<ProductLocale, Record<ProductSlug, ProductLocalizedConfig>> = {
   en: {
     "yearly-goals": {
       title: "Yearly Goals",

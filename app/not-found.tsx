@@ -7,7 +7,7 @@ export default function RootNotFoundPage() {
       <p className="mt-3 text-sm text-deep/70">
         The page you requested does not exist.
       </p>
-      <Link href="/en" className="mt-4 inline-block text-sm text-deep/70 underline underline-offset-4">
+      <Link href="/uk" className="mt-4 inline-block text-sm text-deep/70 underline underline-offset-4">
         Go to home
       </Link>
     </main>

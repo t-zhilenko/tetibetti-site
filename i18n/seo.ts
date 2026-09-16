@@ -1,4 +1,4 @@
-import type {Locale} from "@/i18n/routing";
+import {routing, type Locale} from "@/i18n/routing";
 
 export const getLocalizedPath = (locale: Locale, pathname = "/") => {
   const normalized = pathname === "/" ? "" : pathname;
@@ -8,8 +8,7 @@ export const getLocalizedPath = (locale: Locale, pathname = "/") => {
 export const getHreflang = (pathname = "/") => {
   const normalized = pathname === "/" ? "" : pathname;
   return {
-    en: `/en${normalized}`,
-    uk: `/uk${normalized}`,
-    "x-default": `/en${normalized}`,
+    ...Object.fromEntries(routing.locales.map((locale) => [locale, `/${locale}${normalized}`])),
+    "x-default": `/${routing.defaultLocale}${normalized}`,
   };
 };

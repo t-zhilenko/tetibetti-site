@@ -33,7 +33,7 @@ type RootLayoutProps = {
 
 export default function RootLayout({children}: RootLayoutProps) {
   return (
-    <html lang="en">
+    <html lang="uk">
       <body className={`${inter.variable} ${playfair.variable} ${allura.variable} antialiased`}>
         {children}
       </body>

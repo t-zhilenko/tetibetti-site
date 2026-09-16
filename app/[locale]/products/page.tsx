@@ -7,5 +7,5 @@ type ProductsPageProps = {
 
 export default async function ProductsPage({params}: ProductsPageProps) {
   const locale = await resolveLocale(params);
-  permanentRedirect(`/${locale ?? "en"}/shop`);
+  permanentRedirect(`/${locale ?? "uk"}/shop`);
 }

@@ -157,6 +157,7 @@ export default function Header() {
               ))}
             </nav>
             <div className="flex items-center justify-end">
+              {routing.locales.length > 1 ? (
               <div className="inline-flex items-center gap-1 rounded-full bg-white/55 p-1 border border-deep/10">
                 {routing.locales.map((value) => {
                   const isCurrent = locale === value;
@@ -171,13 +172,14 @@ export default function Header() {
                           : "text-deep/55 hover:text-deep/75"
                       }`}
                       aria-pressed={isCurrent}
-                      aria-label={value === "en" ? common("switchToEnglish") : common("switchToUkrainian")}
+                      aria-label={(value as string) === "en" ? common("switchToEnglish") : common("switchToUkrainian")}
                     >
                       {value}
                     </button>
                   );
                 })}
               </div>
+              ) : null}
             </div>
           </div>
         </Container>
