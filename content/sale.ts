@@ -3,11 +3,12 @@
 // k = 1..photos; перше фото = обкладинка. Джерело описів: нотатки проєкту
 // «Розпродаж речей» у Teti Studio.
 // Статус речі: без поля = в наявності; "reserved" = заброньовано (картка лишається,
-// кнопки нема); "shipped" = відправлено (картка переїжджає вниз у «Продано»).
+// кнопки нема); "shipped" = відправлено, "sold" = продано (обидві картки переїжджають
+// вниз в «Уже продано»).
 
 export type SaleCategory = "clothes" | "sport" | "lingerie" | "accessories";
 
-export type SaleStatus = "available" | "reserved" | "shipped";
+export type SaleStatus = "available" | "reserved" | "shipped" | "sold";
 
 export type SaleItem = {
   id: string;
@@ -25,10 +26,13 @@ export const SALE_STATUS_LABEL: Record<SaleStatus, string> = {
   available: "В наявності",
   reserved: "Заброньовано",
   shipped: "Відправлено",
+  sold: "Продано",
 };
 
 export const saleStatus = (item: SaleItem): SaleStatus => item.status ?? "available";
 export const isAvailable = (item: SaleItem) => saleStatus(item) === "available";
+// Відправлені й продані речі виходять із сітки.
+export const isGone = (item: SaleItem) => saleStatus(item) === "shipped" || saleStatus(item) === "sold";
 
 // Куди ведуть кнопки «Написати в Telegram». Має бути особистий акаунт, не канал.
 export const SALE_TELEGRAM_USERNAME = "tzhilenko";
@@ -132,6 +136,7 @@ export const saleItems: SaleItem[] = [
       "Дизайнерський пояс для панчіх Shur Shur x Zhilyova з регульованими підв'язками, білий з червоним оксамитом, застібка на гачки. 95% поліамід, 5% еластан. У фірмовій коробці. Стан як новий. Трусики в комплект не входять.",
     photos: 9,
     category: "lingerie",
+    status: "reserved",
   },
   {
     id: "09",
@@ -232,6 +237,7 @@ export const saleItems: SaleItem[] = [
       "В'язані панчохи вище коліна Shur Shur: сірі в рубчик з синім верхом. Стан гарний.",
     photos: 4,
     category: "lingerie",
+    status: "reserved",
   },
   {
     id: "18",
@@ -243,7 +249,7 @@ export const saleItems: SaleItem[] = [
       "В'язані панчохи вище коліна Shur Shur, ніжно-рожеві в рубчик. Стан гарний.",
     photos: 4,
     category: "lingerie",
-    status: "shipped",
+    status: "sold",
   },
   {
     id: "19",

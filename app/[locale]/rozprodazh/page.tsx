@@ -2,7 +2,7 @@ import type {Metadata} from "next";
 import Container from "@/components/Container";
 import SaleCatalog from "@/components/sale/SaleCatalog";
 import {Send} from "lucide-react";
-import {SALE_CHANNEL_URL, isAvailable, saleItemPhoto, saleItems, saleStatus} from "@/content/sale";
+import {SALE_CHANNEL_URL, isAvailable, isGone, saleItemPhoto, saleItems} from "@/content/sale";
 import {resolveLocale} from "@/i18n/locale";
 import {buildLocalizedPageMetadata} from "@/i18n/metadata";
 
@@ -76,7 +76,7 @@ const details = [
 ];
 
 const buildStructuredData = (locale: string) => {
-  const listed = saleItems.filter((item) => saleStatus(item) !== "shipped");
+  const listed = saleItems.filter((item) => !isGone(item));
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
