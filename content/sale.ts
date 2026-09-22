@@ -136,7 +136,7 @@ export const saleItems: SaleItem[] = [
       "Дизайнерський пояс для панчіх Shur Shur x Zhilyova з регульованими підв'язками, білий з червоним оксамитом, застібка на гачки. 95% поліамід, 5% еластан. У фірмовій коробці. Стан як новий. Трусики в комплект не входять.",
     photos: 9,
     category: "lingerie",
-    status: "reserved",
+    status: "shipped",
   },
   {
     id: "09",
@@ -237,7 +237,7 @@ export const saleItems: SaleItem[] = [
       "В'язані панчохи вище коліна Shur Shur: сірі в рубчик з синім верхом. Стан гарний.",
     photos: 4,
     category: "lingerie",
-    status: "reserved",
+    status: "shipped",
   },
   {
     id: "18",
