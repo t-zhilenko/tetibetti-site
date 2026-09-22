@@ -225,7 +225,7 @@ export const saleItems: SaleItem[] = [
       "В'язані панчохи вище коліна від українського бренду Shur Shur: чорні в рубчик з червоним верхом і фірмовою вишивкою. Стан гарний.",
     photos: 4,
     category: "lingerie",
-    status: "shipped",
+    status: "sold",
   },
   {
     id: "17",
